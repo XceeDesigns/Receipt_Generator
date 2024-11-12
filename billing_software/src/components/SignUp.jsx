@@ -9,11 +9,11 @@ export default function SignUpPage() {
     companyName: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    mobile: '',
+    mobileNumber: '',
     country: '',
     state: ''
   });
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
   const countries = [
@@ -29,27 +29,48 @@ export default function SignUpPage() {
   ];
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
-  const handleSignUp = (event) => {
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+  };
+
+  const handleSignUp = async (event) => {
     event.preventDefault();
     setError('');
 
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.email || !formData.password || !confirmPassword) {
       setError('Please fill in all required fields.');
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
     }
 
-    alert(`Signing up with the following information:\n${JSON.stringify(formData, null, 2)}`);
+    console.log(formData);
+
+    const response = await fetch('http://localhost:8080/api/user/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+        });
+
+    if (!response.ok) {
+      setError('Failed to create account.');
+      return;
+    }
+
+    const data = await response.text();
+    console.log(data);
+
+    alert('Account created successfully!');
   };
 
   return (
@@ -152,8 +173,8 @@ export default function SignUpPage() {
                 type="password"
                 id="confirmPassword"
                 autoComplete="new-password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
               />
             </Grid>
           </Grid>
@@ -161,12 +182,12 @@ export default function SignUpPage() {
           <TextField
             margin="normal"
             fullWidth
-            id="mobile"
+            id="mobileNumber"
             label="Mobile Number"
-            name="mobile"
+            name="mobileNumber"
             type="tel"
             autoComplete="tel"
-            value={formData.mobile}
+            value={formData.mobileNumber}
             onChange={handleInputChange}
           />
 
@@ -219,5 +240,5 @@ export default function SignUpPage() {
         </Box>
       </Paper>
     </Container>
-  );
+ );
 }
