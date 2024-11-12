@@ -6,7 +6,7 @@ export default function SignInPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSignIn = (event) => {
+  const handleSignIn = async (event) => {
     event.preventDefault();
     setError(''); // Clear previous error message
 
@@ -16,8 +16,21 @@ export default function SignInPage() {
       return;
     }
 
-    // Simulate sign-in logic
-    alert(`Signing in with email: ${email} and password: ${password}`);
+    const response = await fetch('http://localhost:8080/api/user/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      alert('Failed login');
+      return;
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+    localStorage.setItem('token', data.authToken);
   };
 
   return (

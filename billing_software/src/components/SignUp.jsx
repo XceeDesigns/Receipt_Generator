@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Box, Typography, Alert, Paper, Divider, MenuItem } from '@mui/material';
+import {
+  Container, TextField, Button, Box, Typography, Alert, Paper, Divider, MenuItem, Grid
+} from '@mui/material';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -7,25 +9,23 @@ export default function SignUpPage() {
     companyName: '',
     email: '',
     password: '',
+    confirmPassword: '',
     mobile: '',
     country: '',
     state: ''
   });
   const [error, setError] = useState('');
 
-  // Country and state options for the dropdowns
   const countries = [
     { label: 'United States', value: 'US' },
     { label: 'Canada', value: 'CA' },
     { label: 'India', value: 'IN' },
-    // Add more countries as needed
   ];
 
   const states = [
     { label: 'California', value: 'CA' },
     { label: 'Texas', value: 'TX' },
     { label: 'Ontario', value: 'ON' },
-    // Add more states/provinces as needed
   ];
 
   const handleInputChange = (e) => {
@@ -37,15 +37,18 @@ export default function SignUpPage() {
 
   const handleSignUp = (event) => {
     event.preventDefault();
-    setError(''); // Clear any previous errors
+    setError('');
 
-    // Basic validation
-    if (!formData.name || !formData.email || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all required fields.');
       return;
     }
 
-    // Simulate sign-up logic
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     alert(`Signing up with the following information:\n${JSON.stringify(formData, null, 2)}`);
   };
 
@@ -81,7 +84,6 @@ export default function SignUpPage() {
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Display error if validation fails */}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
@@ -89,28 +91,31 @@ export default function SignUpPage() {
         )}
 
         <Box component="form" onSubmit={handleSignUp} noValidate>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="Full Name"
-            name="name"
-            autoComplete="name"
-            value={formData.name}
-            onChange={handleInputChange}
-          />
-
-          <TextField
-            margin="normal"
-            fullWidth
-            id="companyName"
-            label="Company Name"
-            name="companyName"
-            autoComplete="organization"
-            value={formData.companyName}
-            onChange={handleInputChange}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                id="name"
+                label="Full Name"
+                name="name"
+                autoComplete="name"
+                value={formData.name}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                id="companyName"
+                label="Company Name"
+                name="companyName"
+                autoComplete="organization"
+                value={formData.companyName}
+                onChange={handleInputChange}
+              />
+            </Grid>
+          </Grid>
 
           <TextField
             margin="normal"
@@ -124,18 +129,34 @@ export default function SignUpPage() {
             onChange={handleInputChange}
           />
 
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="new-password"
-            value={formData.password}
-            onChange={handleInputChange}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+                value={formData.password}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                id="confirmPassword"
+                autoComplete="new-password"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+              />
+            </Grid>
+          </Grid>
 
           <TextField
             margin="normal"
@@ -149,39 +170,42 @@ export default function SignUpPage() {
             onChange={handleInputChange}
           />
 
-          <TextField
-            margin="normal"
-            fullWidth
-            id="country"
-            select
-            label="Country"
-            name="country"
-            value={formData.country}
-            onChange={handleInputChange}
-          >
-            {countries.map((country) => (
-              <MenuItem key={country.value} value={country.value}>
-                {country.label}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            margin="normal"
-            fullWidth
-            id="state"
-            select
-            label="State/Province"
-            name="state"
-            value={formData.state}
-            onChange={handleInputChange}
-          >
-            {states.map((state) => (
-              <MenuItem key={state.value} value={state.value}>
-                {state.label}
-              </MenuItem>
-            ))}
-          </TextField>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                id="country"
+                select
+                label="Country"
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+              >
+                {countries.map((country) => (
+                  <MenuItem key={country.value} value={country.value}>
+                    {country.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                id="state"
+                select
+                label="State/Province"
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+              >
+                {states.map((state) => (
+                  <MenuItem key={state.value} value={state.value}>
+                    {state.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
 
           <Button
             type="submit"
