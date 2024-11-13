@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Button,
@@ -21,7 +21,7 @@ const Dashboard = () => {
     const [depositType, setDepositType] = useState("None");
     const [reviewEnabled, setReviewEnabled] = useState(false);
     const [reviewLink, setReviewLink] = useState("");
-    const [items, setItems] = useState([{ description: "", rate: 0, qty: 1 }]);
+    const [items, setItems] = useState([{ description: "", rate: 0, qty: 1, amount: 0 }]);
     const [receiptData, setReceiptData] = useState({
         companyName: "",
         companyLocation: "",
@@ -71,9 +71,13 @@ const Dashboard = () => {
         setItems(updatedItems);
     };
 
-    const calculateTotal = () => {
-        return items.reduce((total, item) => total + item.rate * item.qty, 0).toFixed(2);
-    };
+    useEffect(() => {
+        const total = items.reduce((total, item) => total + item.rate * item.qty, 0);
+        setReceiptData((prevData) => ({
+            ...prevData,
+            total: total.toFixed(2),
+        }));
+    }, [items]);
 
     const handlePreview = () => {
         console.log(receiptData);
@@ -138,7 +142,7 @@ const Dashboard = () => {
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={4}>
-                                <TextField fullWidth label="Number" defaultValue="INV0001" variant="outlined" value={receiptData.estimateNumber} onChange={(e) => handleReceiptDataChange("estimateNumber", e.target.value)}/>
+                                <TextField fullWidth label="Number" variant="outlined" value={receiptData.estimateNumber} onChange={(e) => handleReceiptDataChange("estimateNumber", e.target.value)}/>
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField
@@ -244,7 +248,8 @@ const Dashboard = () => {
                                         fullWidth
                                         label="Amount"
                                         value={(item.rate * item.qty).toFixed(2)}
-                                        variant="outlined"                                    />
+                                        variant="outlined"
+                                                                           />
                                 </Grid>
                                 <Grid item xs={1}>
                                     <IconButton onClick={() => handleRemoveItem(index)} color="error">
@@ -268,15 +273,15 @@ const Dashboard = () => {
                         </Typography>
                         <Box display="flex" justifyContent="space-between" mt={2}>
                             <Typography>Subtotal:</Typography>
-                            <Typography>₹{calculateTotal()}</Typography>
+                            <Typography>₹{receiptData.total}</Typography>
                         </Box>
                         <Box display="flex" justifyContent="space-between" mt={1}>
                             <Typography>Total:</Typography>
-                            <Typography>₹{calculateTotal()}</Typography>
+                            <Typography>₹{receiptData.total}</Typography>
                         </Box>
                         <Box display="flex" justifyContent="space-between" mt={1}>
                             <Typography fontWeight="bold">Balance Due:</Typography>
-                            <Typography fontWeight="bold">₹{calculateTotal()}</Typography>
+                            <Typography fontWeight="bold">₹{receiptData.total}</Typography>
                         </Box>
 
                         {/* Notes Section */}

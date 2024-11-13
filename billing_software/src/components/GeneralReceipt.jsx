@@ -53,7 +53,7 @@ const GeneralReceipt = () => {
                                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>Date:</Typography>
                                 <Typography sx={{mb: '5px'}}>{receiptData.date}</Typography>
                                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>Balance Due:</Typography>
-                                <Typography>Total: INR {receiptData.total}</Typography>
+                                <Typography>Total: ₹ {receiptData.total}</Typography>
                             </Box>
                         </Box>
 
@@ -89,10 +89,10 @@ const GeneralReceipt = () => {
                                     <Typography>₹{item.rate}</Typography>
                                 </Grid>
                                 <Grid item xs={2} textAlign="center">
-                                    <Typography>{item.quantity}</Typography>
+                                    <Typography>{item.qty}</Typography>
                                 </Grid>
                                 <Grid item xs={2} textAlign="center">
-                                    <Typography>₹{item.amount}</Typography>
+                                    <Typography>₹{item.rate * item.qty}</Typography>
                                 </Grid>
                             </Grid>
                         ))}
@@ -100,7 +100,7 @@ const GeneralReceipt = () => {
                         {/* Total Calculation */}
                         <Divider sx={{ my: 2 }} />
                         <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
-                            <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>TOTAL INR {receiptData.total}</Typography>
+                            <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>TOTAL: ₹ {receiptData.total}</Typography>
                         </Box>
 
                         {/* Footer / Additional Notes */}
