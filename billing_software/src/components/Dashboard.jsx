@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Button,
@@ -13,14 +13,37 @@ import {
     InputAdornment,
     IconButton,
 } from "@mui/material";
-import { Email, Save, Send, PictureAsPdf, Add, Close } from "@mui/icons-material";
+import { Email, Save, Send, PictureAsPdf, Add, Close, Visibility } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
     const [email, setEmail] = useState("");
     const [depositType, setDepositType] = useState("None");
     const [reviewEnabled, setReviewEnabled] = useState(false);
     const [reviewLink, setReviewLink] = useState("");
-    const [items, setItems] = useState([{ description: "", rate: 0, qty: 1 }]);
+    const [items, setItems] = useState([{ description: "", rate: 0, qty: 1, amount: 0 }]);
+    const [receiptData, setReceiptData] = useState({
+        companyName: "",
+        companyLocation: "",
+        companyPhone: "",
+        companyEmail: "",
+        estimateNumber: "",
+        date: "",
+        total: "",
+        clientName: "",
+        clientAddress: "",
+        clientPhone: "",
+        clientMobile: "",
+        clientEmail: "",
+        desc: items,
+        notes: "",
+    });
+
+    const handleReceiptDataChange = (field, value) => {
+        setReceiptData({ ...receiptData, [field]: value });
+    };
+
+    const navigate = useNavigate();
 
     // Handle functions for form submission and validation
     const handleEmailChange = (e) => setEmail(e.target.value);
@@ -48,8 +71,18 @@ const Dashboard = () => {
         setItems(updatedItems);
     };
 
-    const calculateTotal = () => {
-        return items.reduce((total, item) => total + item.rate * item.qty, 0).toFixed(2);
+    useEffect(() => {
+        const total = items.reduce((total, item) => total + item.rate * item.qty, 0);
+        setReceiptData((prevData) => ({
+            ...prevData,
+            total: total.toFixed(2),
+        }));
+    }, [items]);
+
+    const handlePreview = () => {
+        console.log(receiptData);
+
+        navigate("/dashboard/receipt", { state: { receiptData } });
     };
 
     return (
@@ -77,10 +110,10 @@ const Dashboard = () => {
                                 <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>
                                     From
                                 </Typography>
-                                <TextField fullWidth label="Business Name" variant="outlined" margin="normal" />
-                                <TextField fullWidth label="Email" variant="outlined" margin="normal" />
-                                <TextField fullWidth label="Address" variant="outlined" margin="normal" />
-                                <TextField fullWidth label="Phone" variant="outlined" margin="normal" />
+                                <TextField fullWidth label="Business Name" variant="outlined" margin="normal" value={receiptData.companyName} onChange={(e) => handleReceiptDataChange("companyName", e.target.value)} />
+                                <TextField fullWidth label="Email" variant="outlined" margin="normal" value={receiptData.companyEmail} onChange={(e) => handleReceiptDataChange("companyEmail", e.target.value)}/>
+                                <TextField fullWidth label="Address" variant="outlined" margin="normal" value={receiptData.companyLocation} onChange={(e) => handleReceiptDataChange("companyLocation", e.target.value)}/>
+                                <TextField fullWidth label="Phone" variant="outlined" margin="normal" value={receiptData.companyPhone} onChange={(e) => handleReceiptDataChange("companyPhone", e.target.value)} />
                                 <TextField fullWidth label="Business Number" variant="outlined" margin="normal" />
                                 <Button variant="text" size="small">
                                     Show additional business details
@@ -92,11 +125,11 @@ const Dashboard = () => {
                                 <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>
                                     Bill To
                                 </Typography>
-                                <TextField fullWidth label="Client Name" variant="outlined" margin="normal" />
-                                <TextField fullWidth label="Email" variant="outlined" margin="normal" />
-                                <TextField fullWidth label="Address" variant="outlined" margin="normal" />
-                                <TextField fullWidth label="Phone" variant="outlined" margin="normal" />
-                                <TextField fullWidth label="Mobile" variant="outlined" margin="normal" />
+                                <TextField fullWidth label="Client Name" variant="outlined" margin="normal" value={receiptData.clientName} onChange={(e) => handleReceiptDataChange("clientName", e.target.value)}/>
+                                <TextField fullWidth label="Email" variant="outlined" margin="normal" value={receiptData.clientEmail} onChange={(e) => handleReceiptDataChange("clientEmail", e.target.value)}/>
+                                <TextField fullWidth label="Address" variant="outlined" margin="normal" value={receiptData.clientAddress} onChange={(e) => handleReceiptDataChange("clientAddress", e.target.value)}/>
+                                <TextField fullWidth label="Phone" variant="outlined" margin="normal" value={receiptData.clientPhone} onChange={(e) => handleReceiptDataChange("clientPhone", e.target.value)}/>
+                                <TextField fullWidth label="Mobile" variant="outlined" margin="normal" value={receiptData.clientMobile} onChange={(e) => handleReceiptDataChange("clientMobile", e.target.value)}/>
                                 <TextField fullWidth label="Fax" variant="outlined" margin="normal" />
                             </Grid>
                         </Grid>
@@ -109,7 +142,7 @@ const Dashboard = () => {
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={4}>
-                                <TextField fullWidth label="Number" defaultValue="INV0001" variant="outlined" />
+                                <TextField fullWidth label="Number" variant="outlined" value={receiptData.estimateNumber} onChange={(e) => handleReceiptDataChange("estimateNumber", e.target.value)}/>
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField
@@ -119,6 +152,8 @@ const Dashboard = () => {
                                     defaultValue="2024-11-12"
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
+                                    value={receiptData.date}
+                                    onChange={(e) => handleReceiptDataChange("date", e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={4}>
@@ -214,8 +249,7 @@ const Dashboard = () => {
                                         label="Amount"
                                         value={(item.rate * item.qty).toFixed(2)}
                                         variant="outlined"
-                                        InputProps={{ readOnly: true }}
-                                    />
+                                                                           />
                                 </Grid>
                                 <Grid item xs={1}>
                                     <IconButton onClick={() => handleRemoveItem(index)} color="error">
@@ -239,15 +273,15 @@ const Dashboard = () => {
                         </Typography>
                         <Box display="flex" justifyContent="space-between" mt={2}>
                             <Typography>Subtotal:</Typography>
-                            <Typography>₹{calculateTotal()}</Typography>
+                            <Typography>₹{receiptData.total}</Typography>
                         </Box>
                         <Box display="flex" justifyContent="space-between" mt={1}>
                             <Typography>Total:</Typography>
-                            <Typography>₹{calculateTotal()}</Typography>
+                            <Typography>₹{receiptData.total}</Typography>
                         </Box>
                         <Box display="flex" justifyContent="space-between" mt={1}>
                             <Typography fontWeight="bold">Balance Due:</Typography>
-                            <Typography fontWeight="bold">₹{calculateTotal()}</Typography>
+                            <Typography fontWeight="bold">₹{receiptData.total}</Typography>
                         </Box>
 
                         {/* Notes Section */}
@@ -298,16 +332,15 @@ const Dashboard = () => {
                             Send
                         </Button>
                     </Paper>
-                    <Box display="flex" justifyContent="flex-end" mt={2}>
-                        <Button variant="outlined" sx={{ marginRight: 1 }} startIcon={<Save />}>
+                    <Box display="flex" justifyContent="space-between" mt={2} sx={{ padding: '10px' }}>
+                        <Button variant="outlined" sx={{ marginRight: 2, width: '240px' }} startIcon={<Save />}>
                             Record Payment
                         </Button>
-                        <Button variant="outlined" sx={{ marginRight: 1 }} startIcon={<PictureAsPdf />}>
-                            PDF
-                        </Button>
-                        <Button variant="contained" color="primary">
-                            Email Invoice
-                        </Button>
+    
+                            <Button variant="outlined" sx={{ marginRight: 0, width: '240px' }} startIcon={<Visibility />} onClick={handlePreview}>
+                                Preview
+                            </Button>
+                
                     </Box>
                 </Grid>
             </Grid>

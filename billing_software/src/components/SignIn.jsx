@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Box, Typography, Alert, Paper, Divider } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const backend_url = process.env.REACT_APP_BACKEND_URL;
+
+  const navigate = useNavigate();
 
   const handleSignIn = async (event) => {
     event.preventDefault();
@@ -16,7 +21,7 @@ export default function SignInPage() {
       return;
     }
 
-    const response = await fetch('http://localhost:8080/api/user/login', {
+    const response = await fetch(`${backend_url}/api/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -31,6 +36,8 @@ export default function SignInPage() {
     console.log(data);
 
     localStorage.setItem('token', data.authToken);
+
+    navigate('/dashboard');
   };
 
   return (
@@ -98,6 +105,13 @@ export default function SignInPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            Don't have an account?{' '}
+            <Button color="primary" onClick={() => navigate('/signup')} >
+              Sign Up
+            </Button>
+          </Typography>
 
           <Button
             type="submit"
