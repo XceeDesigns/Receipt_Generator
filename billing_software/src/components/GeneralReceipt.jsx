@@ -8,13 +8,20 @@ import {
     Grid,
     Paper,
     Typography,
-    TextField,
-    IconButton,
 } from "@mui/material";
 import { PictureAsPdf } from "@mui/icons-material";
+import { useLocation } from 'react-router-dom';
 
-const GeneralReceipt = ({ receiptData }) => {
+const GeneralReceipt = () => {
+    const { state } = useLocation();
+    const { receiptData } = state || {};
+
     const receiptRef = useRef();
+
+    if (!receiptData) {
+        return <Typography variant="h6">No receipt data available.</Typography>;
+    }
+
 
     const downloadPdf = async () => {
         const element = receiptRef.current;
@@ -29,78 +36,78 @@ const GeneralReceipt = ({ receiptData }) => {
 
     return (
         <Box sx={{ padding: 4, backgroundColor: "#f0f2f5", minHeight: "100vh" }}>
-            <Typography variant="h4" sx={{ mb: 2, fontWeight: "bold", color: "#333" }}>
-                Receipt
-            </Typography>
-
             <Grid container spacing={3} ref={receiptRef}>
                 <Grid item xs={12}>
-                    <Paper variant="outlined" sx={{ padding: 3, backgroundColor: "#ffffff" }}>
+                    <Paper variant="outlined" sx={{ padding: 4, backgroundColor: "#ffffff" }}>
                         {/* Header Section */}
                         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                Business Name
-                            </Typography>
-                            <Typography>Date: {receiptData.date}</Typography>
+                            <Box>
+                                <Typography variant="h5" sx={{ fontWeight: "bold" }}>{receiptData.companyName}</Typography>
+                                <Typography>{receiptData.companyLocation}</Typography>
+                                <Typography>{receiptData.companyPhone}</Typography>
+                                <Typography>{receiptData.companyEmail}</Typography>
+                            </Box>
+                            <Box textAlign="right">
+                                <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>INVOICE</Typography>
+                                <Typography sx={{mb: '5px'}}>{receiptData.estimateNumber}</Typography>
+                                <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>Date:</Typography>
+                                <Typography sx={{mb: '5px'}}>{receiptData.date}</Typography>
+                                <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>Balance Due:</Typography>
+                                <Typography>Total: INR {receiptData.total}</Typography>
+                            </Box>
                         </Box>
 
-                        {/* From and To Sections */}
-                        <Grid container spacing={2}>
-                            {/* From Section */}
-                            <Grid item xs={6}>
-                                <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>
-                                    From
-                                </Typography>
-                                <Typography>Business Name</Typography>
-                                <Typography>Email: business@example.com</Typography>
-                                <Typography>Address: 123 Main St, City</Typography>
-                                <Typography>Phone: 123-456-7890</Typography>
-                            </Grid>
+                        <Divider sx={{ my: 2 }} />
 
-                            {/* Bill To Section */}
-                            <Grid item xs={6}>
-                                <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>
-                                    Bill To
-                                </Typography>
-                                <Typography>{receiptData.clientName}</Typography>
-                                <Typography>Email: {receiptData.clientEmail}</Typography>
-                                <Typography>Address: {receiptData.clientAddress}</Typography>
-                                <Typography>Phone: {receiptData.clientPhone}</Typography>
-                            </Grid>
-                        </Grid>
+                        {/* Bill To Section */}
+                        <Box mb={2}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>Bill To</Typography>
+                            <Typography>{receiptData.clientName}</Typography>
+                            <Typography>{receiptData.clientAddress}</Typography>
+                        </Box>
 
-                        <Divider sx={{ my: 3 }} />
+                        <Divider sx={{ my: 2, height: '10px' }} />
 
-                        {/* Items Section */}
-                        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-                            Items
-                        </Typography>
-                        {receiptData.items.map((item, index) => (
+                        {/* Items Table Headings */}
+                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} sx={{ fontWeight: 'bold' }}>
+                            <Typography sx={{ width: "50%" }}>Description</Typography>
+                            <Typography sx={{ width: "16%", textAlign: "center" }}>Rate</Typography>
+                            <Typography sx={{ width: "16%", textAlign: "center" }}>Quantity</Typography>
+                            <Typography sx={{ width: "16%", textAlign: "center" }}>Amount</Typography>
+                        </Box>
+                        
+                        <Divider sx={{ mb: 2 }} />
+
+                        {/* Items Table */}
+                        {receiptData.desc.map((item, index) => (
                             <Grid container spacing={2} key={index} sx={{ mb: 1 }}>
                                 <Grid item xs={6}>
+                                    <Typography sx={{ fontWeight: "bold" }}>{item.title}</Typography>
                                     <Typography>{item.description}</Typography>
                                 </Grid>
-                                <Grid item xs={3}>
-                                    <Typography>Rate: ₹{item.rate}</Typography>
+                                <Grid item xs={2} textAlign="center">
+                                    <Typography>₹{item.rate}</Typography>
                                 </Grid>
-                                <Grid item xs={3}>
-                                    <Typography>Qty: {item.qty}</Typography>
+                                <Grid item xs={2} textAlign="center">
+                                    <Typography>{item.quantity}</Typography>
+                                </Grid>
+                                <Grid item xs={2} textAlign="center">
+                                    <Typography>₹{item.amount}</Typography>
                                 </Grid>
                             </Grid>
                         ))}
 
                         {/* Total Calculation */}
-                        <Divider sx={{ my: 3 }} />
-                        <Box display="flex" justifyContent="space-between">
-                            <Typography variant="subtitle1">Total Amount:</Typography>
-                            <Typography variant="subtitle1">₹{receiptData.total}</Typography>
+                        <Divider sx={{ my: 2 }} />
+                        <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>TOTAL INR {receiptData.total}</Typography>
                         </Box>
 
                         {/* Footer / Additional Notes */}
-                        <Typography variant="subtitle1" sx={{ mt: 4 }}>
-                            Notes
+                        <Typography variant="body2" sx={{ mt: 4, color: "#777" }}>
+                            Please note that hosting and domain charges are not included in the estimate provided.
+                            {receiptData.notes}
                         </Typography>
-                        <Typography sx={{ color: "#555" }}>{receiptData.notes}</Typography>
                     </Paper>
                 </Grid>
             </Grid>

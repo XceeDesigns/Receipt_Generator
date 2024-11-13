@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Container, TextField, Button, Box, Typography, Alert, Paper, Divider, MenuItem, Grid
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ export default function SignUpPage() {
   });
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+
+  const navigate = useNavigate();
 
   const countries = [
     { label: 'United States', value: 'US' },
@@ -71,6 +74,8 @@ export default function SignUpPage() {
     console.log(data);
 
     alert('Account created successfully!');
+
+    navigate('/');
   };
 
   return (
