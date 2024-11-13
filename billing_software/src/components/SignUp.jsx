@@ -17,6 +17,8 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
+  const backend_url = process.env.REACT_APP_BACKEND_URL;
+
   const navigate = useNavigate();
 
   const countries = [
@@ -59,7 +61,7 @@ export default function SignUpPage() {
 
     console.log(formData);
 
-    const response = await fetch('http://localhost:8080/api/user/register', {
+    const response = await fetch(`${backend_url}/api/user/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
