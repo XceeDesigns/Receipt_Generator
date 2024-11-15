@@ -45,6 +45,27 @@ const Dashboard = () => {
 
     const navigate = useNavigate();
 
+    // Function to save form data to localStorage
+    const saveFormData = () => {
+        const formData = { receiptData, items };
+        localStorage.setItem("formData", JSON.stringify(formData));
+    };
+
+    // Function to load form data from localStorage
+    const loadFormData = () => {
+        const savedData = localStorage.getItem("formData");
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            setReceiptData(parsedData.receiptData);
+            setItems(parsedData.items);
+        }
+    };
+
+    useEffect(() => {
+        // Load data on component mount
+        loadFormData();
+    }, []);
+
     // Handle functions for form submission and validation
     const handleEmailChange = (e) => setEmail(e.target.value);
     const handleDepositTypeChange = (e) => setDepositType(e.target.value);
@@ -81,8 +102,7 @@ const Dashboard = () => {
     }, [items]);
 
     const handlePreview = () => {
-        console.log(receiptData);
-
+        saveFormData(); // Save form data before navigating
         navigate("/dashboard/g/preview", { state: { receiptData } });
     };
 

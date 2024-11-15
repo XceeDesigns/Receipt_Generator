@@ -32,6 +32,7 @@ const GeneralReceipt = () => {
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
         pdf.save('receipt.pdf');
+        localStorage.removeItem("formData");
     };
 
     return (
