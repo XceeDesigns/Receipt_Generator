@@ -27,7 +27,7 @@ const Dashboard = () => {
         companyLocation: "",
         companyPhone: "",
         companyEmail: "",
-        estimateNumber: "",
+        estimateNumber: "001",
         date: "",
         total: "",
         clientName: "",
@@ -58,7 +58,7 @@ const Dashboard = () => {
     };
 
     const handleAddItem = () => {
-        setItems([...items, { description: "", rate: 0, qty: 1 }]);
+        setItems([...items, { description: "", rate: 0, qty: 0 }]);
     };
 
     const handleRemoveItem = (index) => {
@@ -128,7 +128,6 @@ const Dashboard = () => {
                                 <TextField fullWidth label="Address" variant="outlined" margin="normal" value={receiptData.clientAddress} onChange={(e) => handleReceiptDataChange("clientAddress", e.target.value)} />
                                 <TextField fullWidth label="Phone" variant="outlined" margin="normal" value={receiptData.clientPhone} onChange={(e) => handleReceiptDataChange("clientPhone", e.target.value)} />
                                 <TextField fullWidth label="Mobile" variant="outlined" margin="normal" value={receiptData.clientMobile} onChange={(e) => handleReceiptDataChange("clientMobile", e.target.value)} />
-                                <TextField fullWidth label="Fax" variant="outlined" margin="normal" />
                             </Grid>
                         </Grid>
 
@@ -255,6 +254,8 @@ const Dashboard = () => {
                             rows={4}
                             placeholder="Add any relevant information, terms, or conditions."
                             variant="outlined"
+                            value={receiptData.notes}
+                            onChange={(e) => handleReceiptDataChange("notes", e.target.value)}
                             sx={{ mt: 1 }}
                         />
                     </Paper>

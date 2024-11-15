@@ -110,7 +110,6 @@ const GeneralReceipt = () => {
 
                         {/* Footer / Additional Notes */}
                         <Typography variant="body2" sx={{ mt: 4, color: "#777" }}>
-                            Please note that hosting and domain charges are not included in the estimate provided.
                             {receiptData.notes}
                         </Typography>
                     </Paper>
