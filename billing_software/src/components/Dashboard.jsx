@@ -27,7 +27,7 @@ const Dashboard = () => {
         companyLocation: "",
         companyPhone: "",
         companyEmail: "",
-        estimateNumber: "",
+        estimateNumber: "001",
         date: "",
         total: "",
         clientName: "",
@@ -45,6 +45,27 @@ const Dashboard = () => {
 
     const navigate = useNavigate();
 
+    // Function to save form data to localStorage
+    const saveFormData = () => {
+        const formData = { receiptData, items };
+        localStorage.setItem("formData", JSON.stringify(formData));
+    };
+
+    // Function to load form data from localStorage
+    const loadFormData = () => {
+        const savedData = localStorage.getItem("formData");
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            setReceiptData(parsedData.receiptData);
+            setItems(parsedData.items);
+        }
+    };
+
+    useEffect(() => {
+        // Load data on component mount
+        loadFormData();
+    }, []);
+
     // Handle functions for form submission and validation
     const handleEmailChange = (e) => setEmail(e.target.value);
     const handleDepositTypeChange = (e) => setDepositType(e.target.value);
@@ -58,7 +79,7 @@ const Dashboard = () => {
     };
 
     const handleAddItem = () => {
-        setItems([...items, { description: "", rate: 0, qty: 1 }]);
+        setItems([...items, { description: "", rate: 0, qty: 0 }]);
     };
 
     const handleRemoveItem = (index) => {
@@ -76,12 +97,12 @@ const Dashboard = () => {
         setReceiptData((prevData) => ({
             ...prevData,
             total: total.toFixed(2),
+            desc: items, // Synchronize items with receiptData.desc
         }));
     }, [items]);
 
     const handlePreview = () => {
-        console.log(receiptData);
-
+        saveFormData(); // Save form data before navigating
         navigate("/dashboard/g/preview", { state: { receiptData } });
     };
 
@@ -127,7 +148,6 @@ const Dashboard = () => {
                                 <TextField fullWidth label="Address" variant="outlined" margin="normal" value={receiptData.clientAddress} onChange={(e) => handleReceiptDataChange("clientAddress", e.target.value)} />
                                 <TextField fullWidth label="Phone" variant="outlined" margin="normal" value={receiptData.clientPhone} onChange={(e) => handleReceiptDataChange("clientPhone", e.target.value)} />
                                 <TextField fullWidth label="Mobile" variant="outlined" margin="normal" value={receiptData.clientMobile} onChange={(e) => handleReceiptDataChange("clientMobile", e.target.value)} />
-                                <TextField fullWidth label="Fax" variant="outlined" margin="normal" />
                             </Grid>
                         </Grid>
 
@@ -254,6 +274,8 @@ const Dashboard = () => {
                             rows={4}
                             placeholder="Add any relevant information, terms, or conditions."
                             variant="outlined"
+                            value={receiptData.notes}
+                            onChange={(e) => handleReceiptDataChange("notes", e.target.value)}
                             sx={{ mt: 1 }}
                         />
                     </Paper>
