@@ -87,17 +87,14 @@ const Dashboard = () => {
 
     return (
         <Box sx={{ padding: 4, backgroundColor: "#f0f2f5", minHeight: "100vh" }}>
-            <Typography variant="h4" sx={{ mb: 2, fontWeight: "bold", color: "#333" }}>
-                Invoice Generator
-            </Typography>
 
             <Grid container spacing={3}>
                 {/* Left Section */}
                 <Grid item xs={8}>
                     <Paper variant="outlined" sx={{ padding: 3, backgroundColor: "#ffffff" }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                Invoice
+                            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                                General Receipt
                             </Typography>
                             <Button variant="outlined" startIcon={<Save />} size="small">
                                 + Logo
@@ -138,7 +135,7 @@ const Dashboard = () => {
 
                         {/* Lower Section: Invoice Details */}
                         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-                            Invoice Details
+                            Receipt Details
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={4}>
@@ -298,7 +295,7 @@ const Dashboard = () => {
                         />
                     </Paper>
                 </Grid>
-
+ 
                 {/* Right Section */}
                 <Grid item xs={4}>
                     <Paper variant="outlined" sx={{ padding: 3, backgroundColor: "#ffffff" }}>

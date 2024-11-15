@@ -21,7 +21,7 @@ export default function SignInPage() {
       return;
     }
 
-    const response = await fetch(`${backend_url}/api/user/login`, {
+    const response = await fetch("http://localhost:8080/api/user/login", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -37,7 +37,7 @@ export default function SignInPage() {
 
     localStorage.setItem('token', data.authToken);
 
-    navigate('/dashboard');
+    navigate('/choose');
   };
 
   return (
@@ -108,8 +108,8 @@ export default function SignInPage() {
 
           <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
             Don't have an account?{' '}
-            <Button color="primary" onClick={() => navigate('/signup')} >
-              Sign Up
+            <Button color="primary" onClick={() => navigate('/signup')} sx={{textTransform: 'capitalize'}}>
+              Register
             </Button>
           </Typography>
 
