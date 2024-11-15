@@ -22,15 +22,15 @@ export default function SignUpPage() {
   const navigate = useNavigate();
 
   const countries = [
-    { label: 'United States', value: 'US' },
-    { label: 'Canada', value: 'CA' },
     { label: 'India', value: 'IN' },
+    { label: 'United States', value: 'US' },
+    { label: 'Australia', value: 'AU' },
   ];
 
   const states = [
-    { label: 'California', value: 'CA' },
-    { label: 'Texas', value: 'TX' },
-    { label: 'Ontario', value: 'ON' },
+    { label: 'Uttar Pradesh', value: 'UP' },
+    { label: 'Uttarakhand', value: 'UK' },
+    { label: 'Karnataka', value: 'KA' },
   ];
 
   const handleInputChange = (e) => {
@@ -88,7 +88,7 @@ export default function SignUpPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
+        minHeight: '97vh',
         backgroundColor: '#f7f9fc',
       }}
     >
@@ -101,7 +101,7 @@ export default function SignUpPage() {
           width: '100%',
         }}
       >
-        <Box textAlign="center" mb={2}>
+        <Box textAlign="center" mb={1}>
           <Typography variant="h4" component="h1" color="primary" gutterBottom>
             Create an Account
           </Typography>
@@ -187,6 +187,7 @@ export default function SignUpPage() {
           </Grid>
 
           <TextField
+            required
             margin="normal"
             fullWidth
             id="mobileNumber"
