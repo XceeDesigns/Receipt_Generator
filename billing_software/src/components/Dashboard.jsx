@@ -82,7 +82,7 @@ const Dashboard = () => {
     const handlePreview = () => {
         console.log(receiptData);
 
-        navigate("/dashboard/receipt", { state: { receiptData } });
+        navigate("/dashboard/g/preview", { state: { receiptData } });
     };
 
     return (
@@ -108,8 +108,8 @@ const Dashboard = () => {
                                     From
                                 </Typography>
                                 <TextField fullWidth label="Business Name" variant="outlined" margin="normal" value={receiptData.companyName} onChange={(e) => handleReceiptDataChange("companyName", e.target.value)} />
-                                <TextField fullWidth label="Email" variant="outlined" margin="normal" value={receiptData.companyEmail} onChange={(e) => handleReceiptDataChange("companyEmail", e.target.value)}/>
-                                <TextField fullWidth label="Address" variant="outlined" margin="normal" value={receiptData.companyLocation} onChange={(e) => handleReceiptDataChange("companyLocation", e.target.value)}/>
+                                <TextField fullWidth label="Email" variant="outlined" margin="normal" value={receiptData.companyEmail} onChange={(e) => handleReceiptDataChange("companyEmail", e.target.value)} />
+                                <TextField fullWidth label="Address" variant="outlined" margin="normal" value={receiptData.companyLocation} onChange={(e) => handleReceiptDataChange("companyLocation", e.target.value)} />
                                 <TextField fullWidth label="Phone" variant="outlined" margin="normal" value={receiptData.companyPhone} onChange={(e) => handleReceiptDataChange("companyPhone", e.target.value)} />
                                 <TextField fullWidth label="Business Number" variant="outlined" margin="normal" />
                                 <Button variant="text" size="small">
@@ -122,11 +122,11 @@ const Dashboard = () => {
                                 <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>
                                     Bill To
                                 </Typography>
-                                <TextField fullWidth label="Client Name" variant="outlined" margin="normal" value={receiptData.clientName} onChange={(e) => handleReceiptDataChange("clientName", e.target.value)}/>
-                                <TextField fullWidth label="Email" variant="outlined" margin="normal" value={receiptData.clientEmail} onChange={(e) => handleReceiptDataChange("clientEmail", e.target.value)}/>
-                                <TextField fullWidth label="Address" variant="outlined" margin="normal" value={receiptData.clientAddress} onChange={(e) => handleReceiptDataChange("clientAddress", e.target.value)}/>
-                                <TextField fullWidth label="Phone" variant="outlined" margin="normal" value={receiptData.clientPhone} onChange={(e) => handleReceiptDataChange("clientPhone", e.target.value)}/>
-                                <TextField fullWidth label="Mobile" variant="outlined" margin="normal" value={receiptData.clientMobile} onChange={(e) => handleReceiptDataChange("clientMobile", e.target.value)}/>
+                                <TextField fullWidth label="Client Name" variant="outlined" margin="normal" value={receiptData.clientName} onChange={(e) => handleReceiptDataChange("clientName", e.target.value)} />
+                                <TextField fullWidth label="Email" variant="outlined" margin="normal" value={receiptData.clientEmail} onChange={(e) => handleReceiptDataChange("clientEmail", e.target.value)} />
+                                <TextField fullWidth label="Address" variant="outlined" margin="normal" value={receiptData.clientAddress} onChange={(e) => handleReceiptDataChange("clientAddress", e.target.value)} />
+                                <TextField fullWidth label="Phone" variant="outlined" margin="normal" value={receiptData.clientPhone} onChange={(e) => handleReceiptDataChange("clientPhone", e.target.value)} />
+                                <TextField fullWidth label="Mobile" variant="outlined" margin="normal" value={receiptData.clientMobile} onChange={(e) => handleReceiptDataChange("clientMobile", e.target.value)} />
                                 <TextField fullWidth label="Fax" variant="outlined" margin="normal" />
                             </Grid>
                         </Grid>
@@ -139,7 +139,7 @@ const Dashboard = () => {
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={4}>
-                                <TextField fullWidth label="Number" variant="outlined" value={receiptData.estimateNumber} onChange={(e) => handleReceiptDataChange("estimateNumber", e.target.value)}/>
+                                <TextField fullWidth label="Number" variant="outlined" value={receiptData.estimateNumber} onChange={(e) => handleReceiptDataChange("estimateNumber", e.target.value)} />
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField
@@ -168,92 +168,55 @@ const Dashboard = () => {
                             Items
                         </Typography>
                         {items.map((item, index) => (
-                            <Grid container spacing={2} key={index}>
-                                <Grid item xs={3}>
-                                    <TextField
-                                        fullWidth
-                                        label="Description"
-                                        value={item.description}
-                                        onChange={(e) =>
-                                            handleItemChange(index, "description", e.target.value)
-                                        }
-                                        variant="outlined"
-                                    />
+                            <div key={index}>
+                                <Grid container columnSpacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="Description"
+                                            value={item.description}
+                                            onChange={(e) =>
+                                                handleItemChange(index, "description", e.target.value)
+                                            }
+                                            variant="outlined"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <TextField
+                                            fullWidth
+                                            label="Rate"
+                                            type="number"
+                                            value={item.rate}
+                                            onChange={(e) => handleItemChange(index, "rate", parseFloat(e.target.value))}
+                                            variant="outlined"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1}>
+                                        <TextField
+                                            fullWidth
+                                            label="Quantity"
+                                            type="number"
+                                            value={item.qty}
+                                            onChange={(e) => handleItemChange(index, "qty", parseInt(e.target.value))}
+                                            variant="outlined"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <TextField
+                                            fullWidth
+                                            label="Amount"
+                                            value={(item.rate * item.qty).toFixed(2)}
+                                            variant="outlined"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1}>
+                                        <IconButton onClick={() => handleRemoveItem(index)} color="error">
+                                            <Close />
+                                        </IconButton>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={1}>
-                                    <TextField
-                                        fullWidth
-                                        label="Rate"
-                                        type="number"
-                                        value={item.rate}
-                                        onChange={(e) => handleItemChange(index, "rate", parseFloat(e.target.value))}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <TextField
-                                        fullWidth
-                                        label="Rate"
-                                        type="number"
-                                        value={item.rate}
-                                        onChange={(e) => handleItemChange(index, "rate", parseFloat(e.target.value))}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <TextField
-                                        fullWidth
-                                        label="Rate"
-                                        type="number"
-                                        value={item.rate}
-                                        onChange={(e) => handleItemChange(index, "rate", parseFloat(e.target.value))}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <TextField
-                                        fullWidth
-                                        label="Rate"
-                                        type="number"
-                                        value={item.rate}
-                                        onChange={(e) => handleItemChange(index, "rate", parseFloat(e.target.value))}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <TextField
-                                        fullWidth
-                                        label="Rate"
-                                        type="number"
-                                        value={item.rate}
-                                        onChange={(e) => handleItemChange(index, "rate", parseFloat(e.target.value))}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        fullWidth
-                                        label="Quantity"
-                                        type="number"
-                                        value={item.qty}
-                                        onChange={(e) => handleItemChange(index, "qty", parseInt(e.target.value))}
-                                        variant="outlined"
-                                    />
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <TextField
-                                        fullWidth
-                                        label="Amount"
-                                        value={(item.rate * item.qty).toFixed(2)}
-                                        variant="outlined"
-                                                                           />
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <IconButton onClick={() => handleRemoveItem(index)} color="error">
-                                        <Close />
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
+                                <Divider sx={{ margin: '16px 0' }} /> {/* Divider added here */}
+                            </div>
                         ))}
                         <Button
                             variant="text"
@@ -295,7 +258,7 @@ const Dashboard = () => {
                         />
                     </Paper>
                 </Grid>
- 
+
                 {/* Right Section */}
                 <Grid item xs={4}>
                     <Paper variant="outlined" sx={{ padding: 3, backgroundColor: "#ffffff" }}>
@@ -333,11 +296,11 @@ const Dashboard = () => {
                         <Button variant="outlined" sx={{ marginRight: 2, width: '240px' }} startIcon={<Save />}>
                             Record Payment
                         </Button>
-    
-                            <Button variant="outlined" sx={{ marginRight: 0, width: '240px' }} startIcon={<Visibility />} onClick={handlePreview}>
-                                Preview
-                            </Button>
-                
+
+                        <Button variant="outlined" sx={{ marginRight: 0, width: '240px' }} startIcon={<Visibility />} onClick={handlePreview}>
+                            Preview
+                        </Button>
+
                     </Box>
                 </Grid>
             </Grid>

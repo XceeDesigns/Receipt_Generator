@@ -46,7 +46,7 @@ function RoughEstimate() {
     const navigate = useNavigate();
 
     const [items, setItems] = useState([
-        { description: '', grossWeight: '', netWeight: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
+        { description: '', grossWeight: '', lessWeight: '', netWeight: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
     ]);
 
     const handleFormChange = (field, value) => {
@@ -65,7 +65,7 @@ function RoughEstimate() {
     const addItem = () => {
         setItems([
             ...items,
-            { description: '', grossWeight: '', netWeight: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
+            { description: '', grossWeight: '', lessWeight: '', netWeight: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
         ]);
     };
 
@@ -78,7 +78,7 @@ function RoughEstimate() {
     };
 
     const handlePreview = () => {
-        navigate('/dashboard/e/preview');
+        navigate('/dashboard/e/preview', { state: { formValues, items } });
     }
 
     return (
@@ -170,6 +170,9 @@ function RoughEstimate() {
                             <TextField
                                 fullWidth
                                 label="Date"
+                                defaultValue="2024-11-12"
+                                InputLabelProps={{ shrink: true }}
+                                type='date'
                                 variant="outlined"
                                 margin="dense"
                                 value={formValues.date}
@@ -202,8 +205,9 @@ function RoughEstimate() {
                             <TableHead>
                                 <TableRow>
                                     <StyledTableCell>Description</StyledTableCell>
-                                    <StyledTableCell>Gross Wt.</StyledTableCell>
-                                    <StyledTableCell>Net Wt.</StyledTableCell>
+                                    <StyledTableCell>G Wt.</StyledTableCell>
+                                    <StyledTableCell>L Wt.</StyledTableCell>
+                                    <StyledTableCell>N Wt.</StyledTableCell>
                                     <StyledTableCell>Tunch</StyledTableCell>
                                     <StyledTableCell>Rate</StyledTableCell>
                                     <StyledTableCell>Gold</StyledTableCell>
@@ -278,7 +282,7 @@ function RoughEstimate() {
                 </Container>
             </Grid>
             <Grid item xs={4}>
-                <Container maxWidth="md" sx={{mt: 4}}>
+                <Container maxWidth="md" sx={{ mt: 4 }}>
                     <Paper variant="outlined" sx={{ padding: 3, backgroundColor: "#ffffff" }}>
                         {/* Preview via Email */}
                         <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>

@@ -17,7 +17,7 @@ const GeneralReceipt = () => {
     const { receiptData } = state || {};
 
     const receiptRef = useRef();
-
+ 
     if (!receiptData) {
         return <Typography variant="h6">No receipt data available.</Typography>;
     }
