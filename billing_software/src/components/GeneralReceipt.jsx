@@ -17,7 +17,7 @@ const GeneralReceipt = () => {
     const { receiptData } = state || {};
 
     const receiptRef = useRef();
- 
+
     if (!receiptData) {
         return <Typography variant="h6">No receipt data available.</Typography>;
     }
@@ -49,9 +49,9 @@ const GeneralReceipt = () => {
                             </Box>
                             <Box textAlign="right">
                                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>INVOICE</Typography>
-                                <Typography sx={{mb: '5px'}}>{receiptData.estimateNumber}</Typography>
+                                <Typography sx={{ mb: '5px' }}>{receiptData.estimateNumber}</Typography>
                                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>Date:</Typography>
-                                <Typography sx={{mb: '5px'}}>{receiptData.date}</Typography>
+                                <Typography sx={{ mb: '5px' }}>{receiptData.date}</Typography>
                                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>Balance Due:</Typography>
                                 <Typography>Total: ₹ {receiptData.total}</Typography>
                             </Box>
@@ -75,26 +75,31 @@ const GeneralReceipt = () => {
                             <Typography sx={{ width: "16%", textAlign: "center" }}>Quantity</Typography>
                             <Typography sx={{ width: "16%", textAlign: "center" }}>Amount</Typography>
                         </Box>
-                        
+
                         <Divider sx={{ mb: 2 }} />
 
                         {/* Items Table */}
                         {receiptData.desc.map((item, index) => (
-                            <Grid container spacing={2} key={index} sx={{ mb: 1 }}>
-                                <Grid item xs={6}>
-                                    <Typography sx={{ fontWeight: "bold" }}>{item.title}</Typography>
-                                    <Typography>{item.description}</Typography>
+                            <React.Fragment key={index}>
+                                <Grid container spacing={2} sx={{ mb: 1 }}>
+                                    <Grid item xs={6}>
+                                        <Typography sx={{ fontWeight: "bold" }}>{item.title}</Typography>
+                                        <Typography>{item.description}</Typography>
+                                    </Grid>
+                                    <Grid item xs={2} textAlign="center">
+                                        <Typography>₹{item.rate}</Typography>
+                                    </Grid>
+                                    <Grid item xs={2} textAlign="center">
+                                        <Typography>{item.qty}</Typography>
+                                    </Grid>
+                                    <Grid item xs={2} textAlign="center">
+                                        <Typography>₹{item.rate * item.qty}</Typography>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={2} textAlign="center">
-                                    <Typography>₹{item.rate}</Typography>
-                                </Grid>
-                                <Grid item xs={2} textAlign="center">
-                                    <Typography>{item.qty}</Typography>
-                                </Grid>
-                                <Grid item xs={2} textAlign="center">
-                                    <Typography>₹{item.rate * item.qty}</Typography>
-                                </Grid>
-                            </Grid>
+                                {index < receiptData.desc.length - 1 && (
+                                    <Divider sx={{ mb: 1 }} />
+                                )}
+                            </React.Fragment>
                         ))}
 
                         {/* Total Calculation */}

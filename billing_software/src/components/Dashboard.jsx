@@ -76,6 +76,7 @@ const Dashboard = () => {
         setReceiptData((prevData) => ({
             ...prevData,
             total: total.toFixed(2),
+            desc: items, // Synchronize items with receiptData.desc
         }));
     }, [items]);
 

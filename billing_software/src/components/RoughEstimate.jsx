@@ -49,7 +49,7 @@ function RoughEstimate() {
         { description: '', grossWeight: '', lessWeight: '', netWeight: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
     ]);
 
-    const handleFormChange = (field, value) => {
+    const handleFormChange = (field, value) => { 
         setFormValues((prevValues) => ({
             ...prevValues,
             [field]: value,
