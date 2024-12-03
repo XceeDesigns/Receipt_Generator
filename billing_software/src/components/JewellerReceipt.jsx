@@ -24,23 +24,43 @@ const JewellerReceipt = () => {
   const { receiptData, setReceiptData } = useContext(ReceiptContext);
   const { user } = useContext(UserContext);
 
+  const backend_url = process.env.REACT_APP_BACKEND_URL;
+
   if (!receiptData || !receiptData.items) {
     return <Typography variant="h6">No receipt data available.</Typography>;
   }
 
   const downloadPdf = async () => {
     const element = receiptRef.current;
-    const canvas = await html2canvas(element, { scale: 2 });
+
+    // Set fixed width for A4 size
+    element.style.width = "794px"; // A4 width at 96 DPI
+    element.style.padding = "20px"; // Add padding for better spacing
+
+    // Use html2canvas with scaling for high-resolution images
+    const canvas = await html2canvas(element, {
+      scale: 2, // Adjust scaling for higher resolution
+      useCORS: true, // Ensure cross-origin content works
+    });
+
     const imgData = canvas.toDataURL('image/png');
+
+    // Create the PDF
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 190;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const imgWidth = 190; // A4 width in mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
     pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+
+    // Save PDF
     pdf.save('receipt.pdf');
+
+    // Reset the element's width after PDF generation
+    element.style.width = "auto";
+
 
     setReceiptData({ ...receiptData, user: user });
 
-    const response = await fetch('http://localhost:8080/api/receipt/save', {
+    const response = await fetch(`${backend-url}/api/receipt/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
