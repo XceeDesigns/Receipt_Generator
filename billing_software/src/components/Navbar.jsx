@@ -24,13 +24,17 @@ export default function Navbar() {
 
   const handleClose = () => {
     setAnchorEl(null);
-    navigate('/receipt-history');
   };
 
   const handleLogout = () => {
     console.log("Logged out");
     setAnchorEl(null);
   };
+
+  const handleReceiptHistory = () => {
+    navigate('/receipt-history');
+    setAnchorEl(null);
+  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -104,7 +108,7 @@ export default function Navbar() {
                 <MenuItem onClick={handleClose}>
                   <PersonIcon /> Profile
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleReceiptHistory}>
                   <ReceiptIcon /> Receipt History
                 </MenuItem>
                 <MenuItem onClick={handleLogout} sx={{ color: '#d32f2f' }}>
