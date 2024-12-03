@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -10,6 +10,7 @@ import {
     TableRow,
     Paper,
     IconButton,
+    Button,
     TextField,
     Select,
     MenuItem,
@@ -17,27 +18,85 @@ import {
     Container,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PreviewIcon from '@mui/icons-material/Preview';  // Import Preview Icon
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { ReceiptHistoryContext } from '../context/ReceiptHistoryContext';
+import { jwtDecode } from 'jwt-decode';
+import { ReceiptContext } from '../context/ReceiptContext';
 
 const ReceiptHistory = () => {
-    // Sample data for demonstration
-    const rows = [
-        { billNo: '001', date: '07-12-2016', name: 'John Doe', phone: '9878987678', quantity: '1', amount: '$52' },
-        { billNo: '002', date: '07-09-2016', name: 'Jon Snow', phone: '9876789876', quantity: '2', amount: '$250' },
-        { billNo: '003', date: '07-03-2016', name: 'Rickon Stark', phone: '9876543212', quantity: '3', amount: '$410' },
-        { billNo: '004', date: '07-01-2016', name: 'Arya Stark', phone: '9876447234', quantity: '2', amount: '$400' },
-        { billNo: '005', date: '07-01-2016', name: 'Arya Stark', phone: '9876447234', quantity: '2', amount: '$400' },
-        { billNo: '006', date: '07-01-2016', name: 'Arya Stark', phone: '9876447234', quantity: '2', amount: '$400' },
-        { billNo: '007', date: '07-01-2016', name: 'Arya Stark', phone: '9876447234', quantity: '2', amount: '$400' },
-    ];
 
-    const { ReceiptHistory } = useContext(ReceiptHistoryContext);
+    const [data, setData] = useState([]);
+    const [amount, setAmount] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [resultsPerPage, setResultsPerPage] = useState(10);
 
-    const handleDelete = () => {
-        console.log(receiptData);
-    }
+    const backend_url = process.env.REACT_APP_BACKEND_URL;
+
+    const handleDelete = async (billNumber) => {
+        try {
+            const response = await fetch(`${backend_url}/api/receipt/delete/${billNumber}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (response.ok) {
+                fetchReceiptHistory();  // Refresh receipt history after deletion
+            } else {
+                console.error('Failed to delete the bill.');
+            }
+        } catch (error) {
+            console.error('Error deleting the bill:', error);
+        }
+    };
+
+    // Fetch receipt history with pagination
+    const fetchReceiptHistory = async () => {
+        try {
+            const email = jwtDecode(localStorage.getItem('token')).sub;
+            const response = await fetch(`${backend_url}/api/receipt/fetch/${email}?page=${currentPage}&limit=${resultsPerPage}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const data = await response.json();
+            setData(data);
+        } catch (error) {
+            console.error('Error fetching receipt history:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchReceiptHistory();
+    }, [currentPage, resultsPerPage]); // Fetch when page or results per page change
+
+    const calculateAmount = (items) => {
+        let qty = 0;
+        items.forEach((item) => {
+            const quantity = parseInt(item.rate, 10);
+            if (!isNaN(quantity)) {
+                qty += quantity;
+            }
+        });
+        return qty;
+    };
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
+
+    const handleResultsPerPageChange = (event) => {
+        setResultsPerPage(event.target.value);
+    };
+
+    const handlePreview = (row) => {
+        // Handle preview functionality, e.g., navigate to preview page or show a modal
+        console.log("Previewing Bill:", billNumber);
+        // You can navigate or open a modal here with detailed receipt info.
+    };
 
     return (
         <Container maxWidth='false' disableGutters>
@@ -49,25 +108,13 @@ const ReceiptHistory = () => {
                 </Typography>
 
                 {/* Search and Actions */}
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '16px',
-                    }}
-                >
-                    <TextField
-                        variant="outlined"
-                        size="small"
-                        placeholder="Search..."
-                        sx={{ width: '300px' }}
-                    />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <TextField variant="outlined" size="small" placeholder="Search..." sx={{ width: '300px' }} />
                     <Box sx={{ display: 'flex', gap: '16px' }}>
-                        <Select size="small" defaultValue="10">
-                            <MenuItem value="10">Show Results 10</MenuItem>
-                            <MenuItem value="20">Show Results 20</MenuItem>
-                            <MenuItem value="50">Show Results 50</MenuItem>
+                        <Select size="small" value={resultsPerPage} onChange={handleResultsPerPageChange}>
+                            <MenuItem value={10}>Show Results 10</MenuItem>
+                            <MenuItem value={20}>Show Results 20</MenuItem>
+                            <MenuItem value={50}>Show Results 50</MenuItem>
                         </Select>
                     </Box>
                 </Box>
@@ -87,16 +134,22 @@ const ReceiptHistory = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {ReceiptHistory.map((row, index) => (
+                            {data.map((row, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{row.billNumber}</TableCell>
                                     <TableCell>{row.date}</TableCell>
-                                    <TableCell>{row.name}</TableCell>
+                                    <TableCell>{row.customerName}</TableCell>
                                     <TableCell>{row.phone}</TableCell>
-                                    <TableCell>{row.quantity}</TableCell>
-                                    <TableCell>{row.amount}</TableCell>
-                                    <TableCell onClick={handleDelete}>
-                                        <IconButton size="small" color="error">
+                                    <TableCell>{row.items.length}</TableCell>
+                                    <TableCell>{calculateAmount(row.items)}</TableCell>
+                                    <TableCell>
+                                        {/* Preview Button */}
+                                        <IconButton size="small" color="primary" onClick={() => handlePreview(row)}>
+                                            <PreviewIcon />
+                                        </IconButton>
+
+                                        {/* Delete Button */}
+                                        <IconButton size="small" color="error" onClick={() => handleDelete(row.billNumber)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>
@@ -107,18 +160,11 @@ const ReceiptHistory = () => {
                 </TableContainer>
 
                 {/* Pagination */}
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginTop: '16px',
-                    }}
-                >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
                     <Typography variant="body2">
-                        Showing {rows.length} of 230
+                        Showing {data.length} of 230
                     </Typography>
-                    <Pagination count={10} page={2} variant="outlined" shape="rounded" />
+                    <Pagination count={10} page={currentPage} onChange={handlePageChange} variant="outlined" shape="rounded" />
                 </Box>
             </Box>
             <Footer />

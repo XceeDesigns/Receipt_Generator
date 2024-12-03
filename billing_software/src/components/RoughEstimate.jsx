@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
     Box,
     Container,
@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { ReceiptContext } from '../context/ReceiptContext';
+import { jwtDecode } from 'jwt-decode';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontWeight: 600,
@@ -44,6 +45,16 @@ function RoughEstimate() {
             [field]: value,
         }));
     };
+
+    useEffect(() => {
+        // Update the context with the current items
+        setReceiptData((prevValues) => {
+            return {
+                ...prevValues,
+                user: jwtDecode(localStorage.getItem('token')).sub,
+            };  
+        });
+    }, []);
 
     const handleItemChange = (index, field, value) => {
         const updatedItems = [...items];

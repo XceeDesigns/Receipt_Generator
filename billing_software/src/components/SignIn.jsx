@@ -38,17 +38,12 @@ export default function SignInPage() {
       }
 
       const data1 = await response1.json();
-      localStorage.setItem('token', data1.authToken);
-
+      console.log(data1);
+      localStorage.setItem('token', data1.msg);
       navigate('/choose');
+      setUser(email);
 
-      const response2 = await fetch(`${backend_url}/api/receipt/fetch/${email}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const data2 = await response2.json();
-      setReceiptHistory(data2);
+      
     } catch (err) {
       setError('An error occurred. Please try again later.');
     }
