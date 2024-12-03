@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Container, TextField, Button, Box, Typography, Alert, Paper, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
+import { ReceiptHistoryContext } from '../context/ReceiptHistoryContext';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const { user, setUser } = useContext(UserContext);
+  const { ReceiptHistory, setReceiptHistory } = useContext(ReceiptHistoryContext);
 
   const backend_url = process.env.REACT_APP_BACKEND_URL;
 
@@ -13,52 +18,58 @@ export default function SignInPage() {
 
   const handleSignIn = async (event) => {
     event.preventDefault();
-    setError(''); // Clear previous error message
+    setError('');
 
-    // Basic validation
     if (!email || !password) {
       setError('Please enter both email and password.');
       return;
     }
 
-    const response = await fetch(`${backend_url}/api/user/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response1 = await fetch(`${backend_url}/api/user/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      alert('Failed login');
-      return;
+      if (!response1.ok) {
+        setError('Failed to log in. Please check your credentials.');
+        return;
+      }
+
+      const data1 = await response1.json();
+      console.log(data1);
+      localStorage.setItem('token', data1.msg);
+      navigate('/choose');
+      setUser(email);
+
+      
+    } catch (err) {
+      setError('An error occurred. Please try again later.');
     }
-
-    const data = await response.json();
-    console.log(data);
-
-    localStorage.setItem('token', data.authToken);
-
-    navigate('/choose');
   };
 
   return (
     <Container
-      maxWidth="sm"
+      maxWidth={false}
       sx={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '97vh',
+        minHeight: '100vh',
         backgroundColor: '#f7f9fc',
+        background: 'linear-gradient(to bottom right, #1976d2, #ffffff)',
+        px: { xs: 2, sm: 4, md: 8 },
       }}
     >
       <Paper
         elevation={3}
         sx={{
-          padding: 2,
+          padding: 3,
           borderRadius: 2,
-          maxWidth: 400,
           width: '100%',
+          maxWidth: { xs: '100%', sm: 400 },
         }}
       >
         <Box textAlign="center" mb={2}>
@@ -72,7 +83,6 @@ export default function SignInPage() {
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Display error if validation fails */}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
@@ -106,9 +116,13 @@ export default function SignInPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
             Don't have an account?{' '}
-            <Button color="primary" onClick={() => navigate('/signup')} sx={{textTransform: 'capitalize'}}>
+            <Button
+              color="primary"
+              onClick={() => navigate('/signup')}
+              sx={{ textTransform: 'capitalize', p: 0 }}
+            >
               Register
             </Button>
           </Typography>
@@ -118,7 +132,12 @@ export default function SignInPage() {
             fullWidth
             variant="contained"
             color="primary"
-            sx={{ mt: 3, mb: 2, padding: 1.5 }}
+            sx={{
+              mt: 3,
+              mb: 2,
+              py: 1.5,
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+            }}
           >
             Sign In
           </Button>

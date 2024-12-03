@@ -7,57 +7,31 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import JewellerReceipt from './components/JewellerReceipt'
 import RoughEstimate from './components/RoughEstimate'
 import Choice from './components/Choice'
+import ReceiptHistory from './pages/ReceiptHistory'
+import { ReceiptProvider } from './context/ReceiptHistoryContext'
+import { ReceiptContextProvider } from './context/ReceiptContext'
+import { UserContextProvider } from './context/UserContext'
 
 function App() {
-  const receiptData = {
-    companyName: "XceeDesigns",
-    companyLocation: "Ghaziabad, Uttar Pradesh",
-    companyPhone: "+91-9582995138",
-    companyEmail: "xceedesigns@gmail.com",
-    estimateNumber: "EST0001",
-    date: "Oct 26, 2024",
-    total: "25,498.00",
-    clientName: "John Doe",
-    clientAddress: "1234 Elm Street, Springfield",
-    items: [
-      {
-        title: "Static Website",
-        description: "The package includes five professionally designed web pages...",
-        rate: "15,500.00",
-        quantity: 1,
-        amount: "15,500.00"
-      },
-      {
-        title: "Search Engine Optimization (SEO)",
-        description: "The website's initial ranking on Google Chrome...",
-        rate: "4,999.00",
-        quantity: 1,
-        amount: "4,999.00"
-      },
-      {
-        title: "Brochure (5 pages)",
-        description: "Prices may vary based on the complexity of the brochure.",
-        rate: "4,999.00",
-        quantity: 1,
-        amount: "4,999.00"
-      }
-    ],
-    notes: "Estimated price was ₹29,997.00, after 15% discount, the chargeable amount is ₹25,498.00."
-  };
-
-
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/choose" element={<Choice />} />  
-        <Route path="/dashboard/general" element={<Dashboard />} />
-        <Route path="/dashboard/estimate" element={<RoughEstimate />} />
-        <Route path="/dashboard/g/preview" element={<GeneralReceipt />} />
-        <Route path="/dashboard/e/preview" element={<JewellerReceipt />} />
-      </Routes>
+      <ReceiptProvider>
+        <ReceiptContextProvider>
+          <UserContextProvider>
+            <Routes>
+              <Route path="/" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/choose" element={<Choice />} />
+              <Route path="/dashboard/general" element={<Dashboard />} />
+              <Route path="/dashboard/estimate" element={<RoughEstimate />} />
+              <Route path="/dashboard/g/preview" element={<GeneralReceipt />} />
+              <Route path="/dashboard/e/preview" element={<JewellerReceipt />} />
+              <Route path="/receipt-history" element={<ReceiptHistory />} />
+            </Routes>
+          </UserContextProvider>
+        </ReceiptContextProvider>
+      </ReceiptProvider>
     </Router>
   )
 }

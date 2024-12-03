@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useContext } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import {
@@ -17,15 +17,19 @@ import {
 } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import { PictureAsPdf } from "@mui/icons-material";
+import { ReceiptContext } from '../context/ReceiptContext';
+import { UserContext } from '../context/UserContext';
 
 const JewellerReceipt = () => {
 
-  const { state } = useLocation();
-  const { formValues, items } = state || {};
-
   const receiptRef = useRef();
+  
 
-  if (!formValues || !items) {
+  const { receiptData, setReceiptData } = useContext(ReceiptContext);
+  const { user } = useContext(UserContext);
+
+  if (!receiptData || !receiptData.items) {
+    console.log(receiptData);
     return <Typography variant="h6">No receipt data available.</Typography>;
   }
 
@@ -38,6 +42,18 @@ const JewellerReceipt = () => {
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
     pdf.save('receipt.pdf');
+
+    setReceiptData({ ...receiptData, user: user });
+    
+    const response = await fetch('http://localhost:8080/api/receipt/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(receiptData)
+    });
+    const data = await response.json();
+    console.log(data);
   };
 
   return (
@@ -45,29 +61,29 @@ const JewellerReceipt = () => {
       <Box sx={{ padding: 3, backgroundColor: "white", margin: 4 }} ref={receiptRef}>
         {/* Header */}
         <Typography variant="h5" align="center" gutterBottom>
-          {formValues.businessName}
+          {receiptData.businessName}
         </Typography>
         <Typography variant="body1" align="center" gutterBottom>
-          {formValues.address} <br />
-          {formValues.phone}
+          {receiptData.address} <br />
+          {receiptData.phone}
         </Typography>
         <Typography variant="h6" align="center" gutterBottom>
-          {formValues.documentTitle}
+          {receiptData.documentTitle}
         </Typography>
 
         {/* Customer Info and Invoice Details */}
         <Grid container spacing={2} sx={{ marginY: 2 }}>
           <Grid item xs={6}>
             <Typography variant="subtitle1">Customer Name & Address:</Typography>
-            <Typography variant="body2">{formValues.customerName}</Typography>
-            <Typography variant="body2">{formValues.customerAddress}</Typography>
-            <Typography variant="body2">Phone: {formValues.customerPhone}</Typography>
+            <Typography variant="body2">{receiptData.customerName}</Typography>
+            <Typography variant="body2">{receiptData.customerAddress}</Typography>
+            <Typography variant="body2">Phone: {receiptData.customerPhone}</Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body2" align="right">Bill No.: {formValues.billNo}</Typography>
-            <Typography variant="body2" align="right">Date: {formValues.date}</Typography>
-            <Typography variant="body2" align="right">24K Rate: {formValues.rate24K}</Typography>
-            <Typography variant="body2" align="right">Silver Bhav: {formValues.silverBhav}</Typography>
+            <Typography variant="body2" align="right">Bill No.: {receiptData.billNumber}</Typography>
+            <Typography variant="body2" align="right">Date: {receiptData.date}</Typography>
+            <Typography variant="body2" align="right">24K Rate: {receiptData._24KRate}</Typography>
+            <Typography variant="body2" align="right">Silver Bhav: {receiptData.silverBhav}</Typography>
           </Grid>
         </Grid>
 
@@ -89,13 +105,12 @@ const JewellerReceipt = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* Row 1 */}
-              {items.map((item, index) => (
+              {receiptData.items.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>{item.description}</TableCell>
-                  <TableCell align="right">{item.grossWeight}</TableCell>
-                  <TableCell align="right">{item.lessWeight}</TableCell>
-                  <TableCell align="right">{item.netWeight}</TableCell>
+                  <TableCell align="right">{item.gWt}</TableCell>
+                  <TableCell align="right">{item.lWt}</TableCell>
+                  <TableCell align="right">{item.nWt}</TableCell>
                   <TableCell align="right">{item.tunch}</TableCell>
                   <TableCell align="right">{item.rate}</TableCell>
                   <TableCell align="right">{item.gold}</TableCell>
@@ -112,24 +127,25 @@ const JewellerReceipt = () => {
                 <TableCell></TableCell>
                 <TableCell></TableCell>
                 <TableCell align="right">
-                {items.reduce((acc, item) => acc + (Number(item.amount) || 0), 0).toFixed(2)}
+                  {receiptData.items.reduce((acc, item) => acc + (Number(item.amount) || 0), 0).toFixed(2)}
                 </TableCell>
               </TableRow>
             </TableBody>
+
           </Table>
         </TableContainer>
 
         {/* Closing Balance */}
         <Typography variant="h6" align="right" sx={{ marginY: 2 }}>
-          Closing Balance: {items.reduce((acc, item) => acc + (Number(item.amount) || 0), 0).toFixed(2)}
+          Closing Balance: {receiptData.items.reduce((acc, item) => acc + (Number(item.amount) || 0), 0).toFixed(2)}
         </Typography>
 
         {/* Terms & Conditions */}
         <Typography variant="body2" sx={{ marginTop: 4 }}>
           <strong>Terms & Conditions:</strong><br />
-          18k return in {formValues.terms18K}<br />
-          20k return in {formValues.terms20K}<br />
-          22k return in {formValues.terms22K}
+          18k return in {receiptData._18KReturn}<br />
+          20k return in {receiptData._20KReturn}<br />
+          22k return in {receiptData._22KReturn}
         </Typography>
 
         {/* Authorized Signature */}

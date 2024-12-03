@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Container, TextField, Button, Box, Typography, Alert, Paper, Divider, MenuItem, Grid
+  Container,
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Alert,
+  Paper,
+  Divider,
+  MenuItem,
+  Grid,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,7 +21,7 @@ export default function SignUpPage() {
     password: '',
     mobileNumber: '',
     country: '',
-    state: ''
+    state: '',
   });
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -37,7 +46,7 @@ export default function SignUpPage() {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -65,7 +74,7 @@ export default function SignUpPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
-        });
+    });
 
     if (!response.ok) {
       setError('Failed to create account.');
@@ -82,30 +91,44 @@ export default function SignUpPage() {
 
   return (
     <Container
-      maxWidth="sm"
+      maxWidth="false"
       sx={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '97vh',
+        minHeight: '100vh',
         backgroundColor: '#f7f9fc',
+        px: { xs: 2, sm: 4 },
+        background: 'linear-gradient(to bottom right, #1976d2, #ffffff)',
       }}
+      disableGutters
     >
       <Paper
         elevation={3}
         sx={{
-          padding: 4,
+          padding: { xs: 2, sm: 4 },
           borderRadius: 2,
-          maxWidth: 500,
+          maxWidth: { xs: 340, sm: 500 },
           width: '100%',
+          my: { xs: 3, sm: 5 },
         }}
       >
-        <Box textAlign="center" mb={1}>
-          <Typography variant="h4" component="h1" color="primary" gutterBottom>
+        <Box textAlign="center" mb={2}>
+          <Typography
+            variant="h4"
+            component="h1"
+            color="primary"
+            gutterBottom
+            sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
+          >
             Create an Account
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+          >
             Please fill in the details to sign up
           </Typography>
         </Box>
@@ -236,17 +259,33 @@ export default function SignUpPage() {
             </Grid>
           </Grid>
 
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{ mt: 2, textAlign: 'center' }}
+          >
+            Have an account?{' '}
+            <Button color="primary" onClick={() => navigate('/')} sx={{ textTransform: 'capitalize' }}>
+              Login
+            </Button>
+          </Typography>
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            sx={{ mt: 3, mb: 2, padding: 1.5 }}
+            sx={{
+              mt: 3,
+              mb: 2,
+              padding: { xs: 1, sm: 1.5 },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+            }}
           >
             Sign Up
           </Button>
         </Box>
       </Paper>
     </Container>
- );
+  );
 }
