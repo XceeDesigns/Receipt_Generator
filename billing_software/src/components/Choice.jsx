@@ -89,7 +89,9 @@ const Choice = () => {
                                         '&:hover': {
                                             transform: 'scale(1.05)',
                                             boxShadow: 6,
+                                            cursor: 'pointer',
                                         },
+
                                     }}
                                     onClick={() => navigate(category.link)}
                                 >

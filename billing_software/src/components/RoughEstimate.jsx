@@ -332,12 +332,12 @@ function RoughEstimate() {
                                 endIcon={<Send />}
                                 sx={{ mt: 1 }}
                             >
-                                Send
+                                Send over WhatsApp
                             </Button>
                         </Paper>
                         <Box display="flex" justifyContent="space-between" mt={2} sx={{ padding: '10px' }}>
                             <Button variant="outlined" sx={{ marginRight: 2, width: '240px' }} startIcon={<Save />}>
-                                Record Payment
+                                Print
                             </Button>
 
                             <Button variant="outlined" sx={{ marginRight: 0, width: '240px' }} startIcon={<Visibility />} onClick={handlePreview}>
