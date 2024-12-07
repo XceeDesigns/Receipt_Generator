@@ -35,7 +35,7 @@ function RoughEstimate() {
     const backend_url = process.env.REACT_APP_BACKEND_URL;
 
     const navigate = useNavigate();
-    
+
     const [receipts, setReceipts] = useState([]);
 
     const [items, setItems] = useState([
@@ -55,7 +55,7 @@ function RoughEstimate() {
             return {
                 ...prevValues,
                 user: jwtDecode(localStorage.getItem('token')).sub,
-            };  
+            };
         });
     }, []);
 
@@ -70,7 +70,7 @@ function RoughEstimate() {
         }
 
         if (field === 'rate' || field === 'gold' || field === 'silver' || field === 'labour') {
-            updatedItems[index].amount = (parseFloat(updatedItems[index].rate) - (parseFloat(updatedItems[index].gold)*(receiptData._24kRate / 10) + parseFloat(updatedItems[index].silver)*(receiptData.silverBhav / 1000)) + parseFloat(updatedItems[index].labour)).toFixed(2);
+            updatedItems[index].amount = (parseFloat(updatedItems[index].rate) - (parseFloat(updatedItems[index].gold) * (receiptData._24kRate / 10) + parseFloat(updatedItems[index].silver) * (receiptData.silverBhav / 1000)) + parseFloat(updatedItems[index].labour)).toFixed(2);
         }
 
         setItems(updatedItems);
@@ -103,35 +103,98 @@ function RoughEstimate() {
             );
             const data = await response.json();
             console.log(data);
-            console.log(data[data.length-1]._18kReturn);
-            
+            console.log(data[data.length - 1]._18kReturn);
+
 
             setReceipts(data);
-            if(data.length !== 0) 
+            if (data.length !== 0)
                 setReceiptData((prevValues) => {
                     return {
                         ...prevValues,
                         user: user_email,
-                        businessName: data[data.length-1].businessName,
-                        address: data[data.length-1].address,
-                        phone: data[data.length-1].phone,
-                        documentTitle: data[data.length-1].documentTitle,
-                        billNumber: "BILL-" + (data.length  + 1),
-                        _18kReturn: data[data.length-1]._18kReturn,
-                        _20kReturn: data[data.length-1]._20kReturn,
-                        _22kReturn: data[data.length-1]._22kReturn,
+                        businessName: data[data.length - 1].businessName,
+                        address: data[data.length - 1].address,
+                        phone: data[data.length - 1].phone,
+                        documentTitle: data[data.length - 1].documentTitle,
+                        billNumber: "BILL-" + (data.length + 1),
+                        _18kReturn: data[data.length - 1]._18kReturn,
+                        _20kReturn: data[data.length - 1]._20kReturn,
+                        _22kReturn: data[data.length - 1]._22kReturn,
                     };
                 });
         };
         fetchReceipts();
     }, []);
 
+    useEffect(() => {
+        const fetchPreviousDue = async () => {
+            // Check if the phone number is exactly 11 digits
+            if (receiptData.customerPhone && receiptData.customerPhone.length === 10) {
+                try {
+                    const response = await fetch(`${backend_url}/api/receipt/fetch/customer/receipts/${receiptData.customerPhone}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+    
+                    if (!response.ok) {
+                        console.error("Failed to fetch previous due. Server error.");
+                        return;
+                    }
+    
+                    const data = await response.json();
+                    console.log("Fetched Receipts Data: ", data);
+    
+                    // Ensure data has valid entries
+                    if (data && data.length > 0) {
+                        const lastReceipt = data[data.length - 1];
+    
+                        // Update previousDue in receiptData
+                        setReceiptData((prevValues) => ({
+                            ...prevValues,
+                            previousDue: lastReceipt.currentDue || 0, // Use 0 if currentDue is undefined
+                            customerAddress: lastReceipt.customerAddress,
+                            customerName: lastReceipt.customerName
+                        }));
+                    }
+                } catch (error) {
+                    console.error("Error fetching previous due:", error);
+                }
+            }
+        };
+    
+        fetchPreviousDue();
+    }, [receiptData.customerPhone, backend_url, setReceiptData]);
+    
+
     // Calculate the closing balance by summing up the amounts of all items
     const calculateClosingBalance = () => {
-        return items.reduce((total, item) => {
+        calculateTotalNetWeight();
+        const closingBalance = items.reduce((total, item) => {
             const amount = parseFloat(item.amount) || 0;
             return total + amount;
         }, 0).toFixed(2); // Rounds to 2 decimal places
+        receiptData.closingBalance = closingBalance;
+        return receiptData.closingBalance;
+    };
+    const calculateTotalNetWeight = () => {
+        const totalNetWeight = items.reduce((total, item) => {
+            const nWt = parseFloat(item.nWt) || 0;
+            return total + nWt;
+        }, 0).toFixed(2); // Rounds to 2 decimal places
+        receiptData.totalNetWeight = totalNetWeight;
+    };
+
+    const calculateEffectiveBalance = () => {
+        const currentDue = ((parseFloat(receiptData.previousDue) + parseFloat(calculateClosingBalance())) - parseFloat(receiptData.paidAmount)).toFixed(2);
+        receiptData.currentDue = currentDue;
+        return receiptData.currentDue;
+    };
+
+    const calculatePreviousDue = () => {
+        receiptData.previousDue = 0;
+        return receiptData.previousDue;
     };
 
     const handlePreview = () => {
@@ -348,7 +411,23 @@ function RoughEstimate() {
                             <Grid item xs={6}>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Closing Balance:</Typography>
-                                    <Typography sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculateClosingBalance()}</Typography>
+                                    <Typography value={receiptData.closingBalance} onChange={(e) => handleFormChange('closingBalance', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculateClosingBalance()}</Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Previous Due:</Typography>
+                                    <Typography value={receiptData.previousDue} onChange={(e) => handleFormChange('previousDue', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{receiptData.previousDue}</Typography>
+                                </Box>
+                                <TextField
+                                    fullWidth
+                                    label="Paid Amount"
+                                    variant="outlined"
+                                    margin="dense"
+                                    value={receiptData.paidAmount}
+                                    onChange={(e) => handleFormChange('paidAmount', e.target.value)}
+                                />
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Current Due:</Typography>
+                                    <Typography value={receiptData.currentDue} onChange={(e) => handleFormChange('currentDue', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculateEffectiveBalance()}</Typography>
                                 </Box>
                                 <Typography sx={{ ml: { sm: 30, xs: 10 }, mt: 24 }}>Authorised Signatory</Typography>
                             </Grid>

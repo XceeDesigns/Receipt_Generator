@@ -20,6 +20,11 @@ export const ReceiptContextProvider = ({ children }) => {
         _20kReturn: '',
         _22kReturn: '',
         items:[],
+        closingBalance: '',
+        previousDue: '0',
+        currentDue: '',
+        paidAmount: '',
+        totalNetWeight: '0',
     });
 
     return (
