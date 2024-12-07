@@ -39,7 +39,7 @@ function RoughEstimate() {
     const [receipts, setReceipts] = useState([]);
 
     const [items, setItems] = useState([
-        { description: '', gWt: '', lWt: '', nWt: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
+        { description: '', gWt: '', lWt: '0', nWt: '0', tunch: '', rate: '', gold: '0', silver: '0', labour: '0', amount: '' },
     ]);
 
     const handleFormChange = (field, value) => {
@@ -62,6 +62,17 @@ function RoughEstimate() {
     const handleItemChange = (index, field, value) => {
         const updatedItems = [...items];
         updatedItems[index][field] = value;
+
+        // Recalculate the values for nWt, lWt, and Amount after user changes any relevant field
+        if (field === 'gWt' || field === 'tunch') {
+            updatedItems[index].nWt = ((parseFloat(updatedItems[index].gWt) * parseFloat(updatedItems[index].tunch)) / 100).toFixed(2);
+            updatedItems[index].lWt = (parseFloat(updatedItems[index].gWt) - parseFloat(updatedItems[index].nWt)).toFixed(2);
+        }
+
+        if (field === 'rate' || field === 'gold' || field === 'silver' || field === 'labour') {
+            updatedItems[index].amount = (parseFloat(updatedItems[index].rate) - (parseFloat(updatedItems[index].gold)*(receiptData._24kRate / 10) + parseFloat(updatedItems[index].silver)*(receiptData.silverBhav / 1000)) + parseFloat(updatedItems[index].labour)).toFixed(2);
+        }
+
         setItems(updatedItems);
 
         // Also update the items in the receiptData context
@@ -287,8 +298,8 @@ function RoughEstimate() {
                                                         value={item[field]}
                                                         onChange={(e) => handleItemChange(index, field, e.target.value)}
                                                         sx={{
-                                                            minWidth: {xs: 120, sm: 45}, // Prevent the text fields from shrinking too small
-                                                            '& .MuiInputBase-root': { fontSize: '0.875rem' }, // Adjust font size for small screens
+                                                            minWidth: { xs: 120, sm: 45 },
+                                                            '& .MuiInputBase-root': { fontSize: '0.875rem' },
                                                         }}
                                                     />
                                                 </TableCell>
@@ -298,7 +309,6 @@ function RoughEstimate() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
-
 
                         <Button variant="contained" onClick={addItem} sx={{ mb: 3 }}>
                             Add Item

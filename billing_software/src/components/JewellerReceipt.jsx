@@ -141,15 +141,15 @@ const JewellerReceipt = () => {
                 {receiptData.items.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell>{item.description}</TableCell>
-                    <TableCell align="right">{item.gWt}</TableCell>
-                    <TableCell align="right">{item.lWt}</TableCell>
-                    <TableCell align="right">{item.nWt}</TableCell>
+                    <TableCell align="right">{item.gWt}gm</TableCell>
+                    <TableCell align="right">{item.lWt}gm</TableCell>
+                    <TableCell align="right">{item.nWt}gm</TableCell>
                     <TableCell align="right">{item.tunch}%</TableCell>
-                    <TableCell align="right">{item.rate}</TableCell>
-                    <TableCell align="right">{item.gold}</TableCell>
-                    <TableCell align="right">{item.silver}</TableCell>
-                    <TableCell align="right">{item.labour}</TableCell>
-                    <TableCell align="right">{item.amount}</TableCell>
+                    <TableCell align="right">Rs.{item.rate}</TableCell>
+                    <TableCell align="right">{item.gold}gm</TableCell>
+                    <TableCell align="right">{item.silver}gm</TableCell>
+                    <TableCell align="right">Rs.{item.labour}</TableCell>
+                    <TableCell align="right">Rs.{item.amount}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow>
