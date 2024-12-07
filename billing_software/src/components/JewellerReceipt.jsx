@@ -145,24 +145,22 @@ const JewellerReceipt = () => {
                     <TableCell align="right">{item.lWt}gm</TableCell>
                     <TableCell align="right">{item.nWt}gm</TableCell>
                     <TableCell align="right">{item.tunch}%</TableCell>
-                    <TableCell align="right">Rs.{item.rate}</TableCell>
+                    <TableCell align="right">₹{item.rate}</TableCell>
                     <TableCell align="right">{item.gold}gm</TableCell>
                     <TableCell align="right">{item.silver}gm</TableCell>
-                    <TableCell align="right">Rs.{item.labour}</TableCell>
-                    <TableCell align="right">Rs.{item.amount}</TableCell>
+                    <TableCell align="right">₹{item.labour}</TableCell>
+                    <TableCell align="right">₹{item.amount}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow>
                   <TableCell colSpan={6} align="left">
-                    <strong>Total</strong>
+                    <strong>Total</strong> 
                   </TableCell>
                   <TableCell></TableCell>
                   <TableCell></TableCell>
                   <TableCell></TableCell>
                   <TableCell align="right">
-                    {receiptData.items
-                      .reduce((acc, item) => acc + (Number(item.amount) || 0), 0)
-                      .toFixed(2)}
+                  (Net Weight) : {receiptData.totalNetWeight}gm <br/> ₹{receiptData.closingBalance}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -172,10 +170,13 @@ const JewellerReceipt = () => {
 
         {/* Closing Balance */}
         <Typography variant="h6" align="right" sx={{ marginY: 2 }}>
-          Closing Balance:{" "}
-          {receiptData.items
-            .reduce((acc, item) => acc + (Number(item.amount) || 0), 0)
-            .toFixed(2)}
+          Closing Balance: ₹{receiptData.closingBalance}
+        </Typography>
+        <Typography variant="h6" align="right" sx={{ marginY: 2 }}>
+          Paid Amount: ₹{receiptData.paidAmount}
+        </Typography>
+        <Typography variant="h6" align="right" sx={{ marginY: 2 }}>
+          Due Amount: ₹{receiptData.currentDue}
         </Typography>
 
         {/* Terms & Conditions */}

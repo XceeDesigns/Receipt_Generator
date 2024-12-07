@@ -128,10 +128,31 @@ function RoughEstimate() {
 
     // Calculate the closing balance by summing up the amounts of all items
     const calculateClosingBalance = () => {
-        return items.reduce((total, item) => {
+        calculateTotalNetWeight();
+        const closingBalance = items.reduce((total, item) => {
             const amount = parseFloat(item.amount) || 0;
             return total + amount;
         }, 0).toFixed(2); // Rounds to 2 decimal places
+        receiptData.closingBalance = closingBalance;
+        return receiptData.closingBalance;
+    };
+    const calculateTotalNetWeight = () => {
+        const totalNetWeight = items.reduce((total, item) => {
+            const nWt = parseFloat(item.nWt) || 0;
+            return total + nWt;
+        }, 0).toFixed(2); // Rounds to 2 decimal places
+        receiptData.totalNetWeight = totalNetWeight;
+    };
+
+    const calculateEffectiveBalance = () => {
+        const currentDue = ((parseFloat(receiptData.previousDue) + parseFloat(calculateClosingBalance())) - parseFloat(receiptData.paidAmount)).toFixed(2);
+        receiptData.currentDue = currentDue;
+        return receiptData.currentDue;
+    };
+
+    const calculatePreviousDue = () => {
+        receiptData.previousDue = 0;
+        return receiptData.previousDue;
     };
 
     const handlePreview = () => {
@@ -348,7 +369,23 @@ function RoughEstimate() {
                             <Grid item xs={6}>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Closing Balance:</Typography>
-                                    <Typography sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculateClosingBalance()}</Typography>
+                                    <Typography value={receiptData.closingBalance} onChange={(e) => handleFormChange('closingBalance', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculateClosingBalance()}</Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Previous Due:</Typography>
+                                    <Typography value={receiptData.previousDue} onChange={(e) => handleFormChange('previousDue', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculatePreviousDue()}</Typography>
+                                </Box>
+                                <TextField
+                                    fullWidth
+                                    label="Paid Amount"
+                                    variant="outlined"
+                                    margin="dense"
+                                    value={receiptData.paidAmount}
+                                    onChange={(e) => handleFormChange('paidAmount', e.target.value)}
+                                />
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Current Due:</Typography>
+                                    <Typography value={receiptData.currentDue} onChange={(e) => handleFormChange('currentDue', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculateEffectiveBalance()}</Typography>
                                 </Box>
                                 <Typography sx={{ ml: { sm: 30, xs: 10 }, mt: 24 }}>Authorised Signatory</Typography>
                             </Grid>
