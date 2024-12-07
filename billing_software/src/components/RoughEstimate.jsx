@@ -32,8 +32,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 function RoughEstimate() {
 
     const { receiptData, setReceiptData } = useContext(ReceiptContext);
+    const backend_url = process.env.REACT_APP_BACKEND_URL;
 
     const navigate = useNavigate();
+    
+    const [receipts, setReceipts] = useState([]);
 
     const [items, setItems] = useState([
         { description: '', gWt: '', lWt: '', nWt: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
@@ -74,6 +77,43 @@ function RoughEstimate() {
             { description: '', gWt: '', lWt: '', nWt: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
         ]);
     };
+
+    useEffect(() => {
+        const fetchReceipts = async () => {
+            const user_email = jwtDecode(localStorage.getItem('token')).sub;
+            console.log(user_email);
+            const response = await fetch(`${backend_url}/api/receipt/fetch/${user_email}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            }
+            );
+            const data = await response.json();
+            console.log(data);
+            console.log(data[data.length-1]._18kReturn);
+            
+
+            setReceipts(data);
+            if(data.length !== 0) 
+                setReceiptData((prevValues) => {
+                    return {
+                        ...prevValues,
+                        user: user_email,
+                        businessName: data[data.length-1].businessName,
+                        address: data[data.length-1].address,
+                        phone: data[data.length-1].phone,
+                        documentTitle: data[data.length-1].documentTitle,
+                        billNumber: "BILL-" + (data.length  + 1),
+                        _18kReturn: data[data.length-1]._18kReturn,
+                        _20kReturn: data[data.length-1]._20kReturn,
+                        _22kReturn: data[data.length-1]._22kReturn,
+                    };
+                });
+        };
+        fetchReceipts();
+    }, []);
 
     // Calculate the closing balance by summing up the amounts of all items
     const calculateClosingBalance = () => {
@@ -203,7 +243,7 @@ function RoughEstimate() {
                                     variant="outlined"
                                     margin="dense"
                                     value={receiptData._24KRate}
-                                    onChange={(e) => handleFormChange('_24KRate', e.target.value)}
+                                    onChange={(e) => handleFormChange('_24kRate', e.target.value)}
                                 />
                                 <TextField
                                     fullWidth
@@ -275,24 +315,24 @@ function RoughEstimate() {
                                     label="18K Return"
                                     variant="outlined"
                                     margin="dense"
-                                    value={receiptData._18KReturn}
-                                    onChange={(e) => handleFormChange('_18KReturn', e.target.value)}
+                                    value={receiptData._18kReturn}
+                                    onChange={(e) => handleFormChange('_18kReturn', e.target.value)}
                                 />
                                 <TextField
                                     fullWidth
                                     label="20K Return"
                                     variant="outlined"
                                     margin="dense"
-                                    value={receiptData._20KReturn}
-                                    onChange={(e) => handleFormChange('_20KReturn', e.target.value)}
+                                    value={receiptData._20kReturn}
+                                    onChange={(e) => handleFormChange('_20kReturn', e.target.value)}
                                 />
                                 <TextField
                                     fullWidth
                                     label="22K Return"
                                     variant="outlined"
                                     margin="dense"
-                                    value={receiptData._22KReturn}
-                                    onChange={(e) => handleFormChange('_22KReturn', e.target.value)}
+                                    value={receiptData._22kReturn}
+                                    onChange={(e) => handleFormChange('_22kReturn', e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={6}>

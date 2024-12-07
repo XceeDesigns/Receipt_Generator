@@ -14,11 +14,11 @@ export const ReceiptContextProvider = ({ children }) => {
         billNumber: '',
         date: '',
         user: '',
-        _24KRate: '',
+        _24kRate: '',
         silverBhav: '',
-        _18KReturn: '',
-        _20KReturn: '',
-        _22KReturn: '',
+        _18kReturn: '',
+        _20kReturn: '',
+        _22kReturn: '',
         items:[],
     });
 
