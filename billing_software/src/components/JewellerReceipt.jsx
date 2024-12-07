@@ -60,7 +60,7 @@ const JewellerReceipt = () => {
 
     setReceiptData({ ...receiptData, user: user });
 
-    const response = await fetch(`${backend-url}/api/receipt/save`, {
+    const response = await fetch(`${backend_url}/api/receipt/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -111,7 +111,7 @@ const JewellerReceipt = () => {
               Date: {receiptData.date}
             </Typography>
             <Typography variant="body2" align="right">
-              24K Rate: {receiptData._24KRate}
+              24K Rate: {receiptData._24kRate}
             </Typography>
             <Typography variant="body2" align="right">
               Silver Bhav: {receiptData.silverBhav}
@@ -144,7 +144,7 @@ const JewellerReceipt = () => {
                     <TableCell align="right">{item.gWt}</TableCell>
                     <TableCell align="right">{item.lWt}</TableCell>
                     <TableCell align="right">{item.nWt}</TableCell>
-                    <TableCell align="right">{item.tunch}</TableCell>
+                    <TableCell align="right">{item.tunch}%</TableCell>
                     <TableCell align="right">{item.rate}</TableCell>
                     <TableCell align="right">{item.gold}</TableCell>
                     <TableCell align="right">{item.silver}</TableCell>
@@ -182,11 +182,11 @@ const JewellerReceipt = () => {
         <Typography variant="body2" sx={{ marginTop: 4 }}>
           <strong>Terms & Conditions:</strong>
           <br />
-          18k return in {receiptData._18KReturn}
+          18k return in {receiptData._18kReturn}
           <br />
-          20k return in {receiptData._20KReturn}
+          20k return in {receiptData._20kReturn}
           <br />
-          22k return in {receiptData._22KReturn}
+          22k return in {receiptData._22kReturn}
         </Typography>
 
         {/* Authorized Signature */}
