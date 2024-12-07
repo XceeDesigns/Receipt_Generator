@@ -22,7 +22,7 @@ const GeneralReceipt = () => {
         return <Typography variant="h6">No receipt data available.</Typography>;
     }
 
-
+    // download pdf logic
     const downloadPdf = async () => {
         const element = receiptRef.current;
 
