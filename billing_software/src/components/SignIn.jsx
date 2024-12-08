@@ -3,6 +3,7 @@ import { Container, TextField, Button, Box, Typography, Alert, Paper, Divider } 
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { ReceiptHistoryContext } from '../context/ReceiptHistoryContext';
+import toast from 'react-hot-toast';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -40,9 +41,9 @@ export default function SignInPage() {
       const data1 = await response1.json();
       console.log(data1);
       localStorage.setItem('token', data1.msg);
+      toast.success('Logged in successfully');
       navigate('/choose');
       setUser(email);
-
       
     } catch (err) {
       setError('An error occurred. Please try again later.');

@@ -17,12 +17,14 @@ import {
     InputAdornment
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Email, Save, Send, Visibility } from '@mui/icons-material';
+import { Email, Phone, Save, Send, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { ReceiptContext } from '../context/ReceiptContext';
 import { jwtDecode } from 'jwt-decode';
+import PhoneIcon from '@mui/icons-material/Phone';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontWeight: 600,
@@ -212,6 +214,10 @@ function RoughEstimate() {
         navigate('/dashboard/e/preview');
     };
 
+    const handlePrint = () => {
+        // logic
+    }
+
     return (
         <Container maxWidth='false' disableGutters>
             <Navbar />
@@ -361,7 +367,7 @@ function RoughEstimate() {
                                                         value={item[field]}
                                                         onChange={(e) => handleItemChange(index, field, e.target.value)}
                                                         sx={{
-                                                            minWidth: { xs: 120, sm: 45 },
+                                                            minWidth: { xs: 120, sm: 100 },
                                                             '& .MuiInputBase-root': { fontSize: '0.875rem' },
                                                         }}
                                                     />
@@ -439,17 +445,17 @@ function RoughEstimate() {
                         <Paper variant="outlined" sx={{ padding: 3, backgroundColor: "#ffffff" }}>
                             {/* Preview via Email */}
                             <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>
-                                Preview via Email
+                                Enter Customer WhatsApp Number
                             </Typography>
                             <TextField
                                 fullWidth
-                                label="name@business.com"
+                                label="WhatsApp Number"
                                 variant="outlined"
                                 margin="normal"
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
-                                            <Email />
+                                            <WhatsAppIcon />
                                         </InputAdornment>
                                     ),
                                 }}
@@ -457,19 +463,19 @@ function RoughEstimate() {
                             <Button
                                 fullWidth
                                 variant="contained"
-                                color="primary"
+                                
                                 endIcon={<Send />}
-                                sx={{ mt: 1 }}
+                                sx={{ mt: 1, backgroundColor:'#25d366' }}
                             >
                                 Send over WhatsApp
                             </Button>
                         </Paper>
                         <Box display="flex" justifyContent="space-between" mt={2} sx={{ padding: '10px' }}>
-                            <Button variant="outlined" sx={{ marginRight: 2, width: '240px' }} startIcon={<Save />}>
+                            <Button variant="contained" sx={{ marginRight: 2, width: '240px' }} startIcon={<Save />} onClick={handlePrint}>
                                 Print
                             </Button>
 
-                            <Button variant="outlined" sx={{ marginRight: 0, width: '240px' }} startIcon={<Visibility />} onClick={handlePreview}>
+                            <Button variant="contained" sx={{ marginRight: 0, width: '240px' }} startIcon={<Visibility />} onClick={handlePreview}>
                                 Preview
                             </Button>
 
