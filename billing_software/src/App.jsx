@@ -11,6 +11,7 @@ import ReceiptHistory from './pages/ReceiptHistory'
 import { ReceiptProvider } from './context/ReceiptHistoryContext'
 import { ReceiptContextProvider } from './context/ReceiptContext'
 import { UserContextProvider } from './context/UserContext'
+import {Toaster} from 'react-hot-toast'
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
               <Route path="/dashboard/e/preview" element={<JewellerReceipt />} />
               <Route path="/receipt-history" element={<ReceiptHistory />} />
             </Routes>
+            <Toaster />
           </UserContextProvider>
         </ReceiptContextProvider>
       </ReceiptProvider>

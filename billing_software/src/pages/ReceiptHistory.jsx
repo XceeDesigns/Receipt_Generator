@@ -22,7 +22,7 @@ import PreviewIcon from '@mui/icons-material/Preview';  // Import Preview Icon
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { jwtDecode } from 'jwt-decode';
-import { ReceiptContext } from '../context/ReceiptContext';
+import toast from 'react-hot-toast'
 
 const ReceiptHistory = () => {
 
@@ -40,9 +40,10 @@ const ReceiptHistory = () => {
                 headers: { 'Content-Type': 'application/json' },
             });
             if (response.ok) {
+                toast.success('Bill deleted successfully.');
                 fetchReceiptHistory();  // Refresh receipt history after deletion
             } else {
-                console.error('Failed to delete the bill.');
+                toast.error('Failed to delete the bill.');
             }
         } catch (error) {
             console.error('Error deleting the bill:', error);

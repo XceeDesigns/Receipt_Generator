@@ -12,6 +12,7 @@ import {
   Grid,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast'
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -84,7 +85,7 @@ export default function SignUpPage() {
     const data = await response.text();
     console.log(data);
 
-    alert('Account created successfully!');
+    toast.success('Account created successfully');
 
     navigate('/');
   };

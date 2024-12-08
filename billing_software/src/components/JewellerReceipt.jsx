@@ -18,6 +18,7 @@ import {
 import { PictureAsPdf } from "@mui/icons-material";
 import { ReceiptContext } from '../context/ReceiptContext';
 import { UserContext } from '../context/UserContext';
+import toast from 'react-hot-toast';
 
 const JewellerReceipt = () => {
   const receiptRef = useRef();
@@ -52,10 +53,11 @@ const JewellerReceipt = () => {
     pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
 
     // Save PDF
-    pdf.save('receipt.pdf');
+    pdf.save(`${receiptData.billNumber}.pdf`);
 
     // Reset the element's width after PDF generation
     element.style.width = "auto";
+    toast.success("PDF downloaded successfully!");
 
 
     setReceiptData({ ...receiptData, user: user });
