@@ -56,7 +56,10 @@ const ReceiptHistory = () => {
             const email = jwtDecode(localStorage.getItem('token')).sub;
             const response = await fetch(`${backend_url}/api/receipt/fetch/${email}?page=${currentPage}&limit=${resultsPerPage}`, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                 },
             });
 
             if (!response.ok) {
