@@ -14,7 +14,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
-
+// categories array
 const categories = [
     {
         title: 'General Receipt',
