@@ -1,1 +1,1 @@
-# Receipt_Generator
+# Receipt_Generator - Receipt Vault
