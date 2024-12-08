@@ -361,7 +361,7 @@ function RoughEstimate() {
                                                         value={item[field]}
                                                         onChange={(e) => handleItemChange(index, field, e.target.value)}
                                                         sx={{
-                                                            minWidth: { xs: 120, sm: 45 },
+                                                            minWidth: { xs: 120, sm: 100 },
                                                             '& .MuiInputBase-root': { fontSize: '0.875rem' },
                                                         }}
                                                     />
