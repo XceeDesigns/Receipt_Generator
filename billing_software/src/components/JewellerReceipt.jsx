@@ -63,7 +63,8 @@ const JewellerReceipt = () => {
     const response = await fetch(`${backend_url}/api/receipt/save`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
       body: JSON.stringify(receiptData)
     });
