@@ -185,7 +185,7 @@ const ReceiptHistory = () => {
                                     <TableCell>{row.billNumber}</TableCell>
                                     <TableCell>{row.date}</TableCell>
                                     <TableCell>{row.customerName}</TableCell>
-                                    <TableCell>{row.phone}</TableCell>
+                                    <TableCell>{row.customerPhone}</TableCell>
                                     <TableCell>{row.totalNetWeight}</TableCell>
                                     <TableCell>{row.currentDue}</TableCell>
                                     <TableCell>{calculateAmount(row.items)}</TableCell>
