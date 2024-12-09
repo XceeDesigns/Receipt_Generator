@@ -67,12 +67,13 @@ function RoughEstimate() {
 
         // Recalculate the values for nWt, lWt, and Amount after user changes any relevant field
         if (field === 'gWt' || field === 'tunch') {
-            updatedItems[index].nWt = ((parseFloat(updatedItems[index].gWt) * parseFloat(updatedItems[index].tunch)) / 100).toFixed(2);
-            updatedItems[index].lWt = (parseFloat(updatedItems[index].gWt) - parseFloat(updatedItems[index].nWt)).toFixed(2);
+            updatedItems[index].nWt = ((parseFloat(updatedItems[index].gWt) * parseFloat(updatedItems[index].tunch)) / 100).toFixed(3);
+            updatedItems[index].lWt = (parseFloat(updatedItems[index].gWt) - parseFloat(updatedItems[index].nWt)).toFixed(3);
+            
         }
 
         if (field === 'rate' || field === 'gold' || field === 'silver' || field === 'labour') {
-            updatedItems[index].amount = (parseFloat(updatedItems[index].rate) - (parseFloat(updatedItems[index].gold) * (receiptData._24kRate / 10) + parseFloat(updatedItems[index].silver) * (receiptData.silverBhav / 1000)) + parseFloat(updatedItems[index].labour)).toFixed(2);
+            updatedItems[index].amount = (parseFloat(updatedItems[index].rate) - (parseFloat(updatedItems[index].gold) * (receiptData._24kRate / 10) + parseFloat(updatedItems[index].silver) * (receiptData.silverBhav / 1000)) + parseFloat(updatedItems[index].labour)).toFixed(3);
         }
 
         setItems(updatedItems);
@@ -195,11 +196,6 @@ function RoughEstimate() {
         return receiptData.currentDue;
     };
 
-    const calculatePreviousDue = () => {
-        receiptData.previousDue = 0;
-        return receiptData.previousDue;
-    };
-
     const handlePreview = () => {
         // Update the context with the current items
         setReceiptData((prevValues) => {
@@ -320,7 +316,7 @@ function RoughEstimate() {
                                 />
                                 <TextField
                                     fullWidth
-                                    label="24K Rate"
+                                    label="Gold Rate"
                                     variant="outlined"
                                     margin="dense"
                                     value={receiptData._24KRate}
@@ -328,7 +324,7 @@ function RoughEstimate() {
                                 />
                                 <TextField
                                     fullWidth
-                                    label="Silver Bhav"
+                                    label="Silver Rate"
                                     variant="outlined"
                                     margin="dense"
                                     value={receiptData.silverBhav}

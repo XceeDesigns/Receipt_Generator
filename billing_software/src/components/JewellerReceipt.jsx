@@ -19,11 +19,37 @@ import { PictureAsPdf } from "@mui/icons-material";
 import { ReceiptContext } from '../context/ReceiptContext';
 import { UserContext } from '../context/UserContext';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const JewellerReceipt = () => {
   const receiptRef = useRef();
   const { receiptData, setReceiptData } = useContext(ReceiptContext);
   const { user } = useContext(UserContext);
+  const defaultReceiptData = {
+    businessName: '',
+    address: '',
+    phone: '',
+    documentTitle: '',
+    customerName: '',
+    customerAddress: '',
+    customerPhone: '',
+    billNumber: '',
+    date: '',
+    user: '',
+    _24kRate: '',
+    silverBhav: '',
+    _18kReturn: '',
+    _20kReturn: '',
+    _22kReturn: '',
+    items: [],
+    closingBalance: '',
+    previousDue: '0',
+    currentDue: '',
+    paidAmount: '',
+    totalNetWeight: '0',
+};
+
+const navigate = useNavigate();
 
   const backend_url = process.env.REACT_APP_BACKEND_URL;
 
@@ -59,9 +85,6 @@ const JewellerReceipt = () => {
     element.style.width = "auto";
     toast.success("PDF downloaded successfully!");
 
-
-    setReceiptData({ ...receiptData, user: user });
-
     const response = await fetch(`${backend_url}/api/receipt/save`, {
       method: 'POST',
       headers: {
@@ -72,6 +95,8 @@ const JewellerReceipt = () => {
     });
     const data = await response.json();
     console.log(data);
+    navigate("/dashboard/estimate");
+    setReceiptData(defaultReceiptData);
   };
 
   return (
@@ -114,10 +139,10 @@ const JewellerReceipt = () => {
               Date: {receiptData.date}
             </Typography>
             <Typography variant="body2" align="right">
-              24K Rate: {receiptData._24kRate}
+              Gold Rate: {receiptData._24kRate}
             </Typography>
             <Typography variant="body2" align="right">
-              Silver Bhav: {receiptData.silverBhav}
+              Silver Rate: {receiptData.silverBhav}
             </Typography>
           </Grid>
         </Grid>

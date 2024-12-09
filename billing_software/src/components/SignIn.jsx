@@ -17,13 +17,6 @@ export default function SignInPage() {
 
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/choose');
-    }
-  }, [navigate]);
-
   const handleSignIn = async (event) => {
     event.preventDefault();
     setError('');
