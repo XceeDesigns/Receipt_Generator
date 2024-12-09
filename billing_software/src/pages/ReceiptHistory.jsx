@@ -40,22 +40,26 @@ const ReceiptHistory = () => {
     const backend_url = process.env.REACT_APP_BACKEND_URL;
 
     const handleDelete = async (billNumber) => {
-        try {
-            const response = await fetch(`${backend_url}/api/receipt/delete/${billNumber}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-            });
-            if (response.ok) {
-                toast.success('Bill deleted successfully.');
-                fetchReceiptHistory();  // Refresh receipt history after deletion
-            } else {
-                toast.error('Failed to delete the bill.');
+        const result = window.confirm("Are you sure you want to proceed?");
+        console.log(result);
+        if (result) {
+            try {
+                const response = await fetch(`${backend_url}/api/receipt/delete/${billNumber}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                });
+                if (response.ok) {
+                    toast.success('Bill deleted successfully.');
+                    fetchReceiptHistory();  // Refresh receipt history after deletion
+                } else {
+                    toast.error('Failed to delete the bill.');
+                }
+            } catch (error) {
+                console.error('Error deleting the bill:', error);
             }
-        } catch (error) {
-            console.error('Error deleting the bill:', error);
         }
     };
 
@@ -140,7 +144,7 @@ const ReceiptHistory = () => {
     };
 
     useEffect(() => {
-       resetReceiptData();
+        resetReceiptData();
     }, []);
 
     return (
