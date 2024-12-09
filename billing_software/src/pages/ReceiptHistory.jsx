@@ -23,14 +23,19 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { jwtDecode } from 'jwt-decode';
 import toast from 'react-hot-toast'
+import { ReceiptContext } from '../context/ReceiptContext';
+import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 //receipt history page
 const ReceiptHistory = () => {
 
+    const { receiptData, setReceiptData } = useContext(ReceiptContext);
     const [data, setData] = useState([]);
     const [amount, setAmount] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [resultsPerPage, setResultsPerPage] = useState(10);
+    const navigate = useNavigate();
 
     const backend_url = process.env.REACT_APP_BACKEND_URL;
 
@@ -38,7 +43,10 @@ const ReceiptHistory = () => {
         try {
             const response = await fetch(`${backend_url}/api/receipt/delete/${billNumber}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
             });
             if (response.ok) {
                 toast.success('Bill deleted successfully.');
@@ -57,10 +65,10 @@ const ReceiptHistory = () => {
             const email = jwtDecode(localStorage.getItem('token')).sub;
             const response = await fetch(`${backend_url}/api/receipt/fetch/${email}?page=${currentPage}&limit=${resultsPerPage}`, {
                 method: 'GET',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
-                 },
+                },
             });
 
             if (!response.ok) {
@@ -98,10 +106,42 @@ const ReceiptHistory = () => {
     };
 
     const handlePreview = (row) => {
-        // Handle preview functionality, e.g., navigate to preview page or show a modal
-        console.log("Previewing Bill:", billNumber);
+        setReceiptData(row);
+        console.log(receiptData);
+        navigate('/dashboard/e/preview');
         // You can navigate or open a modal here with detailed receipt info.
     };
+    const defaultReceiptData = {
+        businessName: '',
+        address: '',
+        phone: '',
+        documentTitle: '',
+        customerName: '',
+        customerAddress: '',
+        customerPhone: '',
+        billNumber: '',
+        date: '',
+        user: '',
+        _24kRate: '',
+        silverBhav: '',
+        _18kReturn: '',
+        _20kReturn: '',
+        _22kReturn: '',
+        items: [],
+        closingBalance: '',
+        previousDue: '0',
+        currentDue: '',
+        paidAmount: '',
+        totalNetWeight: '0',
+    };
+
+    const resetReceiptData = () => {
+        setReceiptData(defaultReceiptData);
+    };
+
+    useEffect(() => {
+       resetReceiptData();
+    }, []);
 
     return (
         <Container maxWidth='false' disableGutters>
@@ -133,7 +173,8 @@ const ReceiptHistory = () => {
                                 <TableCell>Date</TableCell>
                                 <TableCell>Name</TableCell>
                                 <TableCell>Phone</TableCell>
-                                <TableCell>Quantity</TableCell>
+                                <TableCell>Net Weight</TableCell>
+                                <TableCell>Due</TableCell>
                                 <TableCell>Amount</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
@@ -145,7 +186,8 @@ const ReceiptHistory = () => {
                                     <TableCell>{row.date}</TableCell>
                                     <TableCell>{row.customerName}</TableCell>
                                     <TableCell>{row.phone}</TableCell>
-                                    <TableCell>{row.items.length}</TableCell>
+                                    <TableCell>{row.totalNetWeight}</TableCell>
+                                    <TableCell>{row.currentDue}</TableCell>
                                     <TableCell>{calculateAmount(row.items)}</TableCell>
                                     <TableCell>
                                         {/* Preview Button */}
