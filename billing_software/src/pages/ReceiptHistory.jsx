@@ -24,6 +24,7 @@ import Footer from '../components/Footer';
 import { jwtDecode } from 'jwt-decode';
 import toast from 'react-hot-toast'
 
+//receipt history page
 const ReceiptHistory = () => {
 
     const [data, setData] = useState([]);
