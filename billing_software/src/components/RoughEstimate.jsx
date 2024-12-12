@@ -323,7 +323,7 @@ function RoughEstimate() {
                                     label="Gold Rate"
                                     variant="outlined"
                                     margin="dense"
-                                    value={receiptData._24KRate}
+                                    value={receiptData._24kRate}
                                     onChange={(e) => handleFormChange('_24kRate', e.target.value)}
                                 />
                                 <TextField
@@ -420,10 +420,14 @@ function RoughEstimate() {
                                     <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Closing Balance:</Typography>
                                     <Typography value={receiptData.closingBalance} onChange={(e) => handleFormChange('closingBalance', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculateClosingBalance()}</Typography>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Previous Due:</Typography>
-                                    <Typography value={receiptData.previousDue} onChange={(e) => handleFormChange('previousDue', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{receiptData.previousDue}</Typography>
-                                </Box>
+                                <TextField
+                                    fullWidth
+                                    label="Previous Due"
+                                    variant="outlined"
+                                    margin="dense"
+                                    value={receiptData.previousDue}
+                                    onChange={(e) => handleFormChange('previousDue', e.target.value)}
+                                />
                                 <TextField
                                     fullWidth
                                     label="Paid Amount"

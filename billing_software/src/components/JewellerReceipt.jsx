@@ -181,15 +181,16 @@ const navigate = useNavigate();
                   </TableRow>
                 ))}
                 <TableRow>
-                  <TableCell colSpan={6} align="left">
-                    <strong>Total</strong> 
-                  </TableCell>
-                  <TableCell></TableCell>
-                  <TableCell></TableCell>
-                  <TableCell></TableCell>
-                  <TableCell align="right">
-                  (Net Weight) : {receiptData.totalNetWeight}gm <br/> ₹{receiptData.closingBalance}
-                  </TableCell>
+                  <TableCell><strong>Total:</strong></TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right">{receiptData.totalNetWeight}gm</TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right">₹{receiptData.closingBalance}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
