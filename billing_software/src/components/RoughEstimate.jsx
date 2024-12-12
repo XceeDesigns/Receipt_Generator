@@ -23,7 +23,6 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import { ReceiptContext } from '../context/ReceiptContext';
 import { jwtDecode } from 'jwt-decode';
-import PhoneIcon from '@mui/icons-material/Phone';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -85,10 +84,16 @@ function RoughEstimate() {
         }));
     };
 
+    useEffect(() => {
+        if(receiptData.items.length !== 0) {
+            setItems(receiptData.items);
+        }
+    }, []);
+
     const addItem = () => {
         setItems([
             ...items,
-            { description: '', gWt: '', lWt: '', nWt: '', tunch: '', rate: '', gold: '', silver: '', labour: '', amount: '' },
+            { description: '', gWt: '', lWt: '0', nWt: '0', tunch: '', rate: '', gold: '0', silver: '0', labour: '0', amount: '' },
         ]);
     };
 
@@ -120,6 +125,7 @@ function RoughEstimate() {
                         phone: data[data.length - 1].phone,
                         documentTitle: data[data.length - 1].documentTitle,
                         billNumber: "BILL-" + (data.length + 1),
+                        date: new Date().toISOString().slice(0, 10),
                         _18kReturn: data[data.length - 1]._18kReturn,
                         _20kReturn: data[data.length - 1]._20kReturn,
                         _22kReturn: data[data.length - 1]._22kReturn,
@@ -197,7 +203,6 @@ function RoughEstimate() {
     };
 
     const handlePreview = () => {
-        // Update the context with the current items
         setReceiptData((prevValues) => {
             return {
                 ...prevValues,
@@ -306,7 +311,6 @@ function RoughEstimate() {
                                 <TextField
                                     fullWidth
                                     label="Date"
-                                    defaultValue="2024-11-12"
                                     InputLabelProps={{ shrink: true }}
                                     type='date'
                                     variant="outlined"
@@ -319,7 +323,7 @@ function RoughEstimate() {
                                     label="Gold Rate"
                                     variant="outlined"
                                     margin="dense"
-                                    value={receiptData._24KRate}
+                                    value={receiptData._24kRate}
                                     onChange={(e) => handleFormChange('_24kRate', e.target.value)}
                                 />
                                 <TextField
@@ -416,10 +420,14 @@ function RoughEstimate() {
                                     <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Closing Balance:</Typography>
                                     <Typography value={receiptData.closingBalance} onChange={(e) => handleFormChange('closingBalance', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{calculateClosingBalance()}</Typography>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Typography sx={{ ml: { xs: 5, sm: 20 } }} variant='subtitle1'>Previous Due:</Typography>
-                                    <Typography value={receiptData.previousDue} onChange={(e) => handleFormChange('previousDue', e.target.value)} sx={{ ml: 2, mt: 0, fontWeight: 600 }}>₹{receiptData.previousDue}</Typography>
-                                </Box>
+                                <TextField
+                                    fullWidth
+                                    label="Previous Due"
+                                    variant="outlined"
+                                    margin="dense"
+                                    value={receiptData.previousDue}
+                                    onChange={(e) => handleFormChange('previousDue', e.target.value)}
+                                />
                                 <TextField
                                     fullWidth
                                     label="Paid Amount"
