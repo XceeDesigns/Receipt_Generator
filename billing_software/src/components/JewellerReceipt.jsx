@@ -169,15 +169,15 @@ const navigate = useNavigate();
                 {receiptData.items.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell>{item.description}</TableCell>
-                    <TableCell align="right">{item.gWt}gm</TableCell>
-                    <TableCell align="right">{item.lWt}gm</TableCell>
-                    <TableCell align="right">{item.nWt}gm</TableCell>
-                    <TableCell align="right">{item.tunch}%</TableCell>
-                    <TableCell align="right">₹{item.rate}</TableCell>
-                    <TableCell align="right">{item.gold}gm</TableCell>
-                    <TableCell align="right">{item.silver}gm</TableCell>
-                    <TableCell align="right">₹{item.labour}</TableCell>
-                    <TableCell align="right">₹{item.amount}</TableCell>
+                    <TableCell align="right">{item.gWt}{item.gWt.length == 0 ? "-" : "gm"}</TableCell>
+                    <TableCell align="right">{item.lWt !== "NaN" && item.lWt}{(item.lWt.length == 0 || item.lWt === "NaN") ? "-" : "gm"}</TableCell>
+                    <TableCell align="right">{item.nWt !== "NaN" && item.nWt}{(item.nWt.length === 0 || item.nWt === "NaN") ? "-" : "gm"}</TableCell>
+                    <TableCell align="right">{item.tunch}{item.tunch.length === 0 ? "-" : "gm"}</TableCell>
+                    <TableCell align="right">{item.rate.length === 0 ? "-" : "₹"}{item.rate}</TableCell>
+                    <TableCell align="right">{item.gold}{item.gold.length === 0 ? "-" : "gm"}</TableCell>
+                    <TableCell align="right">{item.silver}{item.silver.length == 0 ? "-" : "gm"}</TableCell>
+                    <TableCell align="right">{item.labour.length === 0 ? "-" : "₹"}{item.labour}</TableCell>
+                    <TableCell align="right">{item.amount.length === 0 || item.amount === "NaN" ? "-" : "₹"}{item.amount !== "NaN" && item.amount}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow>
