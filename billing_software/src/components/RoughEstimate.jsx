@@ -192,7 +192,7 @@ function RoughEstimate() {
         const totalNetWeight = items.reduce((total, item) => {
             const nWt = parseFloat(item.nWt) || 0;
             return total + nWt;
-        }, 0).toFixed(2); // Rounds to 2 decimal places
+        }, 0).toFixed(3); // Rounds to 2 decimal places
         receiptData.totalNetWeight = totalNetWeight;
     };
 
