@@ -13,7 +13,8 @@ import {
   TableRow,
   Paper,
   Button,
-  Container
+  Container,
+  Divider
 } from '@mui/material';
 import { PictureAsPdf } from "@mui/icons-material";
 import { ReceiptContext } from '../context/ReceiptContext';
@@ -62,12 +63,14 @@ const navigate = useNavigate();
 
     // Set fixed width for A4 size
     element.style.width = "794px"; // A4 width at 96 DPI
-    element.style.padding = "20px"; // Add padding for better spacing
+    element.style.padding = "5px"; // Add padding for better spacing
 
     // Use html2canvas with scaling for high-resolution images
     const canvas = await html2canvas(element, {
       scale: 2, // Adjust scaling for higher resolution
       useCORS: true, // Ensure cross-origin content works
+      windowWidth: element.scrollWidth, // Match the full table width
+      windowHeight: element.scrollHeight,
     });
 
     const imgData = canvas.toDataURL('image/png');
@@ -82,7 +85,7 @@ const navigate = useNavigate();
     pdf.save(`${receiptData.billNumber}.pdf`);
 
     // Reset the element's width after PDF generation
-    element.style.width = "auto";
+    element.style.width = "794px";  
     toast.success("PDF downloaded successfully!");
 
     const response = await fetch(`${backend_url}/api/receipt/save`, {
@@ -100,7 +103,7 @@ const navigate = useNavigate();
   };
 
   return (
-    <Box sx={{ padding: 2, minHeight: "100vh", backgroundColor: "#f0f2f5" }}>
+    <Box sx={{ padding: 2, minHeight: "100vh", backgroundColor: "#f0f2f5", display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Box
         sx={{
           padding: { xs: 2, md: 3 },
@@ -108,27 +111,27 @@ const navigate = useNavigate();
           margin: { xs: 2, md: 4 },
           borderRadius: 2,
           boxShadow: 3,
+          width: "794px",
         }}
         ref={receiptRef}
       >
         {/* Header */}
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" align="center" gutterBottom sx={{ textTransform: "uppercase", fontWeight: 'bold' }}>
           {receiptData.businessName}
         </Typography>
         <Typography variant="body1" align="center" gutterBottom>
           {receiptData.address} <br />
           {receiptData.phone}
         </Typography>
-        <Typography variant="h6" align="center" gutterBottom>
+        <Typography variant="subtitle1" align="center" gutterBottom sx={{ textTransform: "uppercase", fontWeight: 'bold', marginBottom: 6 }}>
           {receiptData.documentTitle}
         </Typography>
 
         {/* Customer Info and Invoice Details */}
         <Grid container spacing={2} sx={{ marginY: 2 }}>
           <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle1">Customer Name & Address:</Typography>
-            <Typography variant="body2">{receiptData.customerName}</Typography>
-            <Typography variant="body2">{receiptData.customerAddress}</Typography>
+            <Typography variant="body2">Customer Name: {receiptData.customerName}</Typography>
+            <Typography variant="body2">Address: {receiptData.customerAddress}</Typography>
             <Typography variant="body2">Phone: {receiptData.customerPhone}</Typography>
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -147,50 +150,52 @@ const navigate = useNavigate();
           </Grid>
         </Grid>
 
+        <Divider sx={{ marginTop: 6 }} />
+
         {/* Table of Items */}
-        <Box sx={{ overflowX: "auto" }}>
-          <TableContainer component={Paper}>
-            <Table>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <TableContainer component={Paper} sx={{ width: '794px', maxWidth: '100%' }}>
+            <Table size='small'>
               <TableHead>
                 <TableRow>
-                  <TableCell>Description</TableCell>
-                  <TableCell align="right">G. Wt.</TableCell>
-                  <TableCell align="right">L. Wt.</TableCell>
-                  <TableCell align="right">Net Wt.</TableCell>
-                  <TableCell align="right">Tunch</TableCell>
-                  <TableCell align="right">Rate</TableCell>
-                  <TableCell align="right">Gold</TableCell>
-                  <TableCell align="right">Silver</TableCell>
-                  <TableCell align="right">Labour</TableCell>
-                  <TableCell align="right">Amount</TableCell>
+                  <TableCell sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Description</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>G. Wt.</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>L. Wt.</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Net Wt.</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Tunch</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Rate</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Gold</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Silver</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Labour</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Amount</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {receiptData.items.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell>{item.description}</TableCell>
-                    <TableCell align="right">{item.gWt}{item.gWt.length == 0 ? "-" : "gm"}</TableCell>
-                    <TableCell align="right">{item.lWt !== "NaN" && item.lWt}{(item.lWt.length == 0 || item.lWt === "NaN") ? "-" : "gm"}</TableCell>
-                    <TableCell align="right">{item.nWt !== "NaN" && item.nWt}{(item.nWt.length === 0 || item.nWt === "NaN") ? "-" : "gm"}</TableCell>
-                    <TableCell align="right">{item.tunch}{item.tunch.length === 0 ? "-" : "gm"}</TableCell>
-                    <TableCell align="right">{item.rate.length === 0 ? "-" : "₹"}{item.rate}</TableCell>
-                    <TableCell align="right">{item.gold}{item.gold.length === 0 ? "-" : "gm"}</TableCell>
-                    <TableCell align="right">{item.silver}{item.silver.length == 0 ? "-" : "gm"}</TableCell>
-                    <TableCell align="right">{item.labour.length === 0 ? "-" : "₹"}{item.labour}</TableCell>
-                    <TableCell align="right">{item.amount.length === 0 || item.amount === "NaN" ? "-" : "₹"}{item.amount !== "NaN" && item.amount}</TableCell>
+                    <TableCell sx={{ fontSize: '13px', padding: 1}}>{item.description}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>{item.gWt} gm</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '12%', padding: 1}}>{item.lWt} gm</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '12%' , padding: 1}}>{item.nWt} gm</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '5%', padding: 1}}>{item.tunch}%</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>₹ {item.rate}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>{item.gold} gm</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>{item.silver} gm</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>₹ {item.labour}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '15%', padding: 1}}>₹ {item.amount}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow>
-                  <TableCell><strong>Total:</strong></TableCell>
+                  <TableCell sx={{padding: 1}}><strong>Total:</strong></TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
-                  <TableCell align="right">{receiptData.totalNetWeight}gm</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '13px', padding: 1}}>{receiptData.totalNetWeight} gm</TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
-                  <TableCell align="right">₹{receiptData.closingBalance}</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '13px', padding: 1}}>₹ {receiptData.closingBalance}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -198,13 +203,13 @@ const navigate = useNavigate();
         </Box>
 
         {/* Closing Balance */}
-        <Typography variant="h6" align="right" sx={{ marginY: 2 }}>
+        <Typography variant="subtitle1" align="right" sx={{ marginTop: 2 }}>
           Closing Balance: ₹{receiptData.closingBalance}
         </Typography>
-        <Typography variant="h6" align="right" sx={{ marginY: 2 }}>
+        <Typography variant="subtitle1" align="right" sx={{ marginY: 1 }}>
           Paid Amount: ₹{receiptData.paidAmount}
         </Typography>
-        <Typography variant="h6" align="right" sx={{ marginY: 2 }}>
+        <Typography variant="subtitle1" align="right" sx={{ marginY: 1 }}>
           Due Amount: ₹{receiptData.currentDue}
         </Typography>
 
@@ -220,11 +225,11 @@ const navigate = useNavigate();
         </Typography>
 
         {/* Authorized Signature */}
-        <Typography align="right" sx={{ marginTop: 4 }}>
+        <Typography align="right" sx={{ marginTop: 4 }} variant='body2'>
           Authorized Signatory
         </Typography>
       </Box>
-      <Box display="flex" justifyContent={{ xs: "center", md: "flex-end" }} mt={3} mr={{ xs: 0, md: 4 }}>
+      <Box>
         <Button
           variant="contained"
           color="primary"
