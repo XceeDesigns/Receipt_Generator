@@ -41,7 +41,7 @@ const ReceiptHistory = () => {
 
     const handleDelete = async (billNumber) => {
         const result = window.confirm("Are you sure you want to proceed?");
-        console.log(result);
+        // console.log(result);
         if (result) {
             try {
                 const response = await fetch(`${backend_url}/api/receipt/delete/${billNumber}`, {
@@ -58,7 +58,7 @@ const ReceiptHistory = () => {
                     toast.error('Failed to delete the bill.');
                 }
             } catch (error) {
-                console.error('Error deleting the bill:', error);
+                // console.error('Error deleting the bill:', error);
             }
         }
     };
@@ -82,7 +82,7 @@ const ReceiptHistory = () => {
             const data = await response.json();
             setData(data);
         } catch (error) {
-            console.error('Error fetching receipt history:', error);
+            // console.error('Error fetching receipt history:', error);
         }
     };
 
@@ -111,7 +111,7 @@ const ReceiptHistory = () => {
 
     const handlePreview = (row) => {
         setReceiptData(row);
-        console.log(receiptData);
+        // console.log(receiptData);
         navigate('/dashboard/e/preview');
         // You can navigate or open a modal here with detailed receipt info.
     };
