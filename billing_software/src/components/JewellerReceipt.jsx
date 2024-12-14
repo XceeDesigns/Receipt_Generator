@@ -97,7 +97,7 @@ const navigate = useNavigate();
       body: JSON.stringify(receiptData)
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     navigate("/dashboard/estimate");
     setReceiptData(defaultReceiptData);
   };

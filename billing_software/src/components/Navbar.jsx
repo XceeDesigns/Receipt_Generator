@@ -27,7 +27,7 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    console.log("Logged out");
+    // console.log("Logged out");
     localStorage.removeItem('token');
     navigate('/');
     setAnchorEl(null);

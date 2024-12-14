@@ -39,7 +39,7 @@ export default function SignInPage() {
       }
 
       const data1 = await response1.json();
-      console.log(data1);
+      // console.log(data1);
       localStorage.setItem('token', data1.authToken);
       toast.success('Logged in successfully');
       navigate('/choose');

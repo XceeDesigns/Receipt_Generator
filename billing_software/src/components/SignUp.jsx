@@ -69,7 +69,7 @@ export default function SignUpPage() {
       return;
     }
 
-    console.log(formData);
+    // console.log(formData);
 
     const response = await fetch(`${backend_url}/api/user/register`, {
       method: 'POST',
@@ -83,7 +83,7 @@ export default function SignUpPage() {
     }
 
     const data = await response.text();
-    console.log(data);
+    // console.log(data);
 
     toast.success('Account created successfully');
 
