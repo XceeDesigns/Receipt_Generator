@@ -4,14 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { ReceiptHistoryContext } from '../context/ReceiptHistoryContext';
 import toast from 'react-hot-toast';
-import LoadingScreen from './LoadingScreen';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
-  const [loading, setLoading] = useState(false);
 
   const { user, setUser } = useContext(UserContext);
   const { ReceiptHistory, setReceiptHistory } = useContext(ReceiptHistoryContext);
@@ -54,7 +51,7 @@ export default function SignInPage() {
   };
 
   return (
-    loading ? <LoadingScreen/> : (<Container
+    <Container
       maxWidth={false}
       sx={{
         display: 'flex',
@@ -147,6 +144,6 @@ export default function SignInPage() {
           </Button>
         </Box>
       </Paper>
-    </Container>)
+    </Container>
   );
 }
