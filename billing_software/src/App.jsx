@@ -12,6 +12,7 @@ import { ReceiptProvider } from './context/ReceiptHistoryContext'
 import { ReceiptContextProvider } from './context/ReceiptContext'
 import { UserContextProvider } from './context/UserContext'
 import {Toaster} from 'react-hot-toast'
+import MainDashboard from './pages/MainDashboard'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
               <Route path="/" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/choose" element={<Choice />} />
+              <Route path="/main-dashboard" element={<MainDashboard />} />
               <Route path="/dashboard/general" element={<Dashboard />} />
               <Route path="/dashboard/estimate" element={<RoughEstimate />} />
               <Route path="/dashboard/g/preview" element={<GeneralReceipt />} />
