@@ -1,5 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { Container, TextField, Button, Box, Typography, Alert, Paper, Divider } from '@mui/material';
+import {
+  Container,
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Alert,
+  Paper,
+  Divider,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { ReceiptHistoryContext } from '../context/ReceiptHistoryContext';
@@ -10,14 +19,12 @@ export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
   const [loading, setLoading] = useState(false);
 
   const { user, setUser } = useContext(UserContext);
   const { ReceiptHistory, setReceiptHistory } = useContext(ReceiptHistoryContext);
 
   const backend_url = process.env.REACT_APP_BACKEND_URL;
-
   const navigate = useNavigate();
 
   const handleSignIn = async (event) => {
@@ -42,46 +49,53 @@ export default function SignInPage() {
       }
 
       const data1 = await response1.json();
-      // console.log(data1);
       localStorage.setItem('token', data1.authToken);
       toast.success('Logged in successfully');
       navigate('/choose');
       setUser(email);
-      
     } catch (err) {
       setError('An error occurred. Please try again later.');
     }
   };
 
-  return (
-    loading ? <LoadingScreen/> : (<Container
-      maxWidth={false}
+  return loading ? (
+    <LoadingScreen />
+  ) : (
+    <Container
+      maxWidth="sm"
       sx={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        backgroundColor: '#f7f9fc',
-        background: 'linear-gradient(to bottom right, #1976d2, #ffffff)',
-        px: { xs: 2, sm: 4, md: 8 },
+        px: 2,
       }}
     >
       <Paper
         elevation={3}
         sx={{
-          padding: 3,
-          borderRadius: 2,
+          padding: 4,
+          borderRadius: 3,
           width: '100%',
-          maxWidth: { xs: '100%', sm: 400 },
+          maxWidth: 480,
+          background: '#FFFFFF',
+          border: '1px solid #E0E4EA',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         }}
       >
-        <Box textAlign="center" mb={2}>
-          <Typography variant="h4" component="h1" color="primary" gutterBottom>
-            Welcome Back
+        <Box textAlign="center" mb={3}>
+          <Typography
+            variant="h4"
+            component="h1"
+            fontWeight="bold"
+            color="#2C3E50"
+            gutterBottom
+          >
+            Welcome Back 👋
           </Typography>
-          <Typography variant="body2" color="textSecondary">
-            Please sign in to continue
+          <Typography variant="body2" color="#5A6A85">
+            Sign in to your account to continue.
           </Typography>
         </Box>
 
@@ -105,6 +119,13 @@ export default function SignInPage() {
             autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#D1D9E6' },
+                '&:hover fieldset': { borderColor: '#1976D2' },
+                '&.Mui-focused fieldset': { borderColor: '#1976D2' },
+              },
+            }}
           />
 
           <TextField
@@ -118,14 +139,24 @@ export default function SignInPage() {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#D1D9E6' },
+                '&:hover fieldset': { borderColor: '#1976D2' },
+                '&.Mui-focused fieldset': { borderColor: '#1976D2' },
+              },
+            }}
           />
 
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{ mt: 2, textAlign: 'center', color: '#5A6A85' }}
+          >
             Don't have an account?{' '}
             <Button
               color="primary"
               onClick={() => navigate('/signup')}
-              sx={{ textTransform: 'capitalize', p: 0 }}
+              sx={{ textTransform: 'none', p: 0 }}
             >
               Register
             </Button>
@@ -135,18 +166,24 @@ export default function SignInPage() {
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
             sx={{
               mt: 3,
               mb: 2,
               py: 1.5,
-              fontSize: { xs: '0.875rem', sm: '1rem' },
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              backgroundColor: '#1976D2',
+              color: '#fff',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: '#145DA0',
+              },
             }}
           >
             Sign In
           </Button>
         </Box>
       </Paper>
-    </Container>)
+    </Container>
   );
 }
