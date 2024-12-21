@@ -10,11 +10,19 @@ import {
   Divider,
   MenuItem,
   Grid,
+  LinearProgress,
 } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
 import LoadingScreen from './LoadingScreen';
+
+// Password Strength Utility
+const getPasswordStrength = (password) => {
+  if (password.length > 8 && /[A-Z]/.test(password) && /\d/.test(password)) return 'Strong';
+  if (password.length >= 6) return 'Medium';
+  return 'Weak';
+};
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -22,20 +30,18 @@ export default function SignUpPage() {
     companyName: '',
     email: '',
     password: '',
+    confirmPassword: '',
     mobileNumber: '',
     country: '',
     state: '',
   });
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
   const [otp, setOtp] = useState('');
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
-  const [emailForOtp, setEmailForOtp] = useState('');
 
   const backend_url = process.env.REACT_APP_BACKEND_URL;
-
   const navigate = useNavigate();
 
   const countries = [
@@ -50,22 +56,19 @@ export default function SignUpPage() {
     { label: 'Karnataka', value: 'KA' },
   ];
 
-  const handleOtpModalClose = () => {
-    setIsOtpModalOpen(false);
-  };
+  const handleOtpModalClose = () => setIsOtpModalOpen(false);
 
   const handleOtpModalOpen = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
-    if (!formData.name || !formData.email || !formData.password || !confirmPassword) {
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all required fields.');
       setLoading(false);
       return;
     }
 
-    if (formData.password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match.');
       setLoading(false);
       return;
@@ -84,7 +87,6 @@ export default function SignUpPage() {
       }
 
       toast.success('OTP has been sent to your email.');
-      setEmailForOtp(formData.email);
       setIsOtpModalOpen(true);
       setLoading(false);
     } catch (err) {
@@ -94,17 +96,15 @@ export default function SignUpPage() {
     }
   };
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-  };
-
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
+    if (name === 'password') {
+      setPasswordStrength(getPasswordStrength(value));
+    }
   };
 
   const handleValidate = async (event) => {
@@ -122,16 +122,6 @@ export default function SignUpPage() {
         return;
       }
 
-      const otpData = await response.json();
-      console.log(otpData);
-
-      if(otpData.status === 408){
-        setError('OTP expired. Please try again.');
-        toast.error('OTP expired.');
-        setLoading(false);  
-        return;
-      }
-
       const res = await fetch(`${backend_url}/api/user/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -144,25 +134,23 @@ export default function SignUpPage() {
       }
 
       const data = await res.json();
-      console.log(data);
-
-      toast.success(data.message || data.msg);
-
+      toast.success(data.message || 'Account created successfully!');
       navigate('/');
 
       setIsOtpModalOpen(false);
       setLoading(false);
-
     } catch (err) {
       console.error(err);
       setLoading(false);
       setError('An error occurred while verifying OTP.');
     }
-  }
+  };
 
   return (
     <>
-      {(
+      {loading ? (
+        <LoadingScreen />
+      ) : (
         <Container
           maxWidth="false"
           sx={{
@@ -171,248 +159,65 @@ export default function SignUpPage() {
             alignItems: 'center',
             justifyContent: 'center',
             minHeight: '100vh',
-            backgroundColor: '#f7f9fc',
-            px: { xs: 2, sm: 4 },
-            background: 'linear-gradient(to bottom right, #1976d2, #ffffff)',
+            background: 'linear-gradient(to bottom right, #1E3A8A, #ffffff)',
           }}
-          disableGutters
         >
-          {/* OTP Input Modal */}
-          {loading ? <LoadingScreen /> : (
-            <Modal open={isOtpModalOpen} onClose={() => setIsOtpModalOpen(false)}>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '90%',
-                  maxWidth: 400,
-                  bgcolor: 'background.paper',
-                  borderRadius: '8px',
-                  boxShadow: 24,
-                  p: 4,
-                  textAlign: 'center',
-                }}
-              >
-                {/* Modal Title */}
-                <Typography variant="h5" fontWeight="bold" mb={2} color="primary">
-                  Verify Your OTP
-                </Typography>
-
-                {/* Instructions */}
-                <Typography variant="body2" color="textSecondary" mb={3}>
-                  Enter the 6-digit OTP sent to your email.
-                </Typography>
-
-                {/* Single Input Field for OTP */}
-                <TextField
-                  label="Enter OTP"
-                  variant="outlined"
-                  fullWidth
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} // Allow only 6 digits
-                  inputProps={{
-                    maxLength: 6,
-                    style: { textAlign: 'center', letterSpacing: '2px', fontSize: '1.2rem' },
-                  }}
-                />
-
-                {/* Verify Button */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{ mt: 3 }}
-                  onClick={handleValidate}
-                >
-                  Verify OTP
-                </Button>
-              </Box>
-            </Modal>
-          )};
-          {loading ? <LoadingScreen /> :<Paper
-            elevation={3}
-            sx={{
-              padding: { xs: 2, sm: 4 },
-              borderRadius: 2,
-              maxWidth: { xs: 340, sm: 500 },
-              width: '100%',
-              my: { xs: 3, sm: 5 },
-            }}
-          >
-            <Box textAlign="center" mb={2}>
-              <Typography
-                variant="h4"
-                component="h1"
-                color="primary"
-                gutterBottom
-                sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
-              >
-                Create an Account
+          {/* OTP Modal */}
+          <Modal open={isOtpModalOpen} onClose={handleOtpModalClose}>
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 400,
+                bgcolor: 'background.paper',
+                borderRadius: 2,
+                boxShadow: 24,
+                p: 4,
+              }}
+            >
+              <Typography variant="h5" fontWeight="bold" mb={2} color="primary">
+                Verify Your OTP
               </Typography>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
-              >
-                Please fill in the details to sign up
-              </Typography>
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
-            )}
-
-            {<Box component="form" onSubmit={handleOtpModalOpen} noValidate>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="name"
-                    label="Full Name"
-                    name="name"
-                    autoComplete="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    id="companyName"
-                    label="Company Name"
-                    name="companyName"
-                    autoComplete="organization"
-                    value={formData.companyName}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-              </Grid>
-
               <TextField
-                margin="normal"
-                required
+                label="Enter OTP"
+                variant="outlined"
                 fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleInputChange}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.slice(0, 6))}
+                inputProps={{ maxLength: 6 }}
+                sx={{ mb: 2 }}
               />
-
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="new-password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="confirmPassword"
-                    label="Confirm Password"
-                    type="password"
-                    id="confirmPassword"
-                    autoComplete="new-password"
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                  />
-                </Grid>
-              </Grid>
-
-              <TextField
-                required
-                margin="normal"
-                fullWidth
-                id="mobileNumber"
-                label="Mobile Number"
-                name="mobileNumber"
-                type="tel"
-                autoComplete="tel"
-                value={formData.mobileNumber}
-                onChange={handleInputChange}
-              />
-
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    id="country"
-                    select
-                    label="Country"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                  >
-                    {countries.map((country) => (
-                      <MenuItem key={country.value} value={country.value}>
-                        {country.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    id="state"
-                    select
-                    label="State/Province"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                  >
-                    {states.map((state) => (
-                      <MenuItem key={state.value} value={state.value}>
-                        {state.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-              </Grid>
-
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ mt: 2, textAlign: 'center' }}
-              >
-                Have an account?{' '}
-                <Button color="primary" onClick={() => navigate('/')} sx={{ textTransform: 'capitalize' }}>
-                  Login
-                </Button>
-              </Typography>
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                sx={{
-                  mt: 3,
-                  mb: 2,
-                  padding: { xs: 1, sm: 1.5 },
-                  fontSize: { xs: '0.875rem', sm: '1rem' },
-                }}
-              >
-                Sign Up
+              <Button variant="contained" color="primary" fullWidth onClick={handleValidate}>
+                Verify OTP
               </Button>
-            </Box>}
-          </Paper>}
+            </Box>
+          </Modal>
+
+          {/* Sign-Up Form */}
+          <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, maxWidth: 500, width: '100%' }}>
+            <Typography variant="h4" textAlign="center" color="primary" mb={2}>
+              Create an Account
+            </Typography>
+            <Divider sx={{ my: 2 }} />
+            {error && <Alert severity="error">{error}</Alert>}
+
+            <Box component="form" onSubmit={handleOtpModalOpen} noValidate>
+              <Grid container spacing={2}>
+                <Grid item xs={12}><TextField label="Full Name" name="name" fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={12}><TextField label="Company Name" name="companyName" fullWidth onChange={handleInputChange} /></Grid>
+                <Grid item xs={12}><TextField label="Email" name="email" fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={6}><TextField label="Password" name="password" type="password" fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={6}><TextField label="Confirm Password" name="confirmPassword" type="password" fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={12}><TextField label="Mobile Number" name="mobileNumber" fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={6}><TextField select label="Country" name="country" fullWidth onChange={handleInputChange}>{countries.map((c) => (<MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>))}</TextField></Grid>
+                <Grid item xs={6}><TextField select label="State" name="state" fullWidth onChange={handleInputChange}>{states.map((s) => (<MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>))}</TextField></Grid>
+              </Grid>
+
+              <Button variant="contained" color="primary" fullWidth type="submit" sx={{ mt: 3 }}>Sign Up</Button>
+            </Box>
+          </Paper>
         </Container>
       )}
     </>
