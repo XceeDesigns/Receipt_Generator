@@ -213,7 +213,7 @@ function RoughEstimate() {
         // console.log(receiptData);
 
         // Ensure receiptData is updated before navigating
-        navigate('/dashboard/e/preview');
+        navigate('/dashboard/rough-receipt/preview');
     };
 
     const handlePrint = () => {
@@ -222,15 +222,11 @@ function RoughEstimate() {
 
     return (
         <Container maxWidth='false' disableGutters>
-            <Navbar />
-            <Grid container sx={{ background: 'linear-gradient(to bottom right, #1976d2, #ffffff)' }}>
-                <Grid item xs={12} sm={12} md={8}>
-                    <Container maxWidth='md' sx={{ bgcolor: '#ffffff', p: 3, borderRadius: 2, boxShadow: 3, mt: 4, mb: 4 }} disableGutters>
+            <Grid container>
+                <Grid item xs={12} sm={12} md={12}>
+                    <Container maxWidth='md' sx={{ bgcolor: '#ffffff', p: 3, borderRadius: 0, boxShadow: 3, mt: 0, mb: 4 }} disableGutters>
                         {/* Business Information */}
                         <Box sx={{ mb: 4, textAlign: 'center' }}>
-                            <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
-                                Receipt
-                            </Typography>
                             <TextField
                                 fullWidth
                                 label="Business Name"
@@ -445,9 +441,9 @@ function RoughEstimate() {
                         </Grid>
                     </Container>
                 </Grid>
-                <Grid item xs={12} sm={12} md={4}>
-                    <Container maxWidth="md" sx={{ mt: 4 }}>
-                        <Paper variant="outlined" sx={{ padding: 3, backgroundColor: "#ffffff" }}>
+                <Grid item xs={12} sm={12} md={12}>
+                    <Container maxWidth="md" sx={{ mt: 2 }}>
+                        <Paper variant="none" sx={{ padding: 2, backgroundColor: "#ffffff" }}>
                             {/* Preview via Email */}
                             <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>
                                 Enter Customer WhatsApp Number
@@ -476,11 +472,11 @@ function RoughEstimate() {
                             </Button>
                         </Paper>
                         <Box display="flex" justifyContent="space-between" mt={2} sx={{ padding: '10px' }}>
-                            <Button variant="contained" sx={{ marginRight: 2, width: '240px' }} startIcon={<Save />} onClick={handlePrint}>
+                            <Button variant="contained" sx={{ marginRight: 2, width: '240px', backgroundColor: '#1e1e2f' }} startIcon={<Save />} onClick={handlePrint}>
                                 Print
                             </Button>
 
-                            <Button variant="contained" sx={{ marginRight: 0, width: '240px' }} startIcon={<Visibility />} onClick={handlePreview}>
+                            <Button variant="contained" sx={{ marginRight: 0, width: '240px', backgroundColor: '#1e1e2f' }} startIcon={<Visibility />} onClick={handlePreview}>
                                 Preview
                             </Button>
 
@@ -488,7 +484,6 @@ function RoughEstimate() {
                     </Container>
                 </Grid>
             </Grid >
-            <Footer />
         </Container>
     );
 }

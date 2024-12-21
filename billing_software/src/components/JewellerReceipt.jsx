@@ -98,12 +98,12 @@ const navigate = useNavigate();
     });
     const data = await response.json();
     // console.log(data);
-    navigate("/dashboard/estimate");
+    navigate("/dashboard/rough-receipt");
     setReceiptData(defaultReceiptData);
   };
 
   return (
-    <Box sx={{ padding: 2, minHeight: "100vh", backgroundColor: "#f0f2f5", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <Box sx={{ padding: 2, minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Box
         sx={{
           padding: { xs: 2, md: 3 },

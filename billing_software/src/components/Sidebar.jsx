@@ -23,11 +23,18 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import HistoryIcon from '@mui/icons-material/History';
 import DescriptionIcon from '@mui/icons-material/Description';
+import { useNavigate } from 'react-router-dom';
 
 function Sidebar({ mobileOpen, handleDrawerToggle }) {
   const drawerWidth = 260;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Check if screen size is mobile
+
+  const navigate = useNavigate();
+
+  const navigateTo = (path) => {
+    navigate(path);
+  }
 
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -52,19 +59,19 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
           </ListItemIcon>
           <ListItemText primary="GST Receipt" sx={{ color: '#ecf0f1' }} />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={() => navigateTo('/dashboard/rough-receipt')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <DescriptionIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
           <ListItemText primary="Rough Receipt" sx={{ color: '#ecf0f1' }} />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={() => navigateTo('/dashboard/inventory')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <InventoryIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
           <ListItemText primary="Inventory" sx={{ color: '#ecf0f1' }} />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={() => navigateTo('/dashboard/receipt-history')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <HistoryIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
