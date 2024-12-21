@@ -100,7 +100,7 @@ function RoughEstimate() {
     useEffect(() => {
         const fetchReceipts = async () => {
             const user_email = jwtDecode(localStorage.getItem('token')).sub;
-            console.log(user_email);
+            // console.log(user_email);
             const response = await fetch(`${backend_url}/api/receipt/fetch/${user_email}`, {
                 method: 'GET',
                 headers: {
@@ -110,8 +110,8 @@ function RoughEstimate() {
             }
             );
             const data = await response.json();
-            console.log(data);
-            console.log(data[data.length - 1]._18kReturn);
+            // console.log(data);
+            // console.log(data[data.length - 1]._18kReturn);
 
 
             setReceipts(data);
@@ -149,12 +149,12 @@ function RoughEstimate() {
                     });
     
                     if (!response.ok) {
-                        console.error("Failed to fetch previous due. Server error.");
+                        // console.error("Failed to fetch previous due. Server error.");
                         return;
                     }
     
                     const data = await response.json();
-                    console.log("Fetched Receipts Data: ", data);
+                    // console.log("Fetched Receipts Data: ", data);
     
                     // Ensure data has valid entries
                     if (data && data.length > 0) {
@@ -169,7 +169,7 @@ function RoughEstimate() {
                         }));
                     }
                 } catch (error) {
-                    console.error("Error fetching previous due:", error);
+                    // console.error("Error fetching previous due:", error);
                 }
             }
         };
@@ -192,7 +192,7 @@ function RoughEstimate() {
         const totalNetWeight = items.reduce((total, item) => {
             const nWt = parseFloat(item.nWt) || 0;
             return total + nWt;
-        }, 0).toFixed(2); // Rounds to 2 decimal places
+        }, 0).toFixed(3); // Rounds to 2 decimal places
         receiptData.totalNetWeight = totalNetWeight;
     };
 
@@ -210,7 +210,7 @@ function RoughEstimate() {
             };
         });
 
-        console.log(receiptData);
+        // console.log(receiptData);
 
         // Ensure receiptData is updated before navigating
         navigate('/dashboard/e/preview');

@@ -97,7 +97,7 @@ const navigate = useNavigate();
       body: JSON.stringify(receiptData)
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     navigate("/dashboard/estimate");
     setReceiptData(defaultReceiptData);
   };
@@ -159,43 +159,43 @@ const navigate = useNavigate();
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Description</TableCell>
-                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>G. Wt.</TableCell>
-                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>L. Wt.</TableCell>
-                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Net Wt.</TableCell>
-                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Tunch</TableCell>
-                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Rate</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>G. Wt.(g)</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>L. Wt.(g)</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>N. Wt.(g)</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Tunch(%)</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Rate(₹)</TableCell>
                   <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Gold</TableCell>
                   <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Silver</TableCell>
-                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Labour</TableCell>
-                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Amount</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Labour(₹)</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '12px', fontWeight: 'bold', padding: 1}}>Amount(₹)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {receiptData.items.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ fontSize: '13px', padding: 1}}>{item.description}</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>{item.gWt} gm</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '12%', padding: 1}}>{item.lWt} gm</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '12%' , padding: 1}}>{item.nWt} gm</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '5%', padding: 1}}>{item.tunch}%</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>₹ {item.rate}</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>{item.gold} gm</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>{item.silver} gm</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>₹ {item.labour}</TableCell>
-                    <TableCell align="left" sx={{ fontSize: '13px', width: '15%', padding: 1}}>₹ {item.amount}</TableCell>
+                    <TableCell sx={{ fontSize: '13px', padding: 1, width: '14%'}}>{item.description}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '12%', padding: 1}}>{item.gWt}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '12%', padding: 1}}>{item.lWt}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '12%' , padding: 1}}>{item.nWt}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '4%', padding: 1}}>{item.tunch}%</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>{item.rate}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '5%', padding: 1}}>{item.gold}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '5%', padding: 1}}>{item.silver}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '10%', padding: 1}}>{item.labour}</TableCell>
+                    <TableCell align="left" sx={{ fontSize: '13px', width: '15%', padding: 1}}>{item.amount}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow>
                   <TableCell sx={{padding: 1}}><strong>Total:</strong></TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
-                  <TableCell align="left" sx={{ fontSize: '13px', padding: 1}}>{receiptData.totalNetWeight} gm</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '13px', padding: 1}}>{receiptData.totalNetWeight} g</TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
                   <TableCell align="right"></TableCell>
-                  <TableCell align="left" sx={{ fontSize: '13px', padding: 1}}>₹ {receiptData.closingBalance}</TableCell>
+                  <TableCell align="left" sx={{ fontSize: '13px', padding: 1, width: '15%'}}>₹ {receiptData.closingBalance}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -203,13 +203,13 @@ const navigate = useNavigate();
         </Box>
 
         {/* Closing Balance */}
-        <Typography variant="subtitle1" align="right" sx={{ marginTop: 2 }}>
+        <Typography align="right" sx={{ marginTop: 2, fontSize: '12px' }}>
           Closing Balance: ₹{receiptData.closingBalance}
         </Typography>
-        <Typography variant="subtitle1" align="right" sx={{ marginY: 1 }}>
+        <Typography variant="subtitle1" align="right" sx={{ marginY: 1, fontSize: '12px' }}>
           Paid Amount: ₹{receiptData.paidAmount}
         </Typography>
-        <Typography variant="subtitle1" align="right" sx={{ marginY: 1 }}>
+        <Typography variant="subtitle1" align="right" sx={{ marginY: 1, fontSize: '12px' }}>
           Due Amount: ₹{receiptData.currentDue}
         </Typography>
 
