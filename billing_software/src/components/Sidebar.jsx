@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Drawer,
   List,
@@ -32,8 +32,10 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Check if screen size is mobile
 
-  const navigate = useNavigate();
+  const backend_url = process.env.REACT_APP_BACKEND_URL;
 
+  const navigate = useNavigate();
+  let [subscription, setSubscription] = useState();
   const navigateTo = (path) => {
     navigate(path);
   }
@@ -43,6 +45,27 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
     localStorage.clear();
     navigate('/');
   }
+
+  const handleSubscriptionStatus = async () => {
+    const subscriptionResponse = await fetch(`${backend_url}/api/subscription/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+      });
+      if(subscriptionResponse.ok) {
+        const data = await subscriptionResponse.json();
+        subscription = data;
+        console.log(subscription);
+      } else {
+        console.log('Error fetching subscription data');
+      }
+  }
+
+  useEffect(() => {
+    handleSubscriptionStatus();
+  }, []);
 
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -113,7 +136,13 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
           </ListItemIcon>
           <ListItemText primary="Rough Receipt" sx={{ color: '#ecf0f1' }} />
         </ListItem>
-        <ListItem button onClick={() => navigateTo('/dashboard/inventory')} sx={{ cursor:'pointer'}}>
+        <ListItem button 
+        onClick={() => {
+          if(subscription.subscriptionType == 'Premium' && subscription.subscriptionStatus == 'Active') {
+            navigateTo('/dashboard/inventory')
+          }
+          }} 
+          sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <InventoryIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>

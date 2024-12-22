@@ -45,15 +45,13 @@ export default function SignUpPage() {
   const navigate = useNavigate();
 
   const countries = [
-    { label: 'India', value: 'IN' },
-    { label: 'United States', value: 'US' },
-    { label: 'Australia', value: 'AU' },
+    { label: 'India', value: 'India' },
   ];
 
   const states = [
-    { label: 'Uttar Pradesh', value: 'UP' },
-    { label: 'Uttarakhand', value: 'UK' },
-    { label: 'Karnataka', value: 'KA' },
+    { label: 'Uttar Pradesh', value: 'Uttar Pradesh' },
+    { label: 'Uttarakhand', value: 'Uttarakhand' },
+    { label: 'Karnataka', value: 'Karnataka' },
   ];
 
   const handleOtpModalClose = () => setIsOtpModalOpen(false);
@@ -197,8 +195,11 @@ export default function SignUpPage() {
 
           {/* Sign-Up Form */}
           <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, maxWidth: 500, width: '100%' }}>
-            <Typography variant="h4" textAlign="center" color="primary" mb={2}>
+            <Typography variant="h4" textAlign="center" fontWeight="bold" color="#2C3E50" mb={1}>
               Create an Account
+            </Typography>
+            <Typography variant="body2" color="#5A6A85" textAlign="center">
+              Join the family of OrnaCloud
             </Typography>
             <Divider sx={{ my: 2 }} />
             {error && <Alert severity="error">{error}</Alert>}
@@ -215,7 +216,20 @@ export default function SignUpPage() {
                 <Grid item xs={6}><TextField select label="State" name="state" fullWidth onChange={handleInputChange}>{states.map((s) => (<MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>))}</TextField></Grid>
               </Grid>
 
-              <Button variant="contained" color="primary" fullWidth type="submit" sx={{ mt: 3 }}>Sign Up</Button>
+              <Button variant="contained" color="primary" fullWidth type="submit" sx={{
+                mt: 3, mb: 2,
+                py: 1.5,
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                backgroundColor: '#1976D2',
+                color: '#fff',
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: '#145DA0',
+                },
+              }}>
+                Sign Up
+              </Button>
             </Box>
           </Paper>
         </Container>

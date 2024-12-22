@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Container,
     Box,
@@ -8,13 +8,148 @@ import {
     Paper,
     Button,
     Divider,
+    Modal,
+    TextField,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
 import SecurityIcon from '@mui/icons-material/Security';
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
+import toast from 'react-hot-toast';
+import { jwtDecode } from 'jwt-decode';
 
 const UserProfile = () => {
+    const [open, setOpen] = useState(false);
+    const [userData, setUserData] = useState({});
+    const [subscriptionData, setSubscriptionData] = useState({});
+    const [openPasswordModal, setOpenPasswordModal] = useState(false);
+    const [password, setPassword] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+        _id: '',
+        user: '',
+    });
+    const [request, setRequest] = useState({
+        user: '',
+        _id: '',
+        currentPassword: '',
+        newPassword: '',
+    });
+
+    const handleOpen = () => setOpen(true);
+    const handleOpenPasswordModal = () => setOpenPasswordModal(true);
+    const handleClosePasswordModal = () => setOpenPasswordModal(false);
+    const handleClose = () => {
+        setOpen(false)
+    };
+
+
+    const backend_url = process.env.REACT_APP_BACKEND_URL;
+
+    const handleChangePassword = (e) => {
+        setPassword({ ...password, [e.target.name]: e.target.value });
+    };
+
+    const handleUpdateProfile = async () => {
+        const token = localStorage.getItem('token');
+        // Update user data to API
+        const response = await fetch(`${backend_url}/api/user/update`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(userData),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            toast.success(data.message || 'Profile updated successfully!');
+            handleClose();
+        }
+        else {
+            toast.error(data.message || 'Failed to update profile.');
+        }
+    }
+
+
+    const fetchUserData = async () => {
+
+        const token = localStorage.getItem('token');
+        // Fetch user data from API
+        const response = await fetch(`${backend_url}/api/user/fetch`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        const data = await response.json();
+        setUserData(data);
+        console.log(data);
+    }
+
+    const fetchSubscriptionData = async () => {
+        const token = localStorage.getItem('token');
+        // Fetch subscription data from API
+        const response = await fetch(`${backend_url}/api/subscription/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        const data = await response.json();
+        setSubscriptionData(data);
+        console.log(data);
+    }
+
+    const handlePasswordUpdate = async () => {
+        const token = localStorage.getItem('token');
+        // Update password to API
+        console.log(userData._id);
+        console.log(password);
+        request.user = token.sub;
+        request._id = userData._id;
+        request.currentPassword = password.currentPassword;
+        request.newPassword = password.newPassword;
+        if (password.newPassword !== password.confirmPassword) {
+            toast.error('Passwords do not match.');
+            return;
+        }
+
+        console.log(request);
+        const response = await fetch(`${backend_url}/api/user/update-password`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(request),
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            toast.success(data.message || 'Password updated successfully!');
+            handleClosePasswordModal();
+            request.currentPassword = '';
+            request.newPassword = '';
+            request._id = '';
+            request.user = '';
+        }
+        else {
+            toast.error(data.message || 'Failed to update password.');
+        }
+    }
+
+    useEffect(() => {
+        fetchUserData();
+        fetchSubscriptionData();
+    }, []);
+
+
     return (
         <Container maxWidth="lg" sx={{ mt: 6, mb: 4 }}>
             <Box>
@@ -49,23 +184,15 @@ const UserProfile = () => {
                                 color: 'text.primary',
                             }}
                         >
-                            XceeDesigns
+                            {userData.companyName}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                            Ghaziabad, India
+                            {`${userData.state}, ${userData.country}`}
                         </Typography>
                         <Button
                             variant="outlined"
-                            startIcon={
-                                <EditIcon
-                                    sx={{
-                                        color: '#1e1e2f',
-                                        '&:hover': {
-                                            color: '#ffffff', // Changes icon color to white on hover
-                                        },
-                                    }}
-                                />
-                            }
+                            startIcon={<EditIcon />}
+                            onClick={handleOpen}
                             sx={{
                                 mt: 2,
                                 size: 'small',
@@ -74,10 +201,7 @@ const UserProfile = () => {
                                 '&:hover': {
                                     borderColor: '#1e1e2f',
                                     backgroundColor: '#1e1e2f',
-                                    color: '#ffffff', // Changes text color to white on hover
-                                    '& .MuiSvgIcon-root': {
-                                        color: '#ffffff', // Applies hover effect to the icon
-                                    },
+                                    color: '#ffffff',
                                 },
                             }}
                         >
@@ -87,6 +211,161 @@ const UserProfile = () => {
                 </Box>
 
                 <Divider sx={{ mb: 4 }} />
+
+                {/* Modal for Editing Profile */}
+                <Modal open={open} onClose={handleClose}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 400,
+                            bgcolor: 'background.paper',
+                            boxShadow: 24,
+                            p: 4,
+                            borderRadius: 2,
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ mb: 2 }} fontWeight="bold">
+                            Edit Profile
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            label="Name"
+                            sx={{ mb: 2 }}
+                            value={userData.name}
+                            onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Company Name"
+                            sx={{ mb: 2 }}
+                            value={userData.companyName}
+                            onChange={(e) => setUserData({ ...userData, companyName: e.target.value })}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Mobile Number"
+                            sx={{ mb: 2 }}
+                            value={userData.mobileNumber}
+                            onChange={(e) => setUserData({ ...userData, mobileNumber: e.target.value })}
+                        />
+                        <TextField
+                            fullWidth
+                            label="State"
+                            sx={{ mb: 2 }}
+                            value={userData.state}
+                            onChange={(e) => setUserData({ ...userData, state: e.target.value })}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Country"
+                            sx={{ mb: 2 }}
+                            value={userData.country}
+                            onChange={(e) => setUserData({ ...userData, country: e.target.value })}
+                        />
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                            <Button
+                                variant="outlined"
+                                onClick={handleClose}
+                                sx={{
+                                    borderColor: '#1e1e2f',
+                                    color: '#1e1e2f',
+                                    '&:hover': {
+                                        borderColor: '#1e1e2f',
+                                        backgroundColor: '#1e1e2f',
+                                        color: '#ffffff',
+                                    },
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#1e1e2f',
+                                    '&:hover': {
+                                        backgroundColor: '#3a3a4f',
+                                    },
+                                }}
+                                onClick={handleUpdateProfile}
+                            >
+                                Save Changes
+                            </Button>
+                        </Box>
+                    </Box>
+                </Modal>
+
+                <Modal open={openPasswordModal} onClose={handleClosePasswordModal}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 400,
+                            bgcolor: 'background.paper',
+                            boxShadow: 24,
+                            p: 4,
+                            borderRadius: 2,
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ mb: 2 }} fontWeight="bold">
+                            Update Password
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            label="Current Password"
+                            sx={{ mb: 2 }}
+                            value={password.currentPassword}
+                            onChange={(e) => setPassword({ ...password, currentPassword: e.target.value })}
+                        />
+                        <TextField
+                            fullWidth
+                            label="New Password"
+                            sx={{ mb: 2 }}
+                            value={password.newPassword}
+                            onChange={(e) => setPassword({ ...password, newPassword: e.target.value })}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Confirm New Password"
+                            sx={{ mb: 2 }}
+                            value={password.confirmPassword}
+                            onChange={(e) => setPassword({ ...password, confirmPassword: e.target.value })}
+                        />
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                            <Button
+                                variant="outlined"
+                                onClick={handleClosePasswordModal}
+                                sx={{
+                                    borderColor: '#1e1e2f',
+                                    color: '#1e1e2f',
+                                    '&:hover': {
+                                        borderColor: '#1e1e2f',
+                                        backgroundColor: '#1e1e2f',
+                                        color: '#ffffff',
+                                    },
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: '#1e1e2f',
+                                    '&:hover': {
+                                        backgroundColor: '#3a3a4f',
+                                    },
+                                }}
+                                onClick={handlePasswordUpdate}
+                            >
+                                Save Changes
+                            </Button>
+                        </Box>
+                    </Box>
+                </Modal>
 
                 {/* Profile Details */}
                 <Grid container spacing={3}>
@@ -103,13 +382,13 @@ const UserProfile = () => {
                         </Typography>
                         <Box>
                             <Typography variant="body2" sx={{ mb: 1 }}>
-                                <strong>Email:</strong> john.doe@example.com
+                                <strong>Email:</strong> {userData.email}
                             </Typography>
                             <Typography variant="body2" sx={{ mb: 1 }}>
-                                <strong>Phone:</strong> +1 123-456-7890
+                                <strong>Phone:</strong> {userData.mobileNumber}
                             </Typography>
                             <Typography variant="body2">
-                                <strong>Location:</strong> San Francisco, CA
+                                <strong>Location:</strong> {`${userData.state}, ${userData.country}`}
                             </Typography>
                         </Box>
                     </Grid>
@@ -126,13 +405,13 @@ const UserProfile = () => {
                         </Typography>
                         <Box>
                             <Typography variant="body2" sx={{ mb: 1 }}>
-                                <strong>Name:</strong> johndoe
+                                <strong>Name:</strong> {userData.name}
                             </Typography>
                             <Typography variant="body2" sx={{ mb: 1 }}>
-                                <strong>Member Since:</strong> January 2020
+                                <strong>Subscription Expiry:</strong> {subscriptionData.endDate == null ? 'N/A' : subscriptionData.endDate.slice(0, 10)}
                             </Typography>
                             <Typography variant="body2">
-                                <strong>Subscription:</strong> Freemium
+                                <strong>Subscription & Status:</strong> {subscriptionData.subscriptionType == null ? `Freemium(${subscriptionData.subscriptionStatus})` : `${subscriptionData.subscriptionType}(${subscriptionData.subscriptionStatus})`}
                             </Typography>
                         </Box>
                     </Grid>
@@ -182,6 +461,7 @@ const UserProfile = () => {
                                         backgroundColor: '#3a3a4f',
                                     },
                                 }}
+                                onClick={handleOpenPasswordModal}
                             >
                                 Update
                             </Button>
