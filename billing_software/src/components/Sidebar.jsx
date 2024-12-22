@@ -20,6 +20,7 @@ import PaymentIcon from '@mui/icons-material/Payment';
 import SettingsIcon from '@mui/icons-material/Settings';
 import StarIcon from '@mui/icons-material/Star';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import LogoutIcon from '@mui/icons-material/Logout';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import HistoryIcon from '@mui/icons-material/History';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -36,6 +37,12 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
     navigate(path);
   }
 
+  const handleLogout = () => {
+    // Clear the local storage and redirect to login page
+    localStorage.clear();
+    navigate('/');
+  }
+
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Logo */}
@@ -47,7 +54,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
 
       {/* Menu List */}
       <List>
-        <ListItem button>
+        <ListItem button onClick={() => navigateTo('/main-dashboard')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <DashboardIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
@@ -138,7 +145,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
         <Divider sx={{ bgcolor: '#444', mb: 1 }} />
         <Button
           variant="outlined"
-          startIcon={<SettingsIcon />}
+          startIcon={<LogoutIcon />}
           sx={{
             color: '#ecf0f1',
             borderColor: '#ecf0f1',
@@ -148,8 +155,9 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
               borderColor: '#fff',
             },
           }}
+          onClick={handleLogout}
         >
-          Settings
+          Log Out
         </Button>
       </Box>
     </Box>

@@ -211,7 +211,7 @@ const ReceiptHistory = () => {
                                         <TableCell>{row.closingBalance}</TableCell>
                                         <TableCell>
                                             {/* Preview Button */}
-                                            <IconButton size="small" color="primary" onClick={() => handlePreview(row)}>
+                                            <IconButton size="small" color="primary" onClick={() => handlePreview(row)} sx={{ color: '#1e1e2f' }}>
                                                 <PreviewIcon />
                                             </IconButton>
 

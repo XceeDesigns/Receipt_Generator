@@ -8,6 +8,7 @@ import ReceiptHistory from './ReceiptHistory';
 import RoughReceipt from './RoughReceipt';
 import Inventory from './Inventory';
 import JewellerReceipt from '../components/JewellerReceipt';
+import UserProfile from './UserProfile';
 
 const MainDashboard = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -36,7 +37,7 @@ const MainDashboard = () => {
         {/* Header */}
         <Header handleDrawerToggle={handleDrawerToggle} />
 
-        {location.pathname === '/' && (
+        {location.pathname === '/main-dashboard' && (
           <>
             {/* Statistic Cards Section */}
             <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -134,6 +135,10 @@ const MainDashboard = () => {
 
         {location.pathname === '/dashboard/rough-receipt/preview' && (
           <JewellerReceipt/>
+        )}
+
+        {location.pathname === '/dashboard/user-profile' && (
+          <UserProfile/>
         )}
       </Box>
     </Box>

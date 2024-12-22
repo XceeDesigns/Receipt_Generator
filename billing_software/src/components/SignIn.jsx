@@ -51,7 +51,7 @@ export default function SignInPage() {
       const data1 = await response1.json();
       localStorage.setItem('token', data1.authToken);
       toast.success('Logged in successfully');
-      navigate('/choose');
+      navigate('/main-dashboard');
       setUser(email);
     } catch (err) {
       setError('An error occurred. Please try again later.');

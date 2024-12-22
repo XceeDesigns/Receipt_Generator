@@ -2,8 +2,14 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Avatar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useNavigate } from 'react-router-dom';
 
 function Header({ handleDrawerToggle }) {
+  const navigate = useNavigate();
+  const openUserProfile = () => {
+    navigate('/dashboard/user-profile');
+  }
+
   return (
     <AppBar
       position="static"
@@ -38,6 +44,7 @@ function Header({ handleDrawerToggle }) {
             }}
             alt="Profile"
             src="/static/images/avatar/1.jpg" // You can add a path to an image if needed
+            onClick={openUserProfile} // Function to open the user profile page
           >
             <AccountCircleIcon />
           </Avatar>

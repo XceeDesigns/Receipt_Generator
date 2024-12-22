@@ -8,6 +8,10 @@ import {
     Typography,
     Modal,
     Grid,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
@@ -184,7 +188,7 @@ const Inventory = () => {
                     onChange={handleSearch}
                     sx={{ flex: 1, marginRight: '16px' }}
                 />
-                <Button variant="contained" color="primary" onClick={handleAddModalOpen}>
+                <Button variant="contained" color="primary" onClick={handleAddModalOpen} sx={{ backgroundColor: '#1e1e2f' }}>
                     Add Item
                 </Button>
             </Box>
@@ -219,13 +223,14 @@ const Inventory = () => {
                             <IconButton
                                 color="primary"
                                 onClick={() => handleEdit(item)}
-                                sx={{ marginRight: '8px' }}
+                                sx={{ marginRight: '8px', color: '#1e1e2f' }}
                             >
                                 <Edit />
                             </IconButton>
                             <IconButton
                                 color="secondary"
                                 onClick={() => handleDelete(index, item._id)}
+                                sx={{ color: 'red' }}
                             >
                                 <Delete />
                             </IconButton>
@@ -242,37 +247,87 @@ const Inventory = () => {
                         top: '50%',
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
-                        width: 400,
+                        width: { xs: 300, sm: 400 },
                         bgcolor: 'background.paper',
                         p: 4,
                         boxShadow: 24,
                         borderRadius: 2,
                     }}
                 >
-                    <Typography variant="h6" component="h2" mb={2}>
+                    <Typography
+                        variant="h6"
+                        component="h2"
+                        mb={3}
+                        sx={{ textAlign: 'center', fontWeight: 'bold' }}
+                    >
                         Add New Item
                     </Typography>
                     <Grid container spacing={2}>
                         {Object.keys(newItem).map((key) => (
-                            <Grid item xs={12} key={key}>
-                                <TextField
-                                    label={key.charAt(0).toUpperCase() + key.slice(1)}
-                                    name={key}
-                                    value={newItem[key]}
-                                    onChange={handleInputChange}
-                                    fullWidth
-                                    disabled={key === 'user'}
-                                />
+                            <Grid
+                                item
+                                xs={12}
+                                sm={6}
+                                key={key}
+                                sx={{ display: key === 'user' ? 'none' : 'block' }}
+                            >
+                                {key === 'type' ? (
+                                    <FormControl fullWidth>
+                                        <InputLabel>{key.charAt(0).toUpperCase() + key.slice(1)}</InputLabel>
+                                        <Select
+                                            value={newItem[key]}
+                                            name={key}
+                                            onChange={handleInputChange}
+                                        >
+                                            <MenuItem value="Gold">Gold</MenuItem>
+                                            <MenuItem value="Silver">Silver</MenuItem>
+                                            <MenuItem value="Diamond">Diamond</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                ) : (
+                                    <TextField
+                                        label={key.charAt(0).toUpperCase() + key.slice(1)}
+                                        name={key}
+                                        value={newItem[key]}
+                                        onChange={handleInputChange}
+                                        fullWidth
+                                    />
+                                )}
                             </Grid>
                         ))}
                     </Grid>
-                    <Box sx={{ mt: 2, textAlign: 'right' }}>
-                        <Button variant="contained" color="primary" onClick={handleAddItem}>
+                    <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        <Button
+                            variant="outlined"
+                            onClick={handleAddModalClose}
+                            sx={{
+                                borderColor: '#1e1e2f',
+                                color: '#1e1e2f',
+                                '&:hover': {
+                                    borderColor: '#1e1e2f',
+                                    backgroundColor: '#1e1e2f',
+                                    color: '#fff',
+                                },
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: '#1e1e2f',
+                                '&:hover': {
+                                    backgroundColor: '#141426',
+                                },
+                            }}
+                            onClick={handleAddItem}
+                        >
                             Save
                         </Button>
                     </Box>
                 </Box>
             </Modal>
+
 
             {/* Edit Item Modal */}
             <Modal open={isEditModalOpen} onClose={handleEditModalClose}>
@@ -282,37 +337,88 @@ const Inventory = () => {
                         top: '50%',
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
-                        width: 400,
+                        width: { xs: 300, sm: 400 },
                         bgcolor: 'background.paper',
                         p: 4,
                         boxShadow: 24,
                         borderRadius: 2,
                     }}
                 >
-                    <Typography variant="h6" component="h2" mb={2}>
+                    <Typography
+                        variant="h6"
+                        component="h2"
+                        mb={3}
+                        sx={{ textAlign: 'center', fontWeight: 'bold' }}
+                    >
                         Edit Item
                     </Typography>
                     <Grid container spacing={2}>
-                        {editItem && Object.keys(editItem).map((key) => (
-                            <Grid item xs={12} key={key}>
-                                <TextField
-                                    label={key.charAt(0).toUpperCase() + key.slice(1)}
-                                    name={key}
-                                    value={editItem[key]}
-                                    onChange={handleEditInputChange}
-                                    fullWidth
-                                    disabled={key === '_id' || key === 'user'}
-                                />
-                            </Grid>
-                        ))}
+                        {editItem &&
+                            Object.keys(editItem).map((key) => (
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    key={key}
+                                    sx={{ display: key === '_id' || key === 'user' ? 'none' : 'block' }}
+                                >
+                                    {key === 'type' ? (
+                                        <FormControl fullWidth>
+                                            <InputLabel>{key.charAt(0).toUpperCase() + key.slice(1)}</InputLabel>
+                                            <Select
+                                                value={editItem[key]}
+                                                name={key}
+                                                onChange={handleEditInputChange}
+                                            >
+                                                <MenuItem value="Gold">Gold</MenuItem>
+                                                <MenuItem value="Silver">Silver</MenuItem>
+                                                <MenuItem value="Diamond">Diamond</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    ) : (
+                                        <TextField
+                                            label={key.charAt(0).toUpperCase() + key.slice(1)}
+                                            name={key}
+                                            value={editItem[key]}
+                                            onChange={handleEditInputChange}
+                                            fullWidth
+                                        />
+                                    )}
+                                </Grid>
+                            ))}
                     </Grid>
-                    <Box sx={{ mt: 2, textAlign: 'right' }}>
-                        <Button variant="contained" color="primary" onClick={handleEditItem}>
+                    <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        <Button
+                            variant="outlined"
+                            onClick={handleEditModalClose}
+                            sx={{
+                                borderColor: '#1e1e2f',
+                                color: '#1e1e2f',
+                                '&:hover': {
+                                    borderColor: '#1e1e2f',
+                                    backgroundColor: '#1e1e2f',
+                                    color: '#fff',
+                                },
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: '#1e1e2f',
+                                '&:hover': {
+                                    backgroundColor: '#141426',
+                                },
+                            }}
+                            onClick={handleEditItem}
+                        >
                             Update
                         </Button>
                     </Box>
                 </Box>
             </Modal>
+
         </Box>
     );
 };
