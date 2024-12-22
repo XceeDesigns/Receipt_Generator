@@ -13,6 +13,7 @@ import {
   Button,
   Card,
   CardContent,
+  Badge
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import TableChartIcon from '@mui/icons-material/TableChart';
@@ -58,13 +59,53 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
           <ListItemIcon>
             <DashboardIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
-          <ListItemText primary="Dashboard" sx={{ color: '#ecf0f1' }} />
+          <ListItemText
+            primary={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                Dashboard
+                <Badge
+                  badgeContent="Pro"
+                  color="error"
+                  sx={{
+                    marginLeft: 1,
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    backgroundColor: '#FFD700',
+                    color: '#2C3E50',
+                    borderRadius: 1,
+                    padding: '2px 6px',
+                  }}
+                />
+              </Box>
+            }
+            sx={{ color: '#ecf0f1' }}
+          />
         </ListItem>
         <ListItem button>
           <ListItemIcon>
             <ReceiptIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
-          <ListItemText primary="GST Receipt" sx={{ color: '#ecf0f1' }} />
+          <ListItemText
+            primary={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                GST Receipt
+                <Badge
+                  badgeContent="Lite"
+                  color="secondary"
+                  sx={{
+                    marginLeft: 1,
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    backgroundColor: '#FFD700',
+                    color: '#2C3E50',
+                    borderRadius: 1,
+                    padding: '2px 6px',
+                  }}
+                />
+              </Box>
+            }
+            sx={{ color: '#ecf0f1' }}
+          />
         </ListItem>
         <ListItem button onClick={() => navigateTo('/dashboard/rough-receipt')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
@@ -76,7 +117,27 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
           <ListItemIcon>
             <InventoryIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
-          <ListItemText primary="Inventory" sx={{ color: '#ecf0f1' }} />
+          <ListItemText
+            primary={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                Inventory
+                <Badge
+                  badgeContent="Pro"
+                  color="error"
+                  sx={{
+                    marginLeft: 1,
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    backgroundColor: '#FFD700',
+                    color: '#2C3E50',
+                    borderRadius: 1,
+                    padding: '2px 6px',
+                  }}
+                />
+              </Box>
+            }
+            sx={{ color: '#ecf0f1' }}
+          />
         </ListItem>
         <ListItem button onClick={() => navigateTo('/dashboard/receipt-history')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>

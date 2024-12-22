@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Box } from '@mui/material';
+import { Button, Box, Badge } from '@mui/material';
 import RoughEstimate from '../components/RoughEstimate'; // Assume these are your components
 import Dashboard from '../components/Dashboard'; // Assume these are your components
 
@@ -31,22 +31,27 @@ const RoughReceipt = () => {
                 >
                     Manual Receipt
                 </Button>
-                <Button
-                    variant={selectedOption === 'automatic' ? 'contained' : 'outlined'}
-                    onClick={() => setSelectedOption('automatic')}
-                    sx={{
-                        backgroundColor: selectedOption === 'automatic' ? '#1e1e2f' : 'transparent',
-                        color: selectedOption === 'automatic' ? '#ffffff' : '#1e1e2f',
-                        borderColor: '#1e1e2f',
-                        '&:hover': {
-                            backgroundColor: selectedOption === 'automatic' ? '#1e1e2f' : '#e6e6e6',
-                        },
-                    }}
+                <Badge
+                    badgeContent="PRO"
+                    color="error"
+                    sx={{ '& .MuiBadge-dot': { backgroundColor: '#FFD700' } }} // Styling the PRO badge
                 >
-                    Automatic Receipt
-                </Button>
+                    <Button
+                        variant={selectedOption === 'automatic' ? 'contained' : 'outlined'}
+                        onClick={() => setSelectedOption('automatic')}
+                        sx={{
+                            backgroundColor: selectedOption === 'automatic' ? '#1e1e2f' : 'transparent',
+                            color: selectedOption === 'automatic' ? '#ffffff' : '#1e1e2f',
+                            borderColor: '#1e1e2f',
+                            '&:hover': {
+                                backgroundColor: selectedOption === 'automatic' ? '#1e1e2f' : '#e6e6e6',
+                            },
+                        }}
+                    >
+                        Automatic Receipt
+                    </Button>
+                </Badge>
             </Box>
-
 
             {/* Render content based on selection */}
             <Box sx={{ flexGrow: 1 }}>
