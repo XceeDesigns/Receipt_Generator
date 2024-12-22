@@ -19,8 +19,6 @@ import {
 import { styled } from '@mui/material/styles';
 import { Email, Phone, Save, Send, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
 import { ReceiptContext } from '../context/ReceiptContext';
 import { jwtDecode } from 'jwt-decode';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';

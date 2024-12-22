@@ -37,7 +37,7 @@ const MainDashboard = () => {
         {/* Header */}
         <Header handleDrawerToggle={handleDrawerToggle} />
 
-        {location.pathname === '/main-dashboard' && (
+        {location.pathname === '/dashboard' && (
           <>
             {/* Statistic Cards Section */}
             <Grid container spacing={3} sx={{ mt: 2 }}>
