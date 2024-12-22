@@ -55,7 +55,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
 
       {/* Menu List */}
       <List>
-        <ListItem button onClick={() => navigateTo('/main-dashboard')} sx={{ cursor:'pointer'}}>
+        <ListItem button onClick={() => navigateTo('/dashboard')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <DashboardIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
@@ -191,6 +191,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                   bgcolor: '#1A2536',
                 },
               }}
+              onClick={() => navigateTo('/dashboard/user-profile')}
             >
               Upgrade Plan
             </Button>

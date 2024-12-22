@@ -4,10 +4,6 @@ import SignIn from './components/SignIn'
 import Dashboard from './components/Dashboard'
 import GeneralReceipt from './components/GeneralReceipt'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import JewellerReceipt from './components/JewellerReceipt'
-import RoughEstimate from './components/RoughEstimate'
-import Choice from './components/Choice'
-import ReceiptHistory from './pages/ReceiptHistory'
 import { ReceiptProvider } from './context/ReceiptHistoryContext'
 import { ReceiptContextProvider } from './context/ReceiptContext'
 import { UserContextProvider } from './context/UserContext'
@@ -24,9 +20,8 @@ function App() {
             <Routes>
               <Route path="/" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/choose" element={<Choice />} />
               <Route path="/dashboard/user-profile" element={<MainDashboard />} />
-              <Route path="/main-dashboard" element={<MainDashboard />} />
+              <Route path="/dashboard" element={<MainDashboard />} />
               <Route path="/dashboard/general" element={<Dashboard />} />
               <Route path="/dashboard/rough-receipt" element={<MainDashboard />} />
               <Route path="/dashboard/g/preview" element={<GeneralReceipt />} />

@@ -15,8 +15,6 @@ import {
 } from "@mui/material";
 import { Email, Save, Send, PictureAsPdf, Add, Close, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
 
 const Dashboard = () => {
     const [email, setEmail] = useState("");
