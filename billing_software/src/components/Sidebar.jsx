@@ -20,14 +20,28 @@ import PaymentIcon from '@mui/icons-material/Payment';
 import SettingsIcon from '@mui/icons-material/Settings';
 import StarIcon from '@mui/icons-material/Star';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import LogoutIcon from '@mui/icons-material/Logout';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import HistoryIcon from '@mui/icons-material/History';
 import DescriptionIcon from '@mui/icons-material/Description';
+import { useNavigate } from 'react-router-dom';
 
 function Sidebar({ mobileOpen, handleDrawerToggle }) {
   const drawerWidth = 260;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Check if screen size is mobile
+
+  const navigate = useNavigate();
+
+  const navigateTo = (path) => {
+    navigate(path);
+  }
+
+  const handleLogout = () => {
+    // Clear the local storage and redirect to login page
+    localStorage.clear();
+    navigate('/');
+  }
 
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -40,7 +54,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
 
       {/* Menu List */}
       <List>
-        <ListItem button>
+        <ListItem button onClick={() => navigateTo('/main-dashboard')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <DashboardIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
@@ -52,19 +66,19 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
           </ListItemIcon>
           <ListItemText primary="GST Receipt" sx={{ color: '#ecf0f1' }} />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={() => navigateTo('/dashboard/rough-receipt')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <DescriptionIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
           <ListItemText primary="Rough Receipt" sx={{ color: '#ecf0f1' }} />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={() => navigateTo('/dashboard/inventory')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <InventoryIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
           <ListItemText primary="Inventory" sx={{ color: '#ecf0f1' }} />
         </ListItem>
-        <ListItem button>
+        <ListItem button onClick={() => navigateTo('/dashboard/receipt-history')} sx={{ cursor:'pointer'}}>
           <ListItemIcon>
             <HistoryIcon sx={{ color: '#ecf0f1' }} />
           </ListItemIcon>
@@ -131,7 +145,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
         <Divider sx={{ bgcolor: '#444', mb: 1 }} />
         <Button
           variant="outlined"
-          startIcon={<SettingsIcon />}
+          startIcon={<LogoutIcon />}
           sx={{
             color: '#ecf0f1',
             borderColor: '#ecf0f1',
@@ -141,8 +155,9 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
               borderColor: '#fff',
             },
           }}
+          onClick={handleLogout}
         >
-          Settings
+          Log Out
         </Button>
       </Box>
     </Box>

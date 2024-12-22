@@ -110,7 +110,6 @@ const Dashboard = () => {
 
     return (
         <>
-            <Navbar />
             <Box sx={{ padding: 4, backgroundColor: "#f0f2f5", minHeight: "100vh" }}>
 
                 <Grid container spacing={3}>
@@ -331,7 +330,6 @@ const Dashboard = () => {
                     </Grid>
                 </Grid>
             </Box>
-            <Footer />
         </>
     );
 };
