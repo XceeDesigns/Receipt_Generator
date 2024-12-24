@@ -10,6 +10,7 @@ import Inventory from './Inventory';
 import JewellerReceipt from '../components/JewellerReceipt';
 import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
+import Subscription from './Subscription';
 
 const MainDashboard = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -33,7 +34,7 @@ const MainDashboard = () => {
       const data = await subscriptionResponse.json();
       subscription = data;
       console.log("Main Dashboard", subscription);
-      if(subscription.subscriptionType === 'Premium' && subscription.subscriptionStatus !== 'Canceled') {
+      if (subscription.subscriptionType === 'Premium' && subscription.subscriptionStatus !== 'Canceled') {
         setIsPremium(true);
       }
     } else {
@@ -102,7 +103,7 @@ const MainDashboard = () => {
                   variant="contained"
                   color="primary"
                   onClick={() => navigate('/dashboard/user-profile')}
-                  sx={{backgroundColor:'#1e1e2f'}}
+                  sx={{ backgroundColor: '#1e1e2f' }}
                 >
                   Upgrade Now
                 </Button>
@@ -197,6 +198,10 @@ const MainDashboard = () => {
 
         {location.pathname === '/dashboard/receipt-history' && (
           <ReceiptHistory />
+        )}
+
+        {location.pathname === '/dashboard/subscription' && (
+          <Subscription/>
         )}
 
         {location.pathname === '/dashboard/rough-receipt' && (

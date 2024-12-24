@@ -220,7 +220,7 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
                   bgcolor: '#1A2536',
                 },
               }}
-              onClick={() => navigateTo('/dashboard/user-profile')}
+              onClick={() => navigateTo('/dashboard/subscription')}
             >
               Upgrade Plan
             </Button>

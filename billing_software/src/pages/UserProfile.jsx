@@ -17,6 +17,7 @@ import SecurityIcon from '@mui/icons-material/Security';
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
 import toast from 'react-hot-toast';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const UserProfile = () => {
     const [open, setOpen] = useState(false);
@@ -36,6 +37,8 @@ const UserProfile = () => {
         currentPassword: '',
         newPassword: '',
     });
+
+    const navigate = useNavigate();
 
     const handleOpen = () => setOpen(true);
     const handleOpenPasswordModal = () => setOpenPasswordModal(true);
@@ -496,8 +499,9 @@ const UserProfile = () => {
                                         backgroundColor: '#3a3a4f',
                                     },
                                 }}
+                                onClick={() => navigate('/dashboard/subscription')}
                             >
-                                Update
+                                Upgrade
                             </Button>
                         </Paper>
                     </Grid>

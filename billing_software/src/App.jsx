@@ -30,6 +30,7 @@ function App() {
               <Route path="/dashboard/rough-receipt/preview" element={<MainDashboard />} />
               <Route path="/dashboard/receipt-history" element={<MainDashboard />} />
               <Route path="/dashboard/inventory" element={<MainDashboard />} />
+              <Route path="/dashboard/subscription" element={<MainDashboard />} />
             </Routes>
             <Toaster />
             </SubscriptionProvider>

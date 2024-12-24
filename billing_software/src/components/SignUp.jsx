@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   TextField,
@@ -44,6 +44,7 @@ export default function SignUpPage() {
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(300); // 5 minutes in seconds
 
   const backend_url = process.env.REACT_APP_BACKEND_URL;
   const navigate = useNavigate();
@@ -58,7 +59,10 @@ export default function SignUpPage() {
     { label: 'Karnataka', value: 'Karnataka' },
   ];
 
-  const handleOtpModalClose = () => setIsOtpModalOpen(false);
+  const handleOtpModalClose = () => {
+    setIsOtpModalOpen(false);
+    setRemainingTime(300); // Reset the timer when the modal is closed
+  };
 
   const handleOtpModalOpen = async (e) => {
     e.preventDefault();
@@ -91,11 +95,28 @@ export default function SignUpPage() {
       toast.success('OTP has been sent to your email.');
       setIsOtpModalOpen(true);
       setLoading(false);
+      setRemainingTime(300); // Reset the timer when the modal is opened
     } catch (err) {
       console.error(err);
       setError('An error occurred. Please try again later.');
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (isOtpModalOpen && remainingTime > 0) {
+      const timer = setInterval(() => {
+        setRemainingTime((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(timer); // Cleanup on component unmount or modal close
+    }
+  }, [isOtpModalOpen, remainingTime]);
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const handleInputChange = (e) => {
@@ -176,10 +197,10 @@ export default function SignUpPage() {
                 bgcolor: 'background.paper',
                 borderRadius: 2,
                 boxShadow: 24,
-                p: 4,
+                p: 3,
               }}
             >
-              <Typography variant="h5" fontWeight="bold" mb={2} color="primary">
+              <Typography variant="h5" fontWeight="bold" mb={1} color="#2C3E50" textAlign="center">
                 Verify Your OTP
               </Typography>
               <TextField
@@ -191,6 +212,22 @@ export default function SignUpPage() {
                 inputProps={{ maxLength: 6 }}
                 sx={{ mb: 2 }}
               />
+              <Typography
+                variant="body2"
+                color="black"
+                sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold' }}
+              >
+                OTP will expire in {formatTime(remainingTime)}
+              </Typography>
+              {remainingTime === 0 && (
+                <Typography
+                  variant="body2"
+                  color="error"
+                  sx={{ mt: 0,mb: 2, textAlign: 'center' }}
+                >
+                  OTP has expired. Please request a new one.
+                </Typography>
+              )}
               <Button variant="contained" color="primary" fullWidth onClick={handleValidate}>
                 Verify OTP
               </Button>
@@ -205,7 +242,7 @@ export default function SignUpPage() {
             <Typography variant="body2" color="#5A6A85" textAlign="center">
               Join the family of OrnaCloud
             </Typography>
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ mt: 1, mb: 2 }} />
             {error && <Alert severity="error">{error}</Alert>}
 
             <Box component="form" onSubmit={handleOtpModalOpen} noValidate>
@@ -263,7 +300,7 @@ export default function SignUpPage() {
               </Typography>
 
               <Button variant="contained" color="primary" fullWidth type="submit" sx={{
-                mt: 1, mb: 2,
+                mt: 1, mb: 1,
                 py: 1.5,
                 fontSize: '1rem',
                 fontWeight: 'bold',
