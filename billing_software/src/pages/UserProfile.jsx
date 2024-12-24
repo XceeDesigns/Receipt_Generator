@@ -10,14 +10,16 @@ import {
     Divider,
     Modal,
     TextField,
+    InputAdornment,
+    IconButton,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
 import SecurityIcon from '@mui/icons-material/Security';
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
 import toast from 'react-hot-toast';
-import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const UserProfile = () => {
     const [open, setOpen] = useState(false);
@@ -37,6 +39,8 @@ const UserProfile = () => {
         currentPassword: '',
         newPassword: '',
     });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
 
     const navigate = useNavigate();
 
@@ -236,6 +240,7 @@ const UserProfile = () => {
                         <TextField
                             fullWidth
                             label="Name"
+                            type='text'
                             sx={{ mb: 2 }}
                             value={userData.name}
                             onChange={(e) => setUserData({ ...userData, name: e.target.value })}
@@ -243,6 +248,7 @@ const UserProfile = () => {
                         <TextField
                             fullWidth
                             label="Company Name"
+                            type='text'
                             sx={{ mb: 2 }}
                             value={userData.companyName}
                             onChange={(e) => setUserData({ ...userData, companyName: e.target.value })}
@@ -250,6 +256,7 @@ const UserProfile = () => {
                         <TextField
                             fullWidth
                             label="Mobile Number"
+                            type='tel'
                             sx={{ mb: 2 }}
                             value={userData.mobileNumber}
                             onChange={(e) => setUserData({ ...userData, mobileNumber: e.target.value })}
@@ -257,6 +264,7 @@ const UserProfile = () => {
                         <TextField
                             fullWidth
                             label="State"
+                            type='text'
                             sx={{ mb: 2 }}
                             value={userData.state}
                             onChange={(e) => setUserData({ ...userData, state: e.target.value })}
@@ -264,6 +272,7 @@ const UserProfile = () => {
                         <TextField
                             fullWidth
                             label="Country"
+                            type='text'
                             sx={{ mb: 2 }}
                             value={userData.country}
                             onChange={(e) => setUserData({ ...userData, country: e.target.value })}
@@ -320,20 +329,49 @@ const UserProfile = () => {
                         <TextField
                             fullWidth
                             label="Current Password"
+                            type={showPassword ? 'text' : 'password'}
                             sx={{ mb: 2 }}
                             value={password.currentPassword}
                             onChange={(e) => setPassword({ ...password, currentPassword: e.target.value })}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            edge="end"
+                                            aria-label="toggle password visibility"
+                                        >
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                         <TextField
                             fullWidth
                             label="New Password"
+                            type={showNewPassword ? 'text' : 'password'}
                             sx={{ mb: 2 }}
                             value={password.newPassword}
                             onChange={(e) => setPassword({ ...password, newPassword: e.target.value })}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                            edge="end"
+                                            aria-label="toggle password visibility"
+                                        >
+                                            {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                         <TextField
                             fullWidth
                             label="Confirm New Password"
+                            type='password'
                             sx={{ mb: 2 }}
                             value={password.confirmPassword}
                             onChange={(e) => setPassword({ ...password, confirmPassword: e.target.value })}
@@ -414,7 +452,7 @@ const UserProfile = () => {
                                 <strong>Subscription Expiry:</strong> {subscriptionData.endDate == null ? 'N/A' : subscriptionData.endDate.slice(0, 10)}
                             </Typography>
                             <Typography variant="body2">
-                                <strong>Subscription & Status:</strong> {subscriptionData.subscriptionType == null ? `Freemium(${subscriptionData.subscriptionStatus})` : `${subscriptionData.subscriptionType}(${subscriptionData.subscriptionStatus})`}
+                                <strong>Subscription & Status:</strong> {subscriptionData.subscriptionType == null ? `Freemium (${subscriptionData.subscriptionStatus})` : `${subscriptionData.subscriptionType} (${subscriptionData.subscriptionStatus})`}
                             </Typography>
                         </Box>
                     </Grid>

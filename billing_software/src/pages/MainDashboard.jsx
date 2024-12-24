@@ -102,7 +102,7 @@ const MainDashboard = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => navigate('/dashboard/user-profile')}
+                  onClick={() => navigate('/dashboard/subscription')}
                   sx={{ backgroundColor: '#1e1e2f' }}
                 >
                   Upgrade Now
