@@ -8,6 +8,8 @@ import {
   Alert,
   Paper,
   Divider,
+  InputAdornment,
+  IconButton
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
@@ -15,12 +17,14 @@ import { ReceiptHistoryContext } from '../context/ReceiptHistoryContext';
 import { SubscriptionContext } from '../context/SubscriptionContext';
 import toast from 'react-hot-toast';
 import LoadingScreen from './LoadingScreen';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { subscription, setSubscription } = useContext(SubscriptionContext);
   const { user, setUser } = useContext(UserContext);
@@ -36,31 +40,31 @@ export default function SignInPage() {
     console.log('Date 1:', date1Array);
     console.log('Date 2:', date2Array);
 
-    if(date1Array[0] < date2Array[0]) {
+    if (date1Array[0] < date2Array[0]) {
       return false;
-    } else if(date1Array[0] === date2Array[0]) {
-      if(date1Array[1] < date2Array[1]) {
+    } else if (date1Array[0] === date2Array[0]) {
+      if (date1Array[1] < date2Array[1]) {
         return false;
-      } else if(date1Array[1] === date2Array[1]) {
-        if(date1Array[2] < date2Array[2]) {
+      } else if (date1Array[1] === date2Array[1]) {
+        if (date1Array[2] < date2Array[2]) {
           return false;
         }
       }
     }
     return true;
   };
-    
+
 
   const handleSignIn = async (event) => {
     event.preventDefault();
     setError('');
-  
+
     // Ensure both email and password are provided
     if (!email || !password) {
       setError('Please enter both email and password.');
       return;
     }
-  
+
     try {
       // Step 1: Attempt to log in with provided credentials
       const loginResponse = await fetch(`${backend_url}/api/user/login`, {
@@ -68,15 +72,15 @@ export default function SignInPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-  
+
       if (!loginResponse.ok) {
         setError('Failed to log in. Please check your credentials.');
         return;
       }
-  
+
       const loginData = await loginResponse.json();
       localStorage.setItem('token', loginData.authToken);
-  
+
       // Step 2: Attempt to fetch the user's subscription status, but don't block login
       let subscriptionData = null;
       try {
@@ -87,7 +91,7 @@ export default function SignInPage() {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
         });
-  
+
         if (subscriptionResponse.ok) {
           subscriptionData = await subscriptionResponse.json();
           console.log('Subscription Data:', subscriptionData);
@@ -97,14 +101,14 @@ export default function SignInPage() {
       } catch (subscriptionError) {
         console.error('Error fetching subscription data:', subscriptionError);
       }
-      
+
       // Step 3: Check if the subscription has expired and update if needed
       if (subscriptionData !== null && subscriptionData.endData !== null && subscriptionData.subscriptionStatus !== 'Canceled') {
         console.log('Checking subscription status...');
-        const today = new Date().toISOString().split('T')[0];  
+        const today = new Date().toISOString().split('T')[0];
         console.log('chal')
-        console.log(checkDate(subscriptionData.endDate.slice(0,10), today));
-        if (!checkDate(subscriptionData.endDate.slice(0,10), today)) {
+        console.log(checkDate(subscriptionData.endDate.slice(0, 10), today));
+        if (!checkDate(subscriptionData.endDate.slice(0, 10), today)) {
           // Step 4: If expired, update the subscription status
           console.log(subscriptionData);
           try {
@@ -123,7 +127,7 @@ export default function SignInPage() {
                 endDate: subscriptionData.endDate,
               }),
             });
-  
+
             if (updateSubscriptionResponse.ok) {
               const updateSubscriptionData = await updateSubscriptionResponse.json();
               console.log('Subscription Updated:', updateSubscriptionData);
@@ -135,19 +139,19 @@ export default function SignInPage() {
           }
         }
       }
-  
+
       // Step 5: On successful login, navigate to the dashboard
       toast.success('Logged in successfully');
       navigate('/dashboard');
       setUser(email);
-  
+
     } catch (err) {
       // Handle any errors during the login process
       setError('An error occurred. Please try again later.');
     }
   };
-  
-  
+
+
 
   return loading ? (
     <LoadingScreen />
@@ -182,7 +186,6 @@ export default function SignInPage() {
             component="h1"
             fontWeight="bold"
             color="#2C3E50"
-            gutterBottom
           >
             Welcome Back 👋
           </Typography>
@@ -206,6 +209,7 @@ export default function SignInPage() {
             fullWidth
             id="email"
             label="Email Address"
+            type="email"
             name="email"
             autoComplete="email"
             autoFocus
@@ -226,7 +230,7 @@ export default function SignInPage() {
             fullWidth
             name="password"
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             autoComplete="current-password"
             value={password}
@@ -237,6 +241,19 @@ export default function SignInPage() {
                 '&:hover fieldset': { borderColor: '#1976D2' },
                 '&.Mui-focused fieldset': { borderColor: '#1976D2' },
               },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                    aria-label="toggle password visibility"
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
           />
 

@@ -10,12 +10,14 @@ import {
   Divider,
   MenuItem,
   Grid,
-  LinearProgress,
+  InputAdornment,
+  IconButton
 } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import LoadingScreen from './LoadingScreen';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 // Password Strength Utility
 const getPasswordStrength = (password) => {
@@ -40,6 +42,8 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const backend_url = process.env.REACT_APP_BACKEND_URL;
   const navigate = useNavigate();
@@ -195,7 +199,7 @@ export default function SignUpPage() {
 
           {/* Sign-Up Form */}
           <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, maxWidth: 500, width: '100%' }}>
-            <Typography variant="h4" textAlign="center" fontWeight="bold" color="#2C3E50" mb={1}>
+            <Typography variant="h4" textAlign="center" fontWeight="bold" color="#2C3E50" mb={0}>
               Create an Account
             </Typography>
             <Typography variant="body2" color="#5A6A85" textAlign="center">
@@ -206,18 +210,60 @@ export default function SignUpPage() {
 
             <Box component="form" onSubmit={handleOtpModalOpen} noValidate>
               <Grid container spacing={2}>
-                <Grid item xs={12}><TextField label="Full Name" name="name" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={12}><TextField label="Company Name" name="companyName" fullWidth onChange={handleInputChange} /></Grid>
-                <Grid item xs={12}><TextField label="Email" name="email" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={6}><TextField label="Password" name="password" type="password" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={6}><TextField label="Confirm Password" name="confirmPassword" type="password" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={12}><TextField label="Mobile Number" name="mobileNumber" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={6}><TextField select label="Country" name="country" fullWidth onChange={handleInputChange}>{countries.map((c) => (<MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>))}</TextField></Grid>
-                <Grid item xs={6}><TextField select label="State" name="state" fullWidth onChange={handleInputChange}>{states.map((s) => (<MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>))}</TextField></Grid>
+                <Grid item xs={12}><TextField label="Full Name" name="name" type='text' fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={12}><TextField label="Company Name" name="companyName" type='text' fullWidth onChange={handleInputChange} /></Grid>
+                <Grid item xs={12}><TextField label="Email" name="email" type='email' fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={6}><TextField label="Password" name="password" type={showPassword ? 'text' : 'password'} fullWidth required onChange={handleInputChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                          aria-label="toggle password visibility"
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                /></Grid>
+                <Grid item xs={6}><TextField label="Confirm Password" name="confirmPassword" type={showConfirmPassword ? 'text' : 'password'} fullWidth required onChange={handleInputChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          edge="end"
+                          aria-label="toggle password visibility"
+                        >
+                          {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                /></Grid>
+                <Grid item xs={12}><TextField label="Mobile Number" name="mobileNumber" type='tel' fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={6}><TextField select label="Country" name="country" type='text' fullWidth onChange={handleInputChange}>{countries.map((c) => (<MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>))}</TextField></Grid>
+                <Grid item xs={6}><TextField select label="State" name="state" type='text' fullWidth onChange={handleInputChange}>{states.map((s) => (<MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>))}</TextField></Grid>
               </Grid>
 
+              <Typography
+                variant="body2"
+                sx={{ mt: 2, textAlign: 'center', color: '#5A6A85' }}
+              >
+                Already have an account?{''}
+                <Button
+                  color="primary"
+                  onClick={() => navigate('/')}
+                  sx={{ textTransform: 'none', p: 0 }}
+                >
+                  Log In
+                </Button>
+              </Typography>
+
               <Button variant="contained" color="primary" fullWidth type="submit" sx={{
-                mt: 3, mb: 2,
+                mt: 1, mb: 2,
                 py: 1.5,
                 fontSize: '1rem',
                 fontWeight: 'bold',
