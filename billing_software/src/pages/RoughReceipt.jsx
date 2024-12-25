@@ -1,10 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Box, Badge } from '@mui/material';
 import RoughEstimate from '../components/RoughEstimate'; // Assume these are your components
 import Dashboard from '../components/Dashboard'; // Assume these are your components
 
 const RoughReceipt = () => {
     const [selectedOption, setSelectedOption] = useState('manual'); // Default to 'manual'
+    let [subscription, setSubscription] = useState();
+
+    const backend_url = process.env.REACT_APP_BACKEND_URL;
+
+    const handleSubscriptionStatus = async () => {
+        const subscriptionResponse = await fetch(`${backend_url}/api/subscription/`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              },
+          });
+          if(subscriptionResponse.ok) {
+            const data = await subscriptionResponse.json();
+            subscription = data;
+            console.log(subscription);
+          } else {
+            console.log('Error fetching subscription data');
+          }
+      }
+    
+      useEffect(() => {
+        handleSubscriptionStatus();
+      }, []);
+    
 
     return (
         <Box
@@ -38,7 +63,11 @@ const RoughReceipt = () => {
                 >
                     <Button
                         variant={selectedOption === 'automatic' ? 'contained' : 'outlined'}
-                        onClick={() => setSelectedOption('automatic')}
+                        onClick={() => {
+                            if(subscription.subscriptionType === 'Premium' && subscription.subscriptionStatus === 'Active') {
+                                setSelectedOption('automatic')
+                            }
+                        }}
                         sx={{
                             backgroundColor: selectedOption === 'automatic' ? '#1e1e2f' : 'transparent',
                             color: selectedOption === 'automatic' ? '#ffffff' : '#1e1e2f',

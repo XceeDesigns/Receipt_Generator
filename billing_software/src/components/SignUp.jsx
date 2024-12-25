@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   TextField,
@@ -10,12 +10,14 @@ import {
   Divider,
   MenuItem,
   Grid,
-  LinearProgress,
+  InputAdornment,
+  IconButton
 } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import LoadingScreen from './LoadingScreen';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 // Password Strength Utility
 const getPasswordStrength = (password) => {
@@ -40,23 +42,27 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(300); // 5 minutes in seconds
 
   const backend_url = process.env.REACT_APP_BACKEND_URL;
   const navigate = useNavigate();
 
   const countries = [
-    { label: 'India', value: 'IN' },
-    { label: 'United States', value: 'US' },
-    { label: 'Australia', value: 'AU' },
+    { label: 'India', value: 'India' },
   ];
 
   const states = [
-    { label: 'Uttar Pradesh', value: 'UP' },
-    { label: 'Uttarakhand', value: 'UK' },
-    { label: 'Karnataka', value: 'KA' },
+    { label: 'Uttar Pradesh', value: 'Uttar Pradesh' },
+    { label: 'Uttarakhand', value: 'Uttarakhand' },
+    { label: 'Karnataka', value: 'Karnataka' },
   ];
 
-  const handleOtpModalClose = () => setIsOtpModalOpen(false);
+  const handleOtpModalClose = () => {
+    setIsOtpModalOpen(false);
+    setRemainingTime(300); // Reset the timer when the modal is closed
+  };
 
   const handleOtpModalOpen = async (e) => {
     e.preventDefault();
@@ -89,11 +95,28 @@ export default function SignUpPage() {
       toast.success('OTP has been sent to your email.');
       setIsOtpModalOpen(true);
       setLoading(false);
+      setRemainingTime(300); // Reset the timer when the modal is opened
     } catch (err) {
       console.error(err);
       setError('An error occurred. Please try again later.');
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (isOtpModalOpen && remainingTime > 0) {
+      const timer = setInterval(() => {
+        setRemainingTime((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(timer); // Cleanup on component unmount or modal close
+    }
+  }, [isOtpModalOpen, remainingTime]);
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const handleInputChange = (e) => {
@@ -174,10 +197,10 @@ export default function SignUpPage() {
                 bgcolor: 'background.paper',
                 borderRadius: 2,
                 boxShadow: 24,
-                p: 4,
+                p: 3,
               }}
             >
-              <Typography variant="h5" fontWeight="bold" mb={2} color="primary">
+              <Typography variant="h5" fontWeight="bold" mb={1} color="#2C3E50" textAlign="center">
                 Verify Your OTP
               </Typography>
               <TextField
@@ -189,6 +212,22 @@ export default function SignUpPage() {
                 inputProps={{ maxLength: 6 }}
                 sx={{ mb: 2 }}
               />
+              <Typography
+                variant="body2"
+                color="black"
+                sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold' }}
+              >
+                OTP will expire in {formatTime(remainingTime)}
+              </Typography>
+              {remainingTime === 0 && (
+                <Typography
+                  variant="body2"
+                  color="error"
+                  sx={{ mt: 0,mb: 2, textAlign: 'center' }}
+                >
+                  OTP has expired. Please request a new one.
+                </Typography>
+              )}
               <Button variant="contained" color="primary" fullWidth onClick={handleValidate}>
                 Verify OTP
               </Button>
@@ -197,25 +236,83 @@ export default function SignUpPage() {
 
           {/* Sign-Up Form */}
           <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, maxWidth: 500, width: '100%' }}>
-            <Typography variant="h4" textAlign="center" color="primary" mb={2}>
+            <Typography variant="h4" textAlign="center" fontWeight="bold" color="#2C3E50" mb={0}>
               Create an Account
             </Typography>
-            <Divider sx={{ my: 2 }} />
+            <Typography variant="body2" color="#5A6A85" textAlign="center">
+              Join the family of OrnaCloud
+            </Typography>
+            <Divider sx={{ mt: 1, mb: 2 }} />
             {error && <Alert severity="error">{error}</Alert>}
 
             <Box component="form" onSubmit={handleOtpModalOpen} noValidate>
               <Grid container spacing={2}>
-                <Grid item xs={12}><TextField label="Full Name" name="name" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={12}><TextField label="Company Name" name="companyName" fullWidth onChange={handleInputChange} /></Grid>
-                <Grid item xs={12}><TextField label="Email" name="email" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={6}><TextField label="Password" name="password" type="password" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={6}><TextField label="Confirm Password" name="confirmPassword" type="password" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={12}><TextField label="Mobile Number" name="mobileNumber" fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={6}><TextField select label="Country" name="country" fullWidth onChange={handleInputChange}>{countries.map((c) => (<MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>))}</TextField></Grid>
-                <Grid item xs={6}><TextField select label="State" name="state" fullWidth onChange={handleInputChange}>{states.map((s) => (<MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>))}</TextField></Grid>
+                <Grid item xs={12}><TextField label="Full Name" name="name" type='text' fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={12}><TextField label="Company Name" name="companyName" type='text' fullWidth onChange={handleInputChange} /></Grid>
+                <Grid item xs={12}><TextField label="Email" name="email" type='email' fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={6}><TextField label="Password" name="password" type={showPassword ? 'text' : 'password'} fullWidth required onChange={handleInputChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                          aria-label="toggle password visibility"
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                /></Grid>
+                <Grid item xs={6}><TextField label="Confirm Password" name="confirmPassword" type={showConfirmPassword ? 'text' : 'password'} fullWidth required onChange={handleInputChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          edge="end"
+                          aria-label="toggle password visibility"
+                        >
+                          {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                /></Grid>
+                <Grid item xs={12}><TextField label="Mobile Number" name="mobileNumber" type='tel' fullWidth required onChange={handleInputChange} /></Grid>
+                <Grid item xs={6}><TextField select label="Country" name="country" type='text' fullWidth onChange={handleInputChange}>{countries.map((c) => (<MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>))}</TextField></Grid>
+                <Grid item xs={6}><TextField select label="State" name="state" type='text' fullWidth onChange={handleInputChange}>{states.map((s) => (<MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>))}</TextField></Grid>
               </Grid>
 
-              <Button variant="contained" color="primary" fullWidth type="submit" sx={{ mt: 3 }}>Sign Up</Button>
+              <Typography
+                variant="body2"
+                sx={{ mt: 2, textAlign: 'center', color: '#5A6A85' }}
+              >
+                Already have an account?{''}
+                <Button
+                  color="primary"
+                  onClick={() => navigate('/')}
+                  sx={{ textTransform: 'none', p: 0 }}
+                >
+                  Log In
+                </Button>
+              </Typography>
+
+              <Button variant="contained" color="primary" fullWidth type="submit" sx={{
+                mt: 1, mb: 1,
+                py: 1.5,
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                backgroundColor: '#1976D2',
+                color: '#fff',
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: '#145DA0',
+                },
+              }}>
+                Sign Up
+              </Button>
             </Box>
           </Paper>
         </Container>
