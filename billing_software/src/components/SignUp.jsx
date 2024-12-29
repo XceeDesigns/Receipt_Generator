@@ -138,10 +138,11 @@ export default function SignUpPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
-
-      if (!response.ok) {
+      const otpdata = await response.json();
+      if (otpdata.status === 408) {
         setError('Invalid OTP. Please try again.');
         toast.error('Invalid OTP.');
+        setLoading(false);
         return;
       }
 

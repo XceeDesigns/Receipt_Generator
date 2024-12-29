@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Container,
@@ -8,12 +8,22 @@ import {
     CardContent,
     CardActions,
     Button,
-    Badge
+    Badge,
+    MenuItem,
+    FormControl,
+    Select,
+    InputLabel
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import { jwtDecode } from 'jwt-decode';
+import { useRazorpay } from "react-razorpay";
 
 const Subscription = () => {
+
+    const backend_url = process.env.REACT_APP_BACKEND_URL;
+    const { Razorpay } = useRazorpay();
+
     const plans = [
         {
             title: 'Beginner Plan',
@@ -37,6 +47,137 @@ const Subscription = () => {
 
     const navigate = useNavigate();
 
+    const [liteDuration, setLiteDuration] = useState('');
+    const [proDuration, setProDuration] = useState('');
+    const [user, setUser] = useState({});
+
+    const startSubscription = async () => {
+        console.log('Starting subscription');
+        const addSubscription = await fetch(`${backend_url}/api/subscription/start`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: JSON.stringify({
+                subscriptionType: 'Free',
+                subscriptionStatus: 'Active',
+                user: jwtDecode(localStorage.getItem('token')).sub,
+                startDate: new Date(),
+                endDate: new Date(),
+            }),
+        });
+        const data = await addSubscription.json();
+        console.log(data);
+        setUser(data);
+        navigate('/dashboard/user-profile');
+    };
+
+    const fetchUser = async () => {
+        try {
+            const response = await fetch(`${backend_url}/api/user/fetch`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.log('Error fetching user data');
+        }
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
+    const handleLiteSubscription = async () => {
+        console.log('Lite Plan Duration:', liteDuration);
+        const amount = liteDuration === '1month' ? 9 : liteDuration === '3month' ? 27 : liteDuration === '6month' ? 54 : 108;
+        const response = await fetch(`${backend_url}/api/payment/createOrder?amount=${amount}`
+            , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            }
+        );
+        const order = await response.json();
+        console.log(order);
+        var options = {
+            "key_id": "rzp_test_6WAqYcpc5WOf2p", // Replace with your Razorpay Key ID
+            "amount": order.amount, // Amount in paise
+            "currency": order.currency,
+            "name": "XceeDesigns",
+            "description": "Test Transaction",
+            "order_id": order.id, // Pass the order ID received from backend
+            "handler": function (response) {
+                // This function will be called after successful payment
+                console.log("Payment ID: ", response.razorpay_payment_id);
+                console.log("Order ID: ", response.razorpay_order_id);
+                console.log("Signature: ", response.razorpay_signature);
+
+                // Step 3: Send to backend for verification
+                fetch(`${backend_url}/api/payment/verifyPayment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({
+                        orderId: response.razorpay_order_id,
+                        paymentId: response.razorpay_payment_id,
+                        signature: response.razorpay_signature,
+                    })
+                })
+                    .then(res => res.json())
+                    .then(async data => {
+                        if (data.status === 'success') {
+                            const endDate = new Date().setMonth(new Date().getMonth() + (liteDuration === '1month' ? 1 : liteDuration === '3month' ? 3 : liteDuration === '6month' ? 6 : 12));
+                            try{
+                                const updateSubscription = await fetch(`${backend_url}/api/subscription/update`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                                    },
+                                    body: JSON.stringify({
+                                        subscriptionType: 'Lite',
+                                        subscriptionStatus: 'Active',
+                                        user: jwtDecode(localStorage.getItem('token')).sub,
+                                        startDate: new Date(),
+                                        endDate: endDate,
+                                    }), 
+                                });
+                                const data = await updateSubscription.json();
+                                console.log("Update Subscription:", data);
+                            } catch (error) {
+                                console.log('Error verifying payment');
+                            }
+                            alert('Payment successful and verified!');
+                        } else {
+                            alert('Payment verification failed!');
+                        }
+                    });
+            },
+            "prefill": {
+                "name": user.name,
+                "email": user.email
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    };
+
+    const handleProSubscription = () => {
+        console.log('Pro Plan Duration:', proDuration);
+        // Add logic for Pro plan subscription
+    };
+
     return (
         <Container
             maxWidth="lg"
@@ -48,13 +189,13 @@ const Subscription = () => {
                 mb: 4,
             }}
         >
-            <Typography variant="h4" fontWeight="bold" gutterBottom color='#1e1e2f'>
+            <Typography variant="h4" fontWeight="bold" color='#1e1e2f'>
                 Choose Your Subscription Plan
             </Typography>
-            <Typography variant="body1" color="textSecondary" gutterBottom>
+            <Typography variant="body1" color="textSecondary">
                 Select a plan that suits your needs and enjoy exclusive features.
             </Typography>
-            <Grid container spacing={4} sx={{ mt: 3 }}>
+            <Grid container spacing={4} sx={{ mt: 1 }}>
                 {plans.map((plan, index) => (
                     <Grid item xs={12} sm={6} md={4} key={index}>
                         <Card
@@ -91,13 +232,13 @@ const Subscription = () => {
                                 />
                             )}
                             <CardContent>
-                                <Typography variant="h5" fontWeight="bold" color="#2C3E50" sx={{ mt: 1 }}>
+                                <Typography variant="h5" fontWeight="bold" color="#2C3E50" sx={{ mt: 0 }}>
                                     {plan.title}
                                 </Typography>
                                 <Typography variant="subtitle2" color="grey">
                                     {plan.subtitle}
                                 </Typography>
-                                <Typography variant="h4" fontWeight="bold" fontFamily="cursive" sx={{ mt: 2, display: 'flex', flexdirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                <Typography variant="h4" fontWeight="bold" fontFamily="cursive" sx={{ mt: 1, display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                                     {plan.price}
                                     <Typography
                                         component="span"
@@ -124,6 +265,22 @@ const Subscription = () => {
                                         </Typography>
                                     ))}
                                 </Box>
+                                {(plan.title === 'Explorer Plan (Lite)' || plan.title === 'Expert Plan (Pro)') && (
+                                    <FormControl fullWidth sx={{ mt: 2 }}>
+                                        <InputLabel id={`${plan.title}-duration-label`}>Duration</InputLabel>
+                                        <Select
+                                            labelId={`${plan.title}-duration-label`}
+                                            value={plan.title === 'Explorer Plan (Lite)' ? liteDuration : proDuration}
+                                            onChange={(e) => plan.title === 'Explorer Plan (Lite)' ? setLiteDuration(e.target.value) : setProDuration(e.target.value)}
+                                            label="Duration"
+                                        >
+                                            <MenuItem value="1month">1 Month</MenuItem>
+                                            <MenuItem value="3month">3 Months</MenuItem>
+                                            <MenuItem value="6month">6 Months</MenuItem>
+                                            <MenuItem value="12month">12 Months</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                )}
                             </CardContent>
                             <CardActions>
                                 <Button
@@ -137,7 +294,16 @@ const Subscription = () => {
                                             backgroundColor: '#1A2536', // Darker shade for hover effect
                                         }
                                     }}
-                                    onClick={plan.title === 'Beginner Plan' ? () => navigate('/dashboard/user-profile') : () => navigate('/dashboard/subscription')}
+                                    onClick={() => {
+                                        if (plan.title === 'Beginner Plan') {
+                                            startSubscription();
+                                        } else if (plan.title === 'Explorer Plan (Lite)') {
+                                            handleLiteSubscription();
+                                        } else {
+                                            handleProSubscription();
+                                        }
+                                    }}
+                                    disabled={(plan.title === 'Explorer Plan (Lite)' && !liteDuration) || (plan.title === 'Expert Plan (Pro)' && !proDuration)}
                                 >
                                     {plan.title === 'Beginner Plan' ? 'Get Started' : 'Upgrade'}
                                 </Button>
