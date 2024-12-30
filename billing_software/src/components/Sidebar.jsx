@@ -23,6 +23,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import HistoryIcon from '@mui/icons-material/History';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useNavigate } from 'react-router-dom';
+import ContactPageIcon from '@mui/icons-material/ContactPage';
 
 function Sidebar({ mobileOpen, handleDrawerToggle }) {
   const drawerWidth = 260;
@@ -79,32 +80,6 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
             sx={{ color: '#ecf0f1' }}
           />
         </ListItem>
-        {/* <ListItem button>
-          <ListItemIcon>
-            <ReceiptIcon sx={{ color: '#ecf0f1' }} />
-          </ListItemIcon>
-          <ListItemText
-            primary={
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                GST Receipt
-                <Badge
-                  badgeContent="Lite"
-                  color="secondary"
-                  sx={{
-                    marginLeft: 1,
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    backgroundColor: '#FFD700',
-                    color: '#2C3E50',
-                    borderRadius: 1,
-                    padding: '2px 6px',
-                  }}
-                />
-              </Box>
-            }
-            sx={{ color: '#ecf0f1' }}
-          />
-        </ListItem> */}
         <ListItem button onClick={() => navigateTo('/dashboard/rough-receipt')} sx={{ cursor: 'pointer' }}>
           <ListItemIcon>
             <DescriptionIcon sx={{ color: '#ecf0f1' }} />
@@ -163,6 +138,33 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
           <ListItemText primary="History" sx={{ color: '#ecf0f1' }} />
         </ListItem>
       </List>
+
+      <ListItem button>
+          <ListItemIcon>
+            <ContactPageIcon sx={{ color: '#ecf0f1' }} />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                Contact Us
+                <Badge
+                  badgeContent="Lite"
+                  color="secondary"
+                  sx={{
+                    marginLeft: 1,
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    backgroundColor: '#FFD700',
+                    color: '#2C3E50',
+                    borderRadius: 1,
+                    padding: '2px 6px',
+                  }}
+                />
+              </Box>
+            }
+            sx={{ color: '#ecf0f1' }}
+          />
+        </ListItem>
 
       {/* Subscription Plan Section */}
       <Box sx={{ mt: 'auto', mb: 2, px: 2 }}>

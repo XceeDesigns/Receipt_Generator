@@ -66,7 +66,7 @@ function RoughEstimate() {
 
         // Recalculate the values for nWt, lWt, and Amount after user changes any relevant field
         if (field === 'gWt' || field === 'tunch' || field === 'sWt') {
-            updatedItems[index].nWt = ((parseFloat(updatedItems[index].gWt) * parseFloat(updatedItems[index].tunch)) / 100).toFixed(3) - parseFloat(updatedItems[index].sWt);
+            updatedItems[index].nWt = (((parseFloat(updatedItems[index].gWt) * parseFloat(updatedItems[index].tunch)) / 100).toFixed(3) - parseFloat(updatedItems[index].sWt)).toFixed(3);
             updatedItems[index].lWt = (parseFloat(updatedItems[index].gWt) - parseFloat(updatedItems[index].nWt)).toFixed(3);
 
         }
@@ -75,7 +75,7 @@ function RoughEstimate() {
             if (updatedItems[index].type === 'Gold')
                 updatedItems[index].rate = (parseFloat(updatedItems[index].sRate) + ((parseFloat(updatedItems[index].nWt)).toFixed(3)) * (receiptData._24kRate / 10));
             else
-                updatedItems[index].rate = (parseFloat(updatedItems[index].sRate) + (parseFloat(updatedItems[index].nWt)) * (receiptData.silverBhav / 1000));
+                updatedItems[index].rate = (parseFloat(updatedItems[index].sRate) + (parseFloat(updatedItems[index].nWt)) * (receiptData.silverBhav / 1000)).toFixed(2);
         }
 
         if (field === 'rate' || field === 'gold' || field === 'silver' || field === 'labour' || field === 'tunch') {
@@ -127,6 +127,7 @@ function RoughEstimate() {
                         businessName: data[data.length - 1].businessName,
                         address: data[data.length - 1].address,
                         phone: data[data.length - 1].phone,
+                        gst: data[data.length - 1].gst,
                         sgst: data[data.length - 1].sgst,
                         cgst: data[data.length - 1].cgst,
                         documentTitle: data[data.length - 1].documentTitle,
@@ -142,7 +143,7 @@ function RoughEstimate() {
     }, []);
 
     useEffect(() => {
-        if(receiptData.sgst || receiptData.cgst){
+        if (receiptData.sgst || receiptData.cgst) {
             receiptData.sgstValue = (parseFloat(receiptData.closingBalance) * parseFloat(receiptData.sgst) / 100).toFixed(2);
             receiptData.cgstValue = (parseFloat(receiptData.closingBalance) * parseFloat(receiptData.cgst) / 100).toFixed(2);
             receiptData.totalGst = (parseFloat(receiptData.sgstValue) + parseFloat(receiptData.cgstValue)).toFixed(2);
@@ -201,7 +202,7 @@ function RoughEstimate() {
             return total + amount;
         }, 0).toFixed(2); // Rounds to 2 decimal places
         receiptData.closingBalance = closingBalance;
-        if(receiptData.sgst || receiptData.cgst){
+        if (receiptData.sgst || receiptData.cgst) {
             return (parseFloat(receiptData.closingBalance) + parseFloat(receiptData.totalGst)).toFixed(2);
         }
         return receiptData.closingBalance;
@@ -433,31 +434,35 @@ function RoughEstimate() {
                         {/* Terms & Conditions */}
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
-                            <TextField
-                                    fullWidth
-                                    label="SGST"
-                                    variant="outlined"
-                                    margin="dense"
-                                    value={receiptData.sgst}
-                                    onChange={(e) => handleFormChange('sgst', e.target.value)}
-                                />
-                                <TextField
-                                    fullWidth
-                                    label="CGST"
-                                    variant="outlined"
-                                    margin="dense"
-                                    value={receiptData.cgst}
-                                    onChange={(e) => handleFormChange('cgst', e.target.value)}
-                                />
-                                <TextField
-                                    fullWidth
-                                    label="Total GST"
-                                    variant="outlined"
-                                    margin="dense"
-                                    value={receiptData.totalGst}
-                                    onChange={(e) => handleFormChange('totalGst', e.target.value)}
-                                />
-                                <Typography variant="subtitle1" sx={{ fontWeight: 500, marginTop: 2 }}>Terms & Conditions:</Typography>
+                                {receiptData.gst ?
+                                    <>
+                                        <TextField
+                                            fullWidth
+                                            label="SGST"
+                                            variant="outlined"
+                                            margin="dense"
+                                            value={receiptData.sgst}
+                                            onChange={(e) => handleFormChange('sgst', e.target.value)}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="CGST"
+                                            variant="outlined"
+                                            margin="dense"
+                                            value={receiptData.cgst}
+                                            onChange={(e) => handleFormChange('cgst', e.target.value)}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="Total GST"
+                                            variant="outlined"
+                                            margin="dense"
+                                            value={receiptData.totalGst}
+                                            onChange={(e) => handleFormChange('totalGst', e.target.value)}
+                                        />
+                                    </>
+                                    : null}
+                                <Typography variant="subtitle1" sx={{ fontWeight: 500, marginTop: 0 }}>Terms & Conditions:</Typography>
                                 <TextField
                                     fullWidth
                                     label="18K Return"
