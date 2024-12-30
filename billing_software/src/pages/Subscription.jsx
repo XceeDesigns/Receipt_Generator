@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import { jwtDecode } from 'jwt-decode';
 import { useRazorpay } from "react-razorpay";
+import toast from 'react-hot-toast';
 
 const Subscription = () => {
 
@@ -50,6 +51,7 @@ const Subscription = () => {
     const [liteDuration, setLiteDuration] = useState('');
     const [proDuration, setProDuration] = useState('');
     const [user, setUser] = useState({});
+    const [status, setStatus] = useState({});
 
     const startSubscription = async () => {
         console.log('Starting subscription');
@@ -73,6 +75,23 @@ const Subscription = () => {
         navigate('/dashboard/user-profile');
     };
 
+    const fetchStatus = async () => {
+        try {
+            const response = await fetch(`${backend_url}/api/subscription/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            const data = await response.json();
+            console.log(data);
+            setStatus(data);
+        } catch (error) {
+            console.log('Error fetching subscription status');
+        }
+    };
+
     const fetchUser = async () => {
         try {
             const response = await fetch(`${backend_url}/api/user/fetch`, {
@@ -91,6 +110,7 @@ const Subscription = () => {
 
     useEffect(() => {
         fetchUser();
+        fetchStatus();
     }, []);
 
     const handleLiteSubscription = async () => {
@@ -100,7 +120,7 @@ const Subscription = () => {
             , {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', 
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
             }
@@ -114,54 +134,47 @@ const Subscription = () => {
             "name": "XceeDesigns",
             "description": "Test Transaction",
             "order_id": order.id, // Pass the order ID received from backend
-            "handler": function (response) {
-                // This function will be called after successful payment
+            "handler": async function (response) {
                 console.log("Payment ID: ", response.razorpay_payment_id);
                 console.log("Order ID: ", response.razorpay_order_id);
                 console.log("Signature: ", response.razorpay_signature);
 
-                // Step 3: Send to backend for verification
-                fetch(`${backend_url}/api/payment/verifyPayment`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    },
-                    body: JSON.stringify({
-                        orderId: response.razorpay_order_id,
-                        paymentId: response.razorpay_payment_id,
-                        signature: response.razorpay_signature,
-                    })
-                })
-                    .then(res => res.json())
-                    .then(async data => {
-                        if (data.status === 'success') {
-                            const endDate = new Date().setMonth(new Date().getMonth() + (liteDuration === '1month' ? 1 : liteDuration === '3month' ? 3 : liteDuration === '6month' ? 6 : 12));
-                            try{
-                                const updateSubscription = await fetch(`${backend_url}/api/subscription/update`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                                    },
-                                    body: JSON.stringify({
-                                        subscriptionType: 'Lite',
-                                        subscriptionStatus: 'Active',
-                                        user: jwtDecode(localStorage.getItem('token')).sub,
-                                        startDate: new Date(),
-                                        endDate: endDate,
-                                    }), 
-                                });
-                                const data = await updateSubscription.json();
-                                console.log("Update Subscription:", data);
-                            } catch (error) {
-                                console.log('Error verifying payment');
-                            }
-                            alert('Payment successful and verified!');
+                // const endDate = new Date().setMonth(new Date().getMonth() + (liteDuration === '1month' ? 1 : liteDuration === '3month' ? 3 : liteDuration === '6month' ? 6 : 12));
+                try {
+                    console.log(status._id);
+                    const endDate = () => {
+                        const date = new Date();
+                        if (liteDuration === '1month') {
+                            return date.setMonth(date.getMonth() + 1);
+                        } else if (liteDuration === '3month') {
+                            return date.setMonth(date.getMonth() + 3);
+                        } else if (liteDuration === '6month') {
+                            return date.setMonth(date.getMonth() + 6);
                         } else {
-                            alert('Payment verification failed!');
+                            return date.setMonth(date.getMonth() + 12);
                         }
+                    }
+                    const updateSubscription = await fetch(`${backend_url}/api/subscription/update`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                        body: JSON.stringify({
+                            subscriptionType: 'Lite',
+                            subscriptionStatus: 'Active',
+                            _id: status._id,
+                            user: jwtDecode(localStorage.getItem('token')).sub,
+                            startDate: new Date(),
+                            endDate: endDate(),
+                        }),
                     });
+                    const data = await updateSubscription.json();
+                    console.log("Update Subscription:", data);
+                    alert('Payment successful and subscription updated!');
+                } catch (error) {
+                    console.log('Error updating subscription');
+                }
             },
             "prefill": {
                 "name": user.name,
@@ -173,9 +186,81 @@ const Subscription = () => {
         rzp1.open();
     };
 
-    const handleProSubscription = () => {
+    const handleProSubscription = async () => {
         console.log('Pro Plan Duration:', proDuration);
-        // Add logic for Pro plan subscription
+        const amount = proDuration === '1month' ? 49 : proDuration === '3month' ? 147 : proDuration === '6month' ? 294 : 588;
+        const response = await fetch(`${backend_url}/api/payment/createOrder?amount=${amount}`
+            , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            }
+        );
+        const order = await response.json();
+        console.log(order);
+        var options = {
+            "key_id": "rzp_test_6WAqYcpc5WOf2p", // Replace with your Razorpay Key ID
+            "amount": order.amount, // Amount in paise
+            "currency": order.currency,
+            "name": "XceeDesigns",
+            "description": "Test Transaction",
+            "order_id": order.id, // Pass the order ID received from backend
+            "handler": async function (response) {
+                console.log("Payment ID: ", response.razorpay_payment_id);
+                console.log("Order ID: ", response.razorpay_order_id);
+                console.log("Signature: ", response.razorpay_signature);
+
+                // const endDate = new Date().setMonth(new Date().getMonth() + (liteDuration === '1month' ? 1 : liteDuration === '3month' ? 3 : liteDuration === '6month' ? 6 : 12));
+                try {
+                    console.log(status._id);
+                    const endDate = () => {
+                        const date = new Date();
+                        if (proDuration === '1month') {
+                            return date.setMonth(date.getMonth() + 1);
+                        } else if (proDuration === '3month') {
+                            return date.setMonth(date.getMonth() + 3);
+                        } else if (proDuration === '6month') {
+                            return date.setMonth(date.getMonth() + 6);
+                        } else {
+                            return date.setMonth(date.getMonth() + 12);
+                        }
+                    }
+                    const updateSubscription = await fetch(`${backend_url}/api/subscription/update`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                        body: JSON.stringify({
+                            subscriptionType: 'Premium',
+                            subscriptionStatus: 'Active',
+                            _id: status._id,
+                            user: jwtDecode(localStorage.getItem('token')).sub,
+                            startDate: new Date(),
+                            endDate: endDate(),
+                        }),
+                    });
+                    const data = await updateSubscription.json();
+                    console.log("Update Subscription:", data);
+                    alert('Payment successful and subscription updated!');
+                } catch (error) {
+                    console.log('Error updating subscription');
+                }
+            },
+            "prefill": {
+                "name": user.name,
+                "email": user.email
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    };
+
+    const handlePayment = () => {
+        toast('Feature not available');
     };
 
     return (
@@ -298,9 +383,9 @@ const Subscription = () => {
                                         if (plan.title === 'Beginner Plan') {
                                             startSubscription();
                                         } else if (plan.title === 'Explorer Plan (Lite)') {
-                                            handleLiteSubscription();
+                                            handlePayment();
                                         } else {
-                                            handleProSubscription();
+                                            handlePayment();
                                         }
                                     }}
                                     disabled={(plan.title === 'Explorer Plan (Lite)' && !liteDuration) || (plan.title === 'Expert Plan (Pro)' && !proDuration)}

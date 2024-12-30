@@ -68,6 +68,12 @@ const JewellerReceipt = () => {
       customerName: '',
       customerAddress: '',
       customerPhone: '',
+      gst: '',
+      cgst: '',
+      cgstValue: '',
+      sgst: '',
+      sgstValue: '',
+      totalGst: '',
       billNumber: '',
       date: '',
       user: '',
@@ -149,8 +155,44 @@ const JewellerReceipt = () => {
 
         <Divider sx={{ marginY: 2 }} />
 
+        {receiptData.gst ? <TableContainer component={Paper} sx={{ marginBottom: 0 }}>
+          <Table>
+            <TableBody>
+              <TableRow>
+                {/* First Column */}
+                <TableCell
+                  sx={{
+                    width: '50%',
+                    border: '1px solid #ccc',
+                    textAlign: 'left',
+                    padding: 2
+                  }}
+                >
+                  <Typography variant="body2" textAlign="center">
+                    GSTIN: {receiptData.gst}
+                  </Typography>
+                </TableCell>
+
+                {/* Second Column */}
+                <TableCell
+                  sx={{
+                    width: '50%',
+                    border: '1px solid #ccc',
+                    textAlign: 'left',
+                    padding: 2
+                  }}
+                >
+                  <Typography variant="body2" textAlign="center">
+                    Original/Duplicate
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer> : null}
+
         {/* Items Table */}
-        <TableContainer component={Paper} sx={{ marginY: 3 }}>
+        <TableContainer component={Paper} sx={{ marginTop: 2, marginBottom: 3 }}>
           <Table
             size="small"
             sx={{
@@ -240,7 +282,7 @@ const JewellerReceipt = () => {
                 <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}></TableCell>
                 <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}></TableCell>
                 <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}></TableCell>
-                <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}></TableCell>
+                <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}>with GST</TableCell>
                 <TableCell
                   sx={{
                     textAlign: 'right',
@@ -255,18 +297,101 @@ const JewellerReceipt = () => {
         </TableContainer>
 
 
-        {/* Payment Summary */}
-        <Box sx={{ textAlign: 'right', marginTop: 3 }}>
-          <Typography variant="body2">
-            <strong>Closing Balance:</strong> ₹{receiptData.closingBalance}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Paid Amount:</strong> ₹{receiptData.paidAmount}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Due Amount:</strong> ₹{receiptData.currentDue}
-          </Typography>
-        </Box>
+        <TableContainer>
+          <Table sx={{ width: '100%' }} size="small">
+            <TableBody>
+              <TableRow>
+                {/* Left Column */}
+                {receiptData.gst ? 
+                <>
+                <TableCell sx={{ width: '50%', verticalAlign: 'top', border: '1px solid #ccc' }}>
+                  <Table size="small">
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }}>
+                          <strong>CGST</strong>
+                        </TableCell>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }}>
+                          {receiptData.cgst}%
+                        </TableCell>
+                        <TableCell align="right" sx={{ border: '1px solid #ccc' }}>
+                          ₹{receiptData.cgstValue}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }}>
+                          <strong>SGST</strong>
+                        </TableCell>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }}>
+                          {receiptData.sgst}%
+                        </TableCell>
+                        <TableCell align="right" sx={{ border: '1px solid #ccc' }}>
+                          ₹{receiptData.sgstValue}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }}>
+                          <strong>Total</strong>
+                        </TableCell>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }} />
+                        <TableCell align="right" sx={{ border: '1px solid #ccc' }}>
+                          ₹{receiptData.totalGst}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableCell>
+                <TableCell sx={{ width: '50%', verticalAlign: 'top', border: '1px solid #ccc' }}>
+                  <Table size="small">
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }}>
+                          <strong>Closing Balance </strong>(with GST):
+                        </TableCell>
+                        <TableCell align="right" sx={{ border: '1px solid #ccc' }}>
+                          ₹{receiptData.closingBalance}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }}>
+                          <strong>Paid Amount:</strong>
+                        </TableCell>
+                        <TableCell align="right" sx={{ border: '1px solid #ccc' }}>
+                          ₹{receiptData.paidAmount}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell align="left" sx={{ border: '1px solid #ccc' }}>
+                          <strong>Due Amount:</strong>
+                        </TableCell>
+                        <TableCell align="right" sx={{ border: '1px solid #ccc' }}>
+                          ₹{receiptData.currentDue}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableCell> 
+                </>
+                :
+                <Box sx={{ textAlign: 'right', marginTop: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Closing Balance:</strong> ₹{receiptData.closingBalance}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Paid Amount:</strong> ₹{receiptData.paidAmount}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Due Amount:</strong> ₹{receiptData.currentDue}
+                  </Typography>
+                </Box> 
+                }
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+
+
 
         {/* Footer */}
         <Typography variant="body2" sx={{ marginTop: 4 }}>
