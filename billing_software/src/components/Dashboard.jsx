@@ -15,8 +15,6 @@ import {
 } from "@mui/material";
 import { Email, Save, Send, PictureAsPdf, Add, Close, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
 
 const Dashboard = () => {
     const [email, setEmail] = useState("");
@@ -110,7 +108,6 @@ const Dashboard = () => {
 
     return (
         <>
-            <Navbar />
             <Box sx={{ padding: 4, backgroundColor: "#f0f2f5", minHeight: "100vh" }}>
 
                 <Grid container spacing={3}>
@@ -331,7 +328,6 @@ const Dashboard = () => {
                     </Grid>
                 </Grid>
             </Box>
-            <Footer />
         </>
     );
 };

@@ -14,13 +14,13 @@ import {
     TableHead,
     TableRow,
     Paper,
-    InputAdornment
+    InputAdornment,
+    Select,
+    MenuItem
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Email, Phone, Save, Send, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
 import { ReceiptContext } from '../context/ReceiptContext';
 import { jwtDecode } from 'jwt-decode';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
@@ -40,7 +40,7 @@ function RoughEstimate() {
     const [receipts, setReceipts] = useState([]);
 
     const [items, setItems] = useState([
-        { description: '', gWt: '', lWt: '0', nWt: '0', tunch: '', rate: '', gold: '0', silver: '0', labour: '0', amount: '' },
+        { type: 'Gold', description: '', gWt: '', sWt: '0', sRate: "0", lWt: '0', nWt: '0', tunch: '', rate: '', gold: '0', silver: '0', labour: '0', amount: '' },
     ]);
 
     const handleFormChange = (field, value) => {
@@ -65,14 +65,21 @@ function RoughEstimate() {
         updatedItems[index][field] = value;
 
         // Recalculate the values for nWt, lWt, and Amount after user changes any relevant field
-        if (field === 'gWt' || field === 'tunch') {
-            updatedItems[index].nWt = ((parseFloat(updatedItems[index].gWt) * parseFloat(updatedItems[index].tunch)) / 100).toFixed(3);
+        if (field === 'gWt' || field === 'tunch' || field === 'sWt') {
+            updatedItems[index].nWt = (((parseFloat(updatedItems[index].gWt) * parseFloat(updatedItems[index].tunch)) / 100).toFixed(3) - parseFloat(updatedItems[index].sWt)).toFixed(3);
             updatedItems[index].lWt = (parseFloat(updatedItems[index].gWt) - parseFloat(updatedItems[index].nWt)).toFixed(3);
-            
+
         }
 
-        if (field === 'rate' || field === 'gold' || field === 'silver' || field === 'labour') {
-            updatedItems[index].amount = (parseFloat(updatedItems[index].rate) - (parseFloat(updatedItems[index].gold) * (receiptData._24kRate / 10) + parseFloat(updatedItems[index].silver) * (receiptData.silverBhav / 1000)) + parseFloat(updatedItems[index].labour)).toFixed(3);
+        if (field === 'sRate' || field === 'nWt' || field === 'tunch') {
+            if (updatedItems[index].type === 'Gold')
+                updatedItems[index].rate = (parseFloat(updatedItems[index].sRate) + ((parseFloat(updatedItems[index].nWt)).toFixed(3)) * (receiptData._24kRate / 10));
+            else
+                updatedItems[index].rate = (parseFloat(updatedItems[index].sRate) + (parseFloat(updatedItems[index].nWt)) * (receiptData.silverBhav / 1000)).toFixed(2);
+        }
+
+        if (field === 'rate' || field === 'gold' || field === 'silver' || field === 'labour' || field === 'tunch') {
+            updatedItems[index].amount = (parseFloat(updatedItems[index].rate) - (parseFloat(updatedItems[index].gold) * (receiptData._24kRate / 10) + parseFloat(updatedItems[index].silver) * (receiptData.silverBhav / 1000)) + parseFloat(updatedItems[index].labour)).toFixed(1);
         }
 
         setItems(updatedItems);
@@ -85,7 +92,7 @@ function RoughEstimate() {
     };
 
     useEffect(() => {
-        if(receiptData.items.length !== 0) {
+        if (receiptData.items.length !== 0) {
             setItems(receiptData.items);
         }
     }, []);
@@ -93,7 +100,7 @@ function RoughEstimate() {
     const addItem = () => {
         setItems([
             ...items,
-            { description: '', gWt: '', lWt: '0', nWt: '0', tunch: '', rate: '', gold: '0', silver: '0', labour: '0', amount: '' },
+            { type: 'Gold', description: '', gWt: '', sWt: '0', sRate: '0', lWt: '0', nWt: '0', tunch: '', rate: '', gold: '0', silver: '0', labour: '0', amount: '' },
         ]);
     };
 
@@ -110,9 +117,6 @@ function RoughEstimate() {
             }
             );
             const data = await response.json();
-            // console.log(data);
-            // console.log(data[data.length - 1]._18kReturn);
-
 
             setReceipts(data);
             if (data.length !== 0)
@@ -123,6 +127,9 @@ function RoughEstimate() {
                         businessName: data[data.length - 1].businessName,
                         address: data[data.length - 1].address,
                         phone: data[data.length - 1].phone,
+                        gst: data[data.length - 1].gst,
+                        sgst: data[data.length - 1].sgst,
+                        cgst: data[data.length - 1].cgst,
                         documentTitle: data[data.length - 1].documentTitle,
                         billNumber: "BILL-" + (data.length + 1),
                         date: new Date().toISOString().slice(0, 10),
@@ -136,8 +143,17 @@ function RoughEstimate() {
     }, []);
 
     useEffect(() => {
+        if (receiptData.sgst || receiptData.cgst) {
+            receiptData.sgstValue = (parseFloat(receiptData.closingBalance) * parseFloat(receiptData.sgst) / 100).toFixed(2);
+            receiptData.cgstValue = (parseFloat(receiptData.closingBalance) * parseFloat(receiptData.cgst) / 100).toFixed(2);
+            receiptData.totalGst = (parseFloat(receiptData.sgstValue) + parseFloat(receiptData.cgstValue)).toFixed(2);
+            receiptData.closingBalance = (parseFloat(receiptData.closingBalance) + parseFloat(receiptData.totalGst)).toFixed(2);
+        }
+    }, [receiptData.sgst, receiptData.cgst]);
+
+    useEffect(() => {
         const fetchPreviousDue = async () => {
-            // Check if the phone number is exactly 11 digits
+            // Check if the phone number is exactly 10 digits
             if (receiptData.customerPhone && receiptData.customerPhone.length === 10) {
                 try {
                     const response = await fetch(`${backend_url}/api/receipt/fetch/customer/receipts/${receiptData.customerPhone}`, {
@@ -147,19 +163,19 @@ function RoughEstimate() {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         },
                     });
-    
+
                     if (!response.ok) {
                         // console.error("Failed to fetch previous due. Server error.");
                         return;
                     }
-    
+
                     const data = await response.json();
-                    // console.log("Fetched Receipts Data: ", data);
-    
+                    console.log("Fetched Receipts Data: ", data);
+
                     // Ensure data has valid entries
                     if (data && data.length > 0) {
                         const lastReceipt = data[data.length - 1];
-    
+
                         // Update previousDue in receiptData
                         setReceiptData((prevValues) => ({
                             ...prevValues,
@@ -169,14 +185,14 @@ function RoughEstimate() {
                         }));
                     }
                 } catch (error) {
-                    // console.error("Error fetching previous due:", error);
+                    console.error("Error fetching previous due:", error);
                 }
             }
         };
-    
+
         fetchPreviousDue();
     }, [receiptData.customerPhone, backend_url, setReceiptData]);
-    
+
 
     // Calculate the closing balance by summing up the amounts of all items
     const calculateClosingBalance = () => {
@@ -186,6 +202,9 @@ function RoughEstimate() {
             return total + amount;
         }, 0).toFixed(2); // Rounds to 2 decimal places
         receiptData.closingBalance = closingBalance;
+        if (receiptData.sgst || receiptData.cgst) {
+            return (parseFloat(receiptData.closingBalance) + parseFloat(receiptData.totalGst)).toFixed(2);
+        }
         return receiptData.closingBalance;
     };
     const calculateTotalNetWeight = () => {
@@ -213,7 +232,7 @@ function RoughEstimate() {
         // console.log(receiptData);
 
         // Ensure receiptData is updated before navigating
-        navigate('/dashboard/e/preview');
+        navigate('/dashboard/rough-receipt/preview');
     };
 
     const handlePrint = () => {
@@ -222,15 +241,11 @@ function RoughEstimate() {
 
     return (
         <Container maxWidth='false' disableGutters>
-            <Navbar />
-            <Grid container sx={{ background: 'linear-gradient(to bottom right, #1976d2, #ffffff)' }}>
-                <Grid item xs={12} sm={12} md={8}>
-                    <Container maxWidth='md' sx={{ bgcolor: '#ffffff', p: 3, borderRadius: 2, boxShadow: 3, mt: 4, mb: 4 }} disableGutters>
+            <Grid container>
+                <Grid item xs={12} sm={12} md={12}>
+                    <Container maxWidth='md' sx={{ bgcolor: '#ffffff', p: 3, borderRadius: 0, boxShadow: 3, mt: 0, mb: 4 }} disableGutters>
                         {/* Business Information */}
                         <Box sx={{ mb: 4, textAlign: 'center' }}>
-                            <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
-                                Receipt
-                            </Typography>
                             <TextField
                                 fullWidth
                                 label="Business Name"
@@ -298,6 +313,14 @@ function RoughEstimate() {
                                     value={receiptData.customerPhone}
                                     onChange={(e) => handleFormChange('customerPhone', e.target.value)}
                                 />
+                                <TextField
+                                    fullWidth
+                                    label="GSTIN"
+                                    variant="outlined"
+                                    margin="dense"
+                                    value={receiptData.gst}
+                                    onChange={(e) => handleFormChange('gst', e.target.value)}
+                                />
                             </Grid>
                             <Grid item xs={6}>
                                 <TextField
@@ -344,8 +367,11 @@ function RoughEstimate() {
                             <Table>
                                 <TableHead>
                                     <TableRow>
+                                        <StyledTableCell>Type</StyledTableCell>
                                         <StyledTableCell>Description</StyledTableCell>
                                         <StyledTableCell>G Wt.</StyledTableCell>
+                                        <StyledTableCell>S Wt.</StyledTableCell>
+                                        <StyledTableCell>S Value</StyledTableCell>
                                         <StyledTableCell>L Wt.</StyledTableCell>
                                         <StyledTableCell>N Wt.</StyledTableCell>
                                         <StyledTableCell>Tunch</StyledTableCell>
@@ -359,24 +385,43 @@ function RoughEstimate() {
                                 <TableBody>
                                     {items.map((item, index) => (
                                         <TableRow key={index}>
-                                            {Object.keys(item).map((field) => (
+                                            {Object.keys(item).map((field, fieldIndex) => (
                                                 <TableCell key={field}>
-                                                    <TextField
-                                                        fullWidth
-                                                        variant="outlined"
-                                                        size="small"
-                                                        value={item[field]}
-                                                        onChange={(e) => handleItemChange(index, field, e.target.value)}
-                                                        sx={{
-                                                            minWidth: { xs: 120, sm: 100 },
-                                                            '& .MuiInputBase-root': { fontSize: '0.875rem' },
-                                                        }}
-                                                    />
+                                                    {fieldIndex === 0 ? (
+                                                        <Select
+                                                            fullWidth
+                                                            value={item[field] || ''}
+                                                            onChange={(e) => handleItemChange(index, field, e.target.value)}
+                                                            variant="outlined"
+                                                            size="small"
+                                                            sx={{
+                                                                minWidth: { xs: 120, sm: 100 },
+                                                                '& .MuiInputBase-root': { fontSize: '0.875rem' },
+                                                            }}
+                                                        >
+                                                            <MenuItem value="" disabled>Select type</MenuItem>
+                                                            <MenuItem value="Gold">Gold</MenuItem>
+                                                            <MenuItem value="Silver">Silver</MenuItem>
+                                                        </Select>
+                                                    ) : (
+                                                        <TextField
+                                                            fullWidth
+                                                            variant="outlined"
+                                                            size="small"
+                                                            value={item[field]}
+                                                            onChange={(e) => handleItemChange(index, field, e.target.value)}
+                                                            sx={{
+                                                                minWidth: { xs: 120, sm: 100 },
+                                                                '& .MuiInputBase-root': { fontSize: '0.875rem' },
+                                                            }}
+                                                        />
+                                                    )}
                                                 </TableCell>
                                             ))}
                                         </TableRow>
                                     ))}
                                 </TableBody>
+
                             </Table>
                         </TableContainer>
 
@@ -389,7 +434,35 @@ function RoughEstimate() {
                         {/* Terms & Conditions */}
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>Terms & Conditions:</Typography>
+                                {receiptData.gst ?
+                                    <>
+                                        <TextField
+                                            fullWidth
+                                            label="SGST"
+                                            variant="outlined"
+                                            margin="dense"
+                                            value={receiptData.sgst}
+                                            onChange={(e) => handleFormChange('sgst', e.target.value)}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="CGST"
+                                            variant="outlined"
+                                            margin="dense"
+                                            value={receiptData.cgst}
+                                            onChange={(e) => handleFormChange('cgst', e.target.value)}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="Total GST"
+                                            variant="outlined"
+                                            margin="dense"
+                                            value={receiptData.totalGst}
+                                            onChange={(e) => handleFormChange('totalGst', e.target.value)}
+                                        />
+                                    </>
+                                    : null}
+                                <Typography variant="subtitle1" sx={{ fontWeight: 500, marginTop: 0 }}>Terms & Conditions:</Typography>
                                 <TextField
                                     fullWidth
                                     label="18K Return"
@@ -445,9 +518,9 @@ function RoughEstimate() {
                         </Grid>
                     </Container>
                 </Grid>
-                <Grid item xs={12} sm={12} md={4}>
-                    <Container maxWidth="md" sx={{ mt: 4 }}>
-                        <Paper variant="outlined" sx={{ padding: 3, backgroundColor: "#ffffff" }}>
+                <Grid item xs={12} sm={12} md={12}>
+                    <Container maxWidth="md" sx={{ mt: 2 }}>
+                        <Paper variant="none" sx={{ padding: 2, backgroundColor: "#ffffff" }}>
                             {/* Preview via Email */}
                             <Typography variant="subtitle1" gutterBottom sx={{ color: "#555" }}>
                                 Enter Customer WhatsApp Number
@@ -468,19 +541,19 @@ function RoughEstimate() {
                             <Button
                                 fullWidth
                                 variant="contained"
-                                
+
                                 endIcon={<Send />}
-                                sx={{ mt: 1, backgroundColor:'#25d366' }}
+                                sx={{ mt: 1, backgroundColor: '#25d366' }}
                             >
                                 Send over WhatsApp
                             </Button>
                         </Paper>
                         <Box display="flex" justifyContent="space-between" mt={2} sx={{ padding: '10px' }}>
-                            <Button variant="contained" sx={{ marginRight: 2, width: '240px' }} startIcon={<Save />} onClick={handlePrint}>
+                            <Button variant="contained" sx={{ marginRight: 2, width: '240px', backgroundColor: '#1e1e2f' }} startIcon={<Save />} onClick={handlePrint}>
                                 Print
                             </Button>
 
-                            <Button variant="contained" sx={{ marginRight: 0, width: '240px' }} startIcon={<Visibility />} onClick={handlePreview}>
+                            <Button variant="contained" sx={{ marginRight: 0, width: '240px', backgroundColor: '#1e1e2f' }} startIcon={<Visibility />} onClick={handlePreview}>
                                 Preview
                             </Button>
 
@@ -488,7 +561,6 @@ function RoughEstimate() {
                     </Container>
                 </Grid>
             </Grid >
-            <Footer />
         </Container>
     );
 }
