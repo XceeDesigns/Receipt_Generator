@@ -1,1 +1,1 @@
-# Receipt_Generator - Receipt Vault
+# OrnaCloud - Receipt Vault
