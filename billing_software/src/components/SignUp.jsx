@@ -145,18 +145,18 @@ export default function SignUpPage() {
         return;
       }
 
-    // console.log(formData);
+      // console.log(formData);
 
-    const response = await fetch(`${backend_url}/api/user/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
+      const res = await fetch(`${backend_url}/api/user/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    if (!response.ok) {
-      setError('Failed to create account.');
-      return;
-    }
+      if (!res.ok) {
+        setError('Failed to create account.');
+        return;
+      }
 
       const data = await res.json();
       toast.success(data.message || 'Account created successfully!');
@@ -225,7 +225,7 @@ export default function SignUpPage() {
                 <Typography
                   variant="body2"
                   color="error"
-                  sx={{ mt: 0,mb: 2, textAlign: 'center' }}
+                  sx={{ mt: 0, mb: 2, textAlign: 'center' }}
                 >
                   OTP has expired. Please request a new one.
                 </Typography>
