@@ -155,7 +155,7 @@ const JewellerReceipt = () => {
 
         <Divider sx={{ marginY: 2 }} />
 
-        <TableContainer component={Paper} sx={{ marginBottom: 0 }}>
+        {receiptData.gst ? <TableContainer component={Paper} sx={{ marginBottom: 0 }}>
           <Table>
             <TableBody>
               <TableRow>
@@ -168,7 +168,7 @@ const JewellerReceipt = () => {
                     padding: 2
                   }}
                 >
-                  <Typography variant="body2">
+                  <Typography variant="body2" textAlign="center">
                     GSTIN: {receiptData.gst}
                   </Typography>
                 </TableCell>
@@ -189,7 +189,7 @@ const JewellerReceipt = () => {
               </TableRow>
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer> : null}
 
         {/* Items Table */}
         <TableContainer component={Paper} sx={{ marginTop: 2, marginBottom: 3 }}>
@@ -302,6 +302,8 @@ const JewellerReceipt = () => {
             <TableBody>
               <TableRow>
                 {/* Left Column */}
+                {receiptData.gst ? 
+                <>
                 <TableCell sx={{ width: '50%', verticalAlign: 'top', border: '1px solid #ccc' }}>
                   <Table size="small">
                     <TableBody>
@@ -339,8 +341,6 @@ const JewellerReceipt = () => {
                     </TableBody>
                   </Table>
                 </TableCell>
-
-                {/* Right Column */}
                 <TableCell sx={{ width: '50%', verticalAlign: 'top', border: '1px solid #ccc' }}>
                   <Table size="small">
                     <TableBody>
@@ -370,7 +370,21 @@ const JewellerReceipt = () => {
                       </TableRow>
                     </TableBody>
                   </Table>
-                </TableCell>
+                </TableCell> 
+                </>
+                :
+                <Box sx={{ textAlign: 'right', marginTop: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Closing Balance:</strong> ₹{receiptData.closingBalance}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Paid Amount:</strong> ₹{receiptData.paidAmount}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Due Amount:</strong> ₹{receiptData.currentDue}
+                  </Typography>
+                </Box> 
+                }
               </TableRow>
             </TableBody>
           </Table>

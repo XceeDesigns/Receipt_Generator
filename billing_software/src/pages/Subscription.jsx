@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import { jwtDecode } from 'jwt-decode';
 import { useRazorpay } from "react-razorpay";
+import toast from 'react-hot-toast';
 
 const Subscription = () => {
 
@@ -258,6 +259,10 @@ const Subscription = () => {
         rzp1.open();
     };
 
+    const handlePayment = () => {
+        toast('Feature not available');
+    };
+
     return (
         <Container
             maxWidth="lg"
@@ -378,9 +383,9 @@ const Subscription = () => {
                                         if (plan.title === 'Beginner Plan') {
                                             startSubscription();
                                         } else if (plan.title === 'Explorer Plan (Lite)') {
-                                            handleLiteSubscription();
+                                            handlePayment();
                                         } else {
-                                            handleProSubscription();
+                                            handlePayment();
                                         }
                                     }}
                                     disabled={(plan.title === 'Explorer Plan (Lite)' && !liteDuration) || (plan.title === 'Expert Plan (Pro)' && !proDuration)}
