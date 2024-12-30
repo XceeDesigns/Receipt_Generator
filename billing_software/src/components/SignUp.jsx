@@ -294,7 +294,7 @@ export default function SignUpPage() {
                 <Button
                   color="primary"
                   onClick={() => navigate('/')}
-                  sx={{ textTransform: 'none', p: 0 }}
+                  sx={{ textTransform: 'none', p: 0, color: '#1e1e2f' }}
                 >
                   Log In
                 </Button>
@@ -305,11 +305,11 @@ export default function SignUpPage() {
                 py: 1.5,
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                backgroundColor: '#1976D2',
+                backgroundColor: '#1e1e2f',
                 color: '#fff',
                 textTransform: 'none',
                 '&:hover': {
-                  backgroundColor: '#145DA0',
+                  backgroundColor: '#3a3a4c',
                 },
               }}>
                 Sign Up

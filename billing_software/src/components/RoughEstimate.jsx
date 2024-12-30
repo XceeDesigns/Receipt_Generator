@@ -24,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import { ReceiptContext } from '../context/ReceiptContext';
 import { jwtDecode } from 'jwt-decode';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import Badge from '@mui/material/Badge';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontWeight: 600,
@@ -425,7 +426,11 @@ function RoughEstimate() {
                             </Table>
                         </TableContainer>
 
-                        <Button variant="contained" onClick={addItem} sx={{ mb: 3 }}>
+                        <Button variant="contained" onClick={addItem} sx={{
+                            mb: 3, backgroundColor: '#1e1e2f', '&:hover': {
+                                backgroundColor: '#3a3a4c',
+                            },
+                        }}>
                             Add Item
                         </Button>
 
@@ -538,15 +543,21 @@ function RoughEstimate() {
                                     ),
                                 }}
                             />
-                            <Button
-                                fullWidth
-                                variant="contained"
-
-                                endIcon={<Send />}
-                                sx={{ mt: 1, backgroundColor: '#25d366' }}
+                            <Badge
+                                badgeContent="Lite"
+                                color="secondary"
+                                sx={{ '& .MuiBadge-dot': { backgroundColor: '#FFD700' } }} // Styling the PRO badge
                             >
-                                Send over WhatsApp
-                            </Button>
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+
+                                    endIcon={<Send />}
+                                    sx={{ mt: 1, backgroundColor: '#25d366' }}
+                                >
+                                    Send over WhatsApp
+                                </Button>
+                            </Badge>
                         </Paper>
                         <Box display="flex" justifyContent="space-between" mt={2} sx={{ padding: '10px' }}>
                             <Button variant="contained" sx={{ marginRight: 2, width: '240px', backgroundColor: '#1e1e2f' }} startIcon={<Save />} onClick={handlePrint}>
