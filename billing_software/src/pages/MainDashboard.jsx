@@ -11,6 +11,7 @@ import JewellerReceipt from '../components/JewellerReceipt';
 import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
 import Subscription from './Subscription';
+import ContactUs from './ContactUs';
 
 const MainDashboard = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -200,8 +201,12 @@ const MainDashboard = () => {
           <ReceiptHistory />
         )}
 
+        {location.pathname === '/dashboard/contact-us' && (
+          <ContactUs />
+        )}
+
         {location.pathname === '/dashboard/subscription' && (
-          <Subscription/>
+          <Subscription />
         )}
 
         {location.pathname === '/dashboard/rough-receipt' && (

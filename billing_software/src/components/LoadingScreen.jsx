@@ -1,5 +1,5 @@
 import React from 'react';
-import { CircularProgress, Box, Typography } from '@mui/material';
+import { CircularProgress, Box, Typography, Paper } from '@mui/material';
 
 const LoadingScreen = () => {
   return (
@@ -12,21 +12,47 @@ const LoadingScreen = () => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        zIndex: 9999,  // Keeps the spinner on top of other elements
-        flexDirection: 'column',  // Align the spinner and text vertically
+        zIndex: 1301, // Ensures visibility above most elements
       }}
     >
-      <CircularProgress size={50} color="primary" sx={{ mb: 2 }} />
-      <Typography 
-        variant="body1" 
-        color="textSecondary"
+      <Paper
+        elevation={2}
         sx={{
-          fontWeight: 500,  // Slightly bolder text
-          textAlign: 'center',
+          padding: 3,
+          borderRadius: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: 'none'
         }}
       >
-        Please wait, processing your request...
-      </Typography>
+        <CircularProgress 
+          size={50} 
+          color="#1e1e2f" 
+          sx={{ mb: 2 }} 
+        />
+        <Typography 
+          variant="h6" 
+          sx={{
+            fontWeight: 600,
+            color: '#1e1e2f',
+            textAlign: 'center',
+            mb: 1,
+          }}
+        >
+          Loading, please wait...
+        </Typography>
+        <Typography 
+          variant="body2" 
+          color="textSecondary" 
+          sx={{
+            textAlign: 'center',
+          }}
+        >
+          We're processing your request.
+        </Typography>
+      </Paper>
     </Box>
   );
 };

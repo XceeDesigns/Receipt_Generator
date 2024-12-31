@@ -31,6 +31,7 @@ function App() {
               <Route path="/dashboard/receipt-history" element={<MainDashboard />} />
               <Route path="/dashboard/inventory" element={<MainDashboard />} />
               <Route path="/dashboard/subscription" element={<MainDashboard />} />
+              <Route path="/dashboard/contact-us" element={<MainDashboard />} />
             </Routes>
             <Toaster />
             </SubscriptionProvider>

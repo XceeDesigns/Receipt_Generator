@@ -9,7 +9,8 @@ import {
   Paper,
   Divider,
   InputAdornment,
-  IconButton
+  IconButton,
+  CircularProgress
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
@@ -17,7 +18,7 @@ import { ReceiptHistoryContext } from '../context/ReceiptHistoryContext';
 import { SubscriptionContext } from '../context/SubscriptionContext';
 import toast from 'react-hot-toast';
 import LoadingScreen from './LoadingScreen';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Send, Visibility, VisibilityOff } from '@mui/icons-material';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -58,10 +59,12 @@ export default function SignInPage() {
   const handleSignIn = async (event) => {
     event.preventDefault();
     setError('');
+    setLoading(true);
 
     // Ensure both email and password are provided
     if (!email || !password) {
       setError('Please enter both email and password.');
+      setLoading(false);
       return;
     }
 
@@ -75,6 +78,7 @@ export default function SignInPage() {
 
       if (!loginResponse.ok) {
         setError('Failed to log in. Please check your credentials.');
+        setLoading(false);
         return;
       }
 
@@ -142,20 +146,20 @@ export default function SignInPage() {
 
       // Step 5: On successful login, navigate to the dashboard
       toast.success('Logged in successfully');
+      setLoading(false);
       navigate('/dashboard');
       setUser(email);
 
     } catch (err) {
       // Handle any errors during the login process
+      setLoading(false);
       setError('An error occurred. Please try again later.');
     }
   };
 
 
 
-  return loading ? (
-    <LoadingScreen />
-  ) : (
+  return (
     <Container
       maxWidth="false"
       sx={{
@@ -275,6 +279,8 @@ export default function SignInPage() {
             type="submit"
             fullWidth
             variant="contained"
+            disabled={loading}
+            endIcon={loading ? <CircularProgress size={20} /> : <Send />}
             sx={{
               mt: 3,
               mb: 2,

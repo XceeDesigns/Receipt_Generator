@@ -26,6 +26,7 @@ import { ReceiptContext } from '../context/ReceiptContext';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDialog from '../components/ConfirmDialog';
+import LoadingScreen from '../components/LoadingScreen';
 
 const ReceiptHistory = () => {
     const { receiptData, setReceiptData } = useContext(ReceiptContext);
@@ -38,6 +39,8 @@ const ReceiptHistory = () => {
     const [totalRecords, setTotalRecords] = useState(0);  // Track total records for pagination
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [selectedBillNumber, setSelectedBillNumber] = useState(null);
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const backend_url = process.env.REACT_APP_BACKEND_URL;
@@ -77,6 +80,7 @@ const ReceiptHistory = () => {
 
     // Fetch all receipt history without pagination
     const fetchReceiptHistory = async () => {
+        setLoading(true);
         try {
             const email = jwtDecode(localStorage.getItem('token')).sub;
             const response = await fetch(`${backend_url}/api/receipt/fetch/${email}`, {
@@ -96,7 +100,9 @@ const ReceiptHistory = () => {
             setData(data || []);  // Ensure 'records' is an array
             setFilteredData(data || []);  // Initialize filtered data to avoid undefined
             setTotalRecords(data ? data.length : 0);  // Set total records
+            setLoading(false);
         } catch (error) {
+            setLoading(false);
             console.error('Error fetching receipt history:', error);
         }
     };
@@ -198,8 +204,8 @@ const ReceiptHistory = () => {
                     </Box>
                 </Box>
 
-                {/* Table */}
-                <Box sx={{ overflowX: 'auto' }}>
+
+                {loading ? <LoadingScreen/> : <><Box sx={{ overflowX: 'auto' }}>
                     <TableContainer component={Paper}>
                         <Table sx={{ minWidth: 650 }}>
                             <TableHead>
@@ -249,19 +255,19 @@ const ReceiptHistory = () => {
                     </TableContainer>
                 </Box>
 
-                {/* Pagination */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
-                    <Typography variant="body2">
-                        Showing {paginatedData.length} of {totalRecords}
-                    </Typography>
-                    <Pagination
-                        count={Math.ceil(totalRecords / resultsPerPage)}  // Dynamic pagination count based on filtered data
-                        page={currentPage}
-                        onChange={handlePageChange}
-                        variant="outlined"
-                        shape="rounded"
-                    />
-                </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+                        <Typography variant="body2">
+                            Showing {paginatedData.length} of {totalRecords}
+                        </Typography>
+                        <Pagination
+                            count={Math.ceil(totalRecords / resultsPerPage)}  // Dynamic pagination count based on filtered data
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            variant="outlined"
+                            shape="rounded"
+                        />
+                    </Box></>}
             </Box>
         </Container>
     );

@@ -12,6 +12,7 @@ import {
     TextField,
     InputAdornment,
     IconButton,
+    CircularProgress,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
@@ -19,13 +20,15 @@ import SecurityIcon from '@mui/icons-material/Security';
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Send, Visibility, VisibilityOff } from '@mui/icons-material';
 
 const UserProfile = () => {
     const [open, setOpen] = useState(false);
     const [userData, setUserData] = useState({});
     const [subscriptionData, setSubscriptionData] = useState({});
     const [openPasswordModal, setOpenPasswordModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+
     const [password, setPassword] = useState({
         currentPassword: '',
         newPassword: '',
@@ -59,6 +62,7 @@ const UserProfile = () => {
     };
 
     const handleUpdateProfile = async () => {
+        setLoading(true);
         const token = localStorage.getItem('token');
         // Update user data to API
         const response = await fetch(`${backend_url}/api/user/update`, {
@@ -78,6 +82,7 @@ const UserProfile = () => {
         else {
             toast.error(data.message || 'Failed to update profile.');
         }
+        setLoading(false);
     }
 
 
@@ -114,6 +119,7 @@ const UserProfile = () => {
     }
 
     const handlePasswordUpdate = async () => {
+        setLoading(true);
         const token = localStorage.getItem('token');
         // Update password to API
         console.log(userData._id);
@@ -149,6 +155,7 @@ const UserProfile = () => {
         else {
             toast.error(data.message || 'Failed to update password.');
         }
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -295,6 +302,8 @@ const UserProfile = () => {
                             </Button>
                             <Button
                                 variant="contained"
+                                endIcon={loading ? <CircularProgress size={20} /> : <Send />}
+                                disabled={loading}
                                 sx={{
                                     backgroundColor: '#1e1e2f',
                                     '&:hover': {
@@ -394,6 +403,8 @@ const UserProfile = () => {
                             </Button>
                             <Button
                                 variant="contained"
+                                endIcon={loading ? <CircularProgress size={20} /> : <Send />}
+                                disabled={loading}
                                 sx={{
                                     backgroundColor: '#1e1e2f',
                                     '&:hover': {

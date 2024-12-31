@@ -11,13 +11,14 @@ import {
   MenuItem,
   Grid,
   InputAdornment,
-  IconButton
+  IconButton,
+  CircularProgress
 } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import LoadingScreen from './LoadingScreen';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Send, Visibility, VisibilityOff } from '@mui/icons-material';
 
 // Password Strength Utility
 const getPasswordStrength = (password) => {
@@ -172,9 +173,7 @@ export default function SignUpPage() {
 
   return (
     <>
-      {loading ? (
-        <LoadingScreen />
-      ) : (
+      {(
         <Container
           maxWidth="false"
           sx={{
@@ -224,12 +223,26 @@ export default function SignUpPage() {
                 <Typography
                   variant="body2"
                   color="error"
-                  sx={{ mt: 0,mb: 2, textAlign: 'center' }}
+                  sx={{ mt: 0, mb: 2, textAlign: 'center' }}
                 >
                   OTP has expired. Please request a new one.
                 </Typography>
               )}
-              <Button variant="contained" color="primary" fullWidth onClick={handleValidate}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  backgroundColor: '#1e1e2f',
+                  color: '#fff',
+                  textTransform: 'none',
+                  '&:hover': {
+                    backgroundColor: '#3a3a4c',
+                  },
+                }}
+                endIcon={loading ? <CircularProgress size={20} /> : <Send />}
+                disabled={loading || remainingTime === 0 || otp.length !== 6}
+                fullWidth onClick={handleValidate}>
+
                 Verify OTP
               </Button>
             </Box>
@@ -300,18 +313,22 @@ export default function SignUpPage() {
                 </Button>
               </Typography>
 
-              <Button variant="contained" color="primary" fullWidth type="submit" sx={{
-                mt: 1, mb: 1,
-                py: 1.5,
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                backgroundColor: '#1e1e2f',
-                color: '#fff',
-                textTransform: 'none',
-                '&:hover': {
-                  backgroundColor: '#3a3a4c',
-                },
-              }}>
+              <Button variant="contained"
+                color="primary"
+                disabled={loading}
+                endIcon={loading ? <CircularProgress size={20} /> : <Send />}
+                fullWidth type="submit" sx={{
+                  mt: 1, mb: 1,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  backgroundColor: '#1e1e2f',
+                  color: '#fff',
+                  textTransform: 'none',
+                  '&:hover': {
+                    backgroundColor: '#3a3a4c',
+                  },
+                }}>
                 Sign Up
               </Button>
             </Box>

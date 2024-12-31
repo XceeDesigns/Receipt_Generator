@@ -139,32 +139,51 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
         </ListItem>
       </List>
 
-      <ListItem button>
-          <ListItemIcon>
-            <ContactPageIcon sx={{ color: '#ecf0f1' }} />
-          </ListItemIcon>
-          <ListItemText
-            primary={
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                Contact Us
-                <Badge
-                  badgeContent="Lite"
-                  color="secondary"
-                  sx={{
-                    marginLeft: 1,
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    backgroundColor: '#FFD700',
-                    color: '#2C3E50',
-                    borderRadius: 1,
-                    padding: '2px 6px',
-                  }}
-                />
-              </Box>
+      <ListItem button
+        sx={{cursor: 'pointer'}}
+        onClick={async () => {
+          const subscriptionResponse = await fetch(`${backend_url}/api/subscription/`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+          if (subscriptionResponse.ok) {
+            const data = await subscriptionResponse.json();
+            console.log(data);
+            if ((data.subscriptionType == 'Lite' || data.subscriptionType == 'Premium') && data.subscriptionStatus == 'Active') {
+              navigateTo('/dashboard/contact-us')
             }
-            sx={{ color: '#ecf0f1' }}
-          />
-        </ListItem>
+          } else {
+            console.log('Error fetching subscription data');
+          }
+        }}>
+        <ListItemIcon>
+          <ContactPageIcon sx={{ color: '#ecf0f1' }} />
+        </ListItemIcon>
+        <ListItemText
+          primary={
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              Contact Us
+              <Badge
+                badgeContent="Lite"
+                color="secondary"
+                sx={{
+                  marginLeft: 1,
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  backgroundColor: '#FFD700',
+                  color: '#2C3E50',
+                  borderRadius: 1,
+                  padding: '2px 6px',
+                }}
+              />
+            </Box>
+          }
+          sx={{ color: '#ecf0f1' }}
+        />
+      </ListItem>
 
       {/* Subscription Plan Section */}
       <Box sx={{ mt: 'auto', mb: 2, px: 2 }}>

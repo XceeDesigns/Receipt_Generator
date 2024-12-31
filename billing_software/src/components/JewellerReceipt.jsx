@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from 'react';
+import React, { useRef, useContext, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import {
@@ -14,6 +14,7 @@ import {
   Paper,
   Button,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import { PictureAsPdf } from '@mui/icons-material';
 import { ReceiptContext } from '../context/ReceiptContext';
@@ -24,10 +25,13 @@ import { useNavigate } from 'react-router-dom';
 const JewellerReceipt = () => {
   const receiptRef = useRef();
   const { receiptData, setReceiptData } = useContext(ReceiptContext);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const backend_url = process.env.REACT_APP_BACKEND_URL;
 
   const downloadPdf = async () => {
+    setLoading(true);
     const element = receiptRef.current;
     element.style.width = '794px'; // A4 size width
     const canvas = await html2canvas(element, { scale: 2, useCORS: true });
@@ -58,6 +62,7 @@ const JewellerReceipt = () => {
       }
     } catch (error) {
       console.log('Error saving receipt');
+      setLoading(false);
       return;
     }
     setReceiptData({
@@ -89,7 +94,7 @@ const JewellerReceipt = () => {
       paidAmount: '',
       totalNetWeight: '0',
     });
-
+    setLoading(false);
     navigate('/dashboard/rough-receipt');
   };
 
@@ -413,8 +418,17 @@ const JewellerReceipt = () => {
         <Button
           variant="contained"
           color="primary"
-          startIcon={<PictureAsPdf />}
+          startIcon={loading ? <CircularProgress size={20} /> : <PictureAsPdf />}
           onClick={downloadPdf}
+          disabled={loading}
+          sx={{
+            backgroundColor: '#1e1e2f',
+              color: '#fff',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: '#3a3a4c',
+              },
+          }}
         >
           Download as PDF
         </Button>
