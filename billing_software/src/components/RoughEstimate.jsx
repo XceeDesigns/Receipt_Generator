@@ -132,11 +132,20 @@ function RoughEstimate() {
                         sgst: data[data.length - 1].sgst,
                         cgst: data[data.length - 1].cgst,
                         documentTitle: data[data.length - 1].documentTitle,
-                        billNumber: "BILL-" + (data.length + 1),
+                        billNumber: `BILL-${parseInt(data[data.length - 1].billNumber.split('-')[1]) + 1}`,
                         date: new Date().toISOString().slice(0, 10),
                         _18kReturn: data[data.length - 1]._18kReturn,
                         _20kReturn: data[data.length - 1]._20kReturn,
                         _22kReturn: data[data.length - 1]._22kReturn,
+                    };
+                });
+            else 
+                setReceiptData((prevValues) => {
+                    return {
+                        ...prevValues,
+                        user: user_email,
+                        billNumber: `BILL-1`,
+                        date: new Date().toISOString().slice(0, 10),
                     };
                 });
         };
