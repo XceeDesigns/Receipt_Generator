@@ -19,12 +19,13 @@ import {
     Grid,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PreviewIcon from '@mui/icons-material/Preview';  
+import PreviewIcon from '@mui/icons-material/Preview';
 import { jwtDecode } from 'jwt-decode';
 import toast from 'react-hot-toast'
 import { ReceiptContext } from '../context/ReceiptContext';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 const ReceiptHistory = () => {
     const { receiptData, setReceiptData } = useContext(ReceiptContext);
@@ -35,30 +36,42 @@ const ReceiptHistory = () => {
     const [resultsPerPage, setResultsPerPage] = useState(6);
     const [searchQuery, setSearchQuery] = useState('');
     const [totalRecords, setTotalRecords] = useState(0);  // Track total records for pagination
+    const [isDialogOpen, setDialogOpen] = useState(false);
+    const [selectedBillNumber, setSelectedBillNumber] = useState(null);
     const navigate = useNavigate();
 
     const backend_url = process.env.REACT_APP_BACKEND_URL;
 
+    const handleOpenDialog = (billNumber) => {
+        setSelectedBillNumber(billNumber);
+        setDialogOpen(true);
+    };
+
+    const handleCloseDialog = (confirmed) => {
+        setDialogOpen(false);
+        if (confirmed) {
+            handleDelete(selectedBillNumber);
+        }
+    };
+
     const handleDelete = async (billNumber) => {
-        const result = window.confirm("Are you sure you want to proceed?");
-        if (result) {
-            try {
-                const response = await fetch(`${backend_url}/api/receipt/delete/${billNumber}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                });
-                if (response.ok) {
-                    toast.success('Bill deleted successfully.');
-                    fetchReceiptHistory();  // Refresh receipt history after deletion
-                } else {
-                    toast.error('Failed to delete the bill.');
-                }
-            } catch (error) {
-                console.error('Error deleting the bill:', error);
+        try {
+            const response = await fetch(`${backend_url}/api/receipt/delete/${billNumber}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            });
+            if (response.ok) {
+                toast.success('Bill deleted successfully.');
+                fetchReceiptHistory(); // Refresh receipt history after deletion
+            } else {
+                toast.error('Failed to delete the bill.');
             }
+        } catch (error) {
+            console.error('Error deleting the bill:', error);
+            toast.error('An error occurred while deleting the bill.');
         }
     };
 
@@ -164,8 +177,10 @@ const ReceiptHistory = () => {
             <Box sx={{ padding: '24px' }}>
 
                 {/* Search and Actions */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '16px', 
-                    '@media (min-width: 600px)': { flexDirection: 'row' }, }}>
+                <Box sx={{
+                    display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '16px',
+                    '@media (min-width: 600px)': { flexDirection: 'row' },
+                }}>
                     <TextField
                         variant="outlined"
                         size="small"
@@ -216,9 +231,16 @@ const ReceiptHistory = () => {
                                             </IconButton>
 
                                             {/* Delete Button */}
-                                            <IconButton size="small" color="error" onClick={() => handleDelete(row.billNumber)}>
+                                            <IconButton size="small" color="error" onClick={() => handleOpenDialog(row.billNumber)}>
                                                 <DeleteIcon />
                                             </IconButton>
+                                            <ConfirmDialog
+                                                open={isDialogOpen}
+                                                handleClose={handleCloseDialog}
+                                                handleConfirm={() => handleCloseDialog(true)}
+                                                title="Delete Bill"
+                                                content="Are you sure you want to delete this bill?"
+                                            />
                                         </TableCell>
                                     </TableRow>
                                 ))}
