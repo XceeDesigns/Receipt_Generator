@@ -2,10 +2,11 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Avatar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Header({ handleDrawerToggle }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const openUserProfile = () => {
     navigate('/dashboard/user-profile');
   }
@@ -32,7 +33,12 @@ function Header({ handleDrawerToggle }) {
 
         {/* Dashboard Title */}
         <Typography variant="h6" sx={{ flexGrow: 1, color: '#ffffff' }}>
-          Dashboard
+          {location.pathname === '/dashboard' && 'Dashboard'}
+          {location.pathname === '/dashboard/rough-receipt' && 'Receipt Generator'}
+          {location.pathname === '/dashboard/receipt-history' && 'Receipt History'}
+          {location.pathname === '/dashboard/inventory' && 'Inventory'}
+          {location.pathname === '/dashboard/user-profile' && 'Profile'}
+          {location.pathname === '/dashboard/subscription' && 'Subscription Plans'}
         </Typography>
 
         {/* Profile Icon */}

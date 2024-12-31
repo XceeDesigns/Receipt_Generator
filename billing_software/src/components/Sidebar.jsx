@@ -188,12 +188,6 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
             <Typography variant="body2" sx={{ color: '#5A6A85', mb: 1 }}>
               Unlock all premium features and priority support
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 'bold', mb: 2 }}
-            >
-              Expires: <span style={{ color: '#2C3E50' }}>Dec 31, 2024</span>
-            </Typography>
             <Button
               variant="contained"
               size="small"
