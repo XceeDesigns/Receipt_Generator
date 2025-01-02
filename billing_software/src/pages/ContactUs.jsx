@@ -52,7 +52,7 @@ const ContactUs = () => {
         <Container maxWidth="md">
             <Paper elevation={4} sx={{ padding: 4, marginTop: 5, borderRadius: 2 }}>
                 {/* Header Section */}
-                <Box textAlign="center" mb={3}>
+                <Box textAlign="center" mb={2}>
                     <Business color="primary" sx={{
                         fontSize: 50,
                         color: '#1e1e2f',
@@ -90,13 +90,15 @@ const ContactUs = () => {
                     />
 
                     {/* File Upload Field */}
-                    <Box display="flex" alignItems="center" mt={2} mb={3}>
+                    <Box display="flex" alignItems="center" mt={2} mb={3} sx={{
+                        justifyContent: {xs: 'center', sm: 'flex-start'},
+                    }}>
                         <Button
                             variant="contained"
                             component="label"
                             startIcon={<AttachFile />}
                             sx={{
-                                marginRight: 2,
+                                marginRight: 0,
                                 backgroundColor: '#1e1e2f',
                                 color: '#fff',
                                 textTransform: 'none',
@@ -138,7 +140,7 @@ const ContactUs = () => {
                 open={snackbar.open}
                 autoHideDuration={4000}
                 onClose={() => setSnackbar({ ...snackbar, open: false })}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
                     {snackbar.message}

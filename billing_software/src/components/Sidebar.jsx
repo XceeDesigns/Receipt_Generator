@@ -35,6 +35,9 @@ function Sidebar({ mobileOpen, handleDrawerToggle }) {
   const navigate = useNavigate();
   const navigateTo = (path) => {
     navigate(path);
+    if(mobileOpen) {
+      handleDrawerToggle();
+    }
   }
 
   const handleLogout = () => {

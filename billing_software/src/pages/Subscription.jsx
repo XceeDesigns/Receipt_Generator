@@ -17,13 +17,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import { jwtDecode } from 'jwt-decode';
-import { useRazorpay } from "react-razorpay";
+// import { useRazorpay } from "react-razorpay";
 import toast from 'react-hot-toast';
 
 const Subscription = () => {
 
     const backend_url = process.env.REACT_APP_BACKEND_URL;
-    const { Razorpay } = useRazorpay();
+    // const { Razorpay } = useRazorpay();
 
     const plans = [
         {
@@ -42,7 +42,7 @@ const Subscription = () => {
             title: 'Expert Plan (Pro)',
             subtitle: 'Best for Medium & Large Scale Organizations',
             price: 'Rs. 49',
-            features: ['All Lite Features & Dashboard Access', 'Inventory Management', 'Unlimited Storage', 'Priority Email Support'],
+            features: ['Lite Features & Dashboard Access', 'Inventory Management', 'Unlimited Storage', 'Priority Email Support'],
         },
     ];
 
@@ -113,151 +113,151 @@ const Subscription = () => {
         fetchStatus();
     }, []);
 
-    const handleLiteSubscription = async () => {
-        console.log('Lite Plan Duration:', liteDuration);
-        const amount = liteDuration === '1month' ? 9 : liteDuration === '3month' ? 27 : liteDuration === '6month' ? 54 : 108;
-        const response = await fetch(`${backend_url}/api/payment/createOrder?amount=${amount}`
-            , {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-            }
-        );
-        const order = await response.json();
-        console.log(order);
-        var options = {
-            "key_id": "rzp_test_6WAqYcpc5WOf2p", // Replace with your Razorpay Key ID
-            "amount": order.amount, // Amount in paise
-            "currency": order.currency,
-            "name": "XceeDesigns",
-            "description": "Test Transaction",
-            "order_id": order.id, // Pass the order ID received from backend
-            "handler": async function (response) {
-                console.log("Payment ID: ", response.razorpay_payment_id);
-                console.log("Order ID: ", response.razorpay_order_id);
-                console.log("Signature: ", response.razorpay_signature);
+    // const handleLiteSubscription = async () => {
+    //     console.log('Lite Plan Duration:', liteDuration);
+    //     const amount = liteDuration === '1month' ? 9 : liteDuration === '3month' ? 27 : liteDuration === '6month' ? 54 : 108;
+    //     const response = await fetch(`${backend_url}/api/payment/createOrder?amount=${amount}`
+    //         , {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    //             },
+    //         }
+    //     );
+    //     const order = await response.json();
+    //     console.log(order);
+    //     var options = {
+    //         "key_id": "rzp_test_6WAqYcpc5WOf2p", // Replace with your Razorpay Key ID
+    //         "amount": order.amount, // Amount in paise
+    //         "currency": order.currency,
+    //         "name": "XceeDesigns",
+    //         "description": "Test Transaction",
+    //         "order_id": order.id, // Pass the order ID received from backend
+    //         "handler": async function (response) {
+    //             console.log("Payment ID: ", response.razorpay_payment_id);
+    //             console.log("Order ID: ", response.razorpay_order_id);
+    //             console.log("Signature: ", response.razorpay_signature);
 
-                // const endDate = new Date().setMonth(new Date().getMonth() + (liteDuration === '1month' ? 1 : liteDuration === '3month' ? 3 : liteDuration === '6month' ? 6 : 12));
-                try {
-                    console.log(status._id);
-                    const endDate = () => {
-                        const date = new Date();
-                        if (liteDuration === '1month') {
-                            return date.setMonth(date.getMonth() + 1);
-                        } else if (liteDuration === '3month') {
-                            return date.setMonth(date.getMonth() + 3);
-                        } else if (liteDuration === '6month') {
-                            return date.setMonth(date.getMonth() + 6);
-                        } else {
-                            return date.setMonth(date.getMonth() + 12);
-                        }
-                    }
-                    const updateSubscription = await fetch(`${backend_url}/api/subscription/update`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        },
-                        body: JSON.stringify({
-                            subscriptionType: 'Lite',
-                            subscriptionStatus: 'Active',
-                            _id: status._id,
-                            user: jwtDecode(localStorage.getItem('token')).sub,
-                            startDate: new Date(),
-                            endDate: endDate(),
-                        }),
-                    });
-                    const data = await updateSubscription.json();
-                    console.log("Update Subscription:", data);
-                    alert('Payment successful and subscription updated!');
-                } catch (error) {
-                    console.log('Error updating subscription');
-                }
-            },
-            "prefill": {
-                "name": user.name,
-                "email": user.email
-            }
-        };
+    //             // const endDate = new Date().setMonth(new Date().getMonth() + (liteDuration === '1month' ? 1 : liteDuration === '3month' ? 3 : liteDuration === '6month' ? 6 : 12));
+    //             try {
+    //                 console.log(status._id);
+    //                 const endDate = () => {
+    //                     const date = new Date();
+    //                     if (liteDuration === '1month') {
+    //                         return date.setMonth(date.getMonth() + 1);
+    //                     } else if (liteDuration === '3month') {
+    //                         return date.setMonth(date.getMonth() + 3);
+    //                     } else if (liteDuration === '6month') {
+    //                         return date.setMonth(date.getMonth() + 6);
+    //                     } else {
+    //                         return date.setMonth(date.getMonth() + 12);
+    //                     }
+    //                 }
+    //                 const updateSubscription = await fetch(`${backend_url}/api/subscription/update`, {
+    //                     method: 'PUT',
+    //                     headers: {
+    //                         'Content-Type': 'application/json',
+    //                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    //                     },
+    //                     body: JSON.stringify({
+    //                         subscriptionType: 'Lite',
+    //                         subscriptionStatus: 'Active',
+    //                         _id: status._id,
+    //                         user: jwtDecode(localStorage.getItem('token')).sub,
+    //                         startDate: new Date(),
+    //                         endDate: endDate(),
+    //                     }),
+    //                 });
+    //                 const data = await updateSubscription.json();
+    //                 console.log("Update Subscription:", data);
+    //                 alert('Payment successful and subscription updated!');
+    //             } catch (error) {
+    //                 console.log('Error updating subscription');
+    //             }
+    //         },
+    //         "prefill": {
+    //             "name": user.name,
+    //             "email": user.email
+    //         }
+    //     };
 
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    };
+    //     var rzp1 = new Razorpay(options);
+    //     rzp1.open();
+    // };
 
-    const handleProSubscription = async () => {
-        console.log('Pro Plan Duration:', proDuration);
-        const amount = proDuration === '1month' ? 49 : proDuration === '3month' ? 147 : proDuration === '6month' ? 294 : 588;
-        const response = await fetch(`${backend_url}/api/payment/createOrder?amount=${amount}`
-            , {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-            }
-        );
-        const order = await response.json();
-        console.log(order);
-        var options = {
-            "key_id": "rzp_test_6WAqYcpc5WOf2p", // Replace with your Razorpay Key ID
-            "amount": order.amount, // Amount in paise
-            "currency": order.currency,
-            "name": "XceeDesigns",
-            "description": "Test Transaction",
-            "order_id": order.id, // Pass the order ID received from backend
-            "handler": async function (response) {
-                console.log("Payment ID: ", response.razorpay_payment_id);
-                console.log("Order ID: ", response.razorpay_order_id);
-                console.log("Signature: ", response.razorpay_signature);
+    // const handleProSubscription = async () => {
+    //     console.log('Pro Plan Duration:', proDuration);
+    //     const amount = proDuration === '1month' ? 49 : proDuration === '3month' ? 147 : proDuration === '6month' ? 294 : 588;
+    //     const response = await fetch(`${backend_url}/api/payment/createOrder?amount=${amount}`
+    //         , {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    //             },
+    //         }
+    //     );
+    //     const order = await response.json();
+    //     console.log(order);
+    //     var options = {
+    //         "key_id": "rzp_test_6WAqYcpc5WOf2p", // Replace with your Razorpay Key ID
+    //         "amount": order.amount, // Amount in paise
+    //         "currency": order.currency,
+    //         "name": "XceeDesigns",
+    //         "description": "Test Transaction",
+    //         "order_id": order.id, // Pass the order ID received from backend
+    //         "handler": async function (response) {
+    //             console.log("Payment ID: ", response.razorpay_payment_id);
+    //             console.log("Order ID: ", response.razorpay_order_id);
+    //             console.log("Signature: ", response.razorpay_signature);
 
-                // const endDate = new Date().setMonth(new Date().getMonth() + (liteDuration === '1month' ? 1 : liteDuration === '3month' ? 3 : liteDuration === '6month' ? 6 : 12));
-                try {
-                    console.log(status._id);
-                    const endDate = () => {
-                        const date = new Date();
-                        if (proDuration === '1month') {
-                            return date.setMonth(date.getMonth() + 1);
-                        } else if (proDuration === '3month') {
-                            return date.setMonth(date.getMonth() + 3);
-                        } else if (proDuration === '6month') {
-                            return date.setMonth(date.getMonth() + 6);
-                        } else {
-                            return date.setMonth(date.getMonth() + 12);
-                        }
-                    }
-                    const updateSubscription = await fetch(`${backend_url}/api/subscription/update`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        },
-                        body: JSON.stringify({
-                            subscriptionType: 'Premium',
-                            subscriptionStatus: 'Active',
-                            _id: status._id,
-                            user: jwtDecode(localStorage.getItem('token')).sub,
-                            startDate: new Date(),
-                            endDate: endDate(),
-                        }),
-                    });
-                    const data = await updateSubscription.json();
-                    console.log("Update Subscription:", data);
-                    alert('Payment successful and subscription updated!');
-                } catch (error) {
-                    console.log('Error updating subscription');
-                }
-            },
-            "prefill": {
-                "name": user.name,
-                "email": user.email
-            }
-        };
+    //             // const endDate = new Date().setMonth(new Date().getMonth() + (liteDuration === '1month' ? 1 : liteDuration === '3month' ? 3 : liteDuration === '6month' ? 6 : 12));
+    //             try {
+    //                 console.log(status._id);
+    //                 const endDate = () => {
+    //                     const date = new Date();
+    //                     if (proDuration === '1month') {
+    //                         return date.setMonth(date.getMonth() + 1);
+    //                     } else if (proDuration === '3month') {
+    //                         return date.setMonth(date.getMonth() + 3);
+    //                     } else if (proDuration === '6month') {
+    //                         return date.setMonth(date.getMonth() + 6);
+    //                     } else {
+    //                         return date.setMonth(date.getMonth() + 12);
+    //                     }
+    //                 }
+    //                 const updateSubscription = await fetch(`${backend_url}/api/subscription/update`, {
+    //                     method: 'PUT',
+    //                     headers: {
+    //                         'Content-Type': 'application/json',
+    //                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    //                     },
+    //                     body: JSON.stringify({
+    //                         subscriptionType: 'Premium',
+    //                         subscriptionStatus: 'Active',
+    //                         _id: status._id,
+    //                         user: jwtDecode(localStorage.getItem('token')).sub,
+    //                         startDate: new Date(),
+    //                         endDate: endDate(),
+    //                     }),
+    //                 });
+    //                 const data = await updateSubscription.json();
+    //                 console.log("Update Subscription:", data);
+    //                 alert('Payment successful and subscription updated!');
+    //             } catch (error) {
+    //                 console.log('Error updating subscription');
+    //             }
+    //         },
+    //         "prefill": {
+    //             "name": user.name,
+    //             "email": user.email
+    //         }
+    //     };
 
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    };
+    //     var rzp1 = new Razorpay(options);
+    //     rzp1.open();
+    // };
 
     const handlePayment = () => {
         toast('Feature not available');
@@ -274,10 +274,10 @@ const Subscription = () => {
                 mb: 4,
             }}
         >
-            <Typography variant="h4" fontWeight="bold" color='#1e1e2f'>
+            <Typography variant="h4" fontWeight="bold" color='#1e1e2f' textAlign='center'>
                 Choose Your Subscription Plan
             </Typography>
-            <Typography variant="body1" color="textSecondary">
+            <Typography variant="body1" color="textSecondary" textAlign='center'>
                 Select a plan that suits your needs and enjoy exclusive features.
             </Typography>
             <Grid container spacing={4} sx={{ mt: 1 }}>
