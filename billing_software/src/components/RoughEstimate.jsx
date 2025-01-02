@@ -65,32 +65,50 @@ function RoughEstimate() {
         const updatedItems = [...items];
         updatedItems[index][field] = value;
 
-        // Recalculate the values for nWt, lWt, and Amount after user changes any relevant field
-        if (field === 'gWt' || field === 'tunch' || field === 'sWt') {
-            updatedItems[index].nWt = (((parseFloat(updatedItems[index].gWt) * parseFloat(updatedItems[index].tunch)) / 100).toFixed(3) - parseFloat(updatedItems[index].sWt)).toFixed(3);
-            updatedItems[index].lWt = (parseFloat(updatedItems[index].gWt) - parseFloat(updatedItems[index].nWt)).toFixed(3);
+        // Parse values safely to avoid NaN errors
+        const gWt = parseFloat(updatedItems[index].gWt) || 0; // Gross Weight
+        const tunch = parseFloat(updatedItems[index].tunch) || 0; // Purity
+        const sWt = parseFloat(updatedItems[index].sWt) || 0; // Stone Weight
+        const sRate = parseFloat(updatedItems[index].sRate) || 0; // Stone Rate
+        const gold = parseFloat(updatedItems[index].gold) || 0; // Gold
+        const silver = parseFloat(updatedItems[index].silver) || 0; // Silver
+        const labour = parseFloat(updatedItems[index].labour) || 0; // Labour Charge
 
+        // 🟡 **Calculate nWt and lWt (Net Weight and Loss Weight)**
+        updatedItems[index].nWt = ((gWt * tunch) / 100 - sWt).toFixed(3); // Net Weight
+        updatedItems[index].lWt = (gWt - parseFloat(updatedItems[index].nWt)).toFixed(3); // Loss Weight
+
+        // 🟡 **Calculate Rate (Gold/Silver)**
+        if (field === 'rate') {
+            updatedItems[index].rate = parseFloat(value) || 0;
+        } else if (updatedItems[index].type === 'Gold') {
+            updatedItems[index].rate = (sRate + parseFloat(updatedItems[index].nWt) * (receiptData._24kRate / 10)).toFixed(2);
+        } else {
+            updatedItems[index].rate = (sRate + parseFloat(updatedItems[index].nWt) * (receiptData.silverBhav / 1000)).toFixed(2);
         }
 
-        if (field === 'sRate' || field === 'nWt' || field === 'tunch') {
-            if (updatedItems[index].type === 'Gold')
-                updatedItems[index].rate = (parseFloat(updatedItems[index].sRate) + ((parseFloat(updatedItems[index].nWt)).toFixed(3)) * (receiptData._24kRate / 10));
-            else
-                updatedItems[index].rate = (parseFloat(updatedItems[index].sRate) + (parseFloat(updatedItems[index].nWt)) * (receiptData.silverBhav / 1000)).toFixed(2);
+        if (field === 'amount') {
+            updatedItems[index].amount = parseFloat(value) || 0;
+        } else {
+            // 🟡 **Calculate Amount**
+            updatedItems[index].amount = (
+                parseFloat(updatedItems[index].rate) -
+                (gold * (receiptData._24kRate / 10)) -
+                (silver * (receiptData.silverBhav / 1000)) +
+                labour
+            ).toFixed(1);
         }
 
-        if (field === 'rate' || field === 'gold' || field === 'silver' || field === 'labour' || field === 'tunch') {
-            updatedItems[index].amount = (parseFloat(updatedItems[index].rate) - (parseFloat(updatedItems[index].gold) * (receiptData._24kRate / 10) + parseFloat(updatedItems[index].silver) * (receiptData.silverBhav / 1000)) + parseFloat(updatedItems[index].labour)).toFixed(1);
-        }
-
+        // 🟡 **Update State**
         setItems(updatedItems);
 
-        // Also update the items in the receiptData context
+        // Sync updated items with receiptData context
         setReceiptData((prevData) => ({
             ...prevData,
             items: updatedItems,
         }));
     };
+
 
     useEffect(() => {
         if (receiptData.items.length !== 0) {
@@ -139,7 +157,7 @@ function RoughEstimate() {
                         _22kReturn: data[data.length - 1]._22kReturn,
                     };
                 });
-            else 
+            else
                 setReceiptData((prevValues) => {
                     return {
                         ...prevValues,
@@ -159,7 +177,7 @@ function RoughEstimate() {
             receiptData.totalGst = (parseFloat(receiptData.sgstValue) + parseFloat(receiptData.cgstValue)).toFixed(2);
             receiptData.closingBalance = (parseFloat(receiptData.closingBalance) + parseFloat(receiptData.totalGst)).toFixed(2);
         }
-    }, [receiptData.sgst, receiptData.cgst]);
+    }, [receiptData.sgst, receiptData.cgst, receiptData.items]);
 
     useEffect(() => {
         const fetchPreviousDue = async () => {

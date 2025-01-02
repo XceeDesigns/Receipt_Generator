@@ -287,7 +287,7 @@ const JewellerReceipt = () => {
                 <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}></TableCell>
                 <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}></TableCell>
                 <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}></TableCell>
-                <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}>with GST</TableCell>
+                <TableCell sx={{ border: '1px solid rgba(224, 224, 224, 1)' }}>{receiptData.gst ? "with GST" : ""}</TableCell>
                 <TableCell
                   sx={{
                     textAlign: 'right',
