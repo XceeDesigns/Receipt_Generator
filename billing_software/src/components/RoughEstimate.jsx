@@ -207,9 +207,14 @@ function RoughEstimate() {
                         // Update previousDue in receiptData
                         setReceiptData((prevValues) => ({
                             ...prevValues,
-                            previousDue: lastReceipt.currentDue || 0, // Use 0 if currentDue is undefined
+                            previousDue: lastReceipt.currentDue || 0, 
                             customerAddress: lastReceipt.customerAddress,
                             customerName: lastReceipt.customerName
+                        }));
+                    } else {
+                        setReceiptData((prevValues) => ({
+                            ...prevValues,
+                            previousDue: 0, 
                         }));
                     }
                 } catch (error) {
