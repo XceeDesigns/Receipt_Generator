@@ -550,7 +550,7 @@ const UserProfile = () => {
                                 }}
                                 onClick={() => navigate('/dashboard/subscription')}
                             >
-                                Upgrade
+                                Renew
                             </Button>
                         </Paper>
                     </Grid>

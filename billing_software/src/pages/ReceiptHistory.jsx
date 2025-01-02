@@ -10,18 +10,16 @@ import {
     TableRow,
     Paper,
     IconButton,
-    Button,
     TextField,
     Select,
     MenuItem,
     Pagination,
     Container,
-    Grid,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
 import { jwtDecode } from 'jwt-decode';
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
 import { ReceiptContext } from '../context/ReceiptContext';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -31,12 +29,11 @@ import LoadingScreen from '../components/LoadingScreen';
 const ReceiptHistory = () => {
     const { receiptData, setReceiptData } = useContext(ReceiptContext);
     const [data, setData] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);  // Ensure it's initialized as an empty array
-    const [amount, setAmount] = useState(0);
+    const [filteredData, setFilteredData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [resultsPerPage, setResultsPerPage] = useState(6);
     const [searchQuery, setSearchQuery] = useState('');
-    const [totalRecords, setTotalRecords] = useState(0);  // Track total records for pagination
+    const [totalRecords, setTotalRecords] = useState(0);
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [selectedBillNumber, setSelectedBillNumber] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -45,6 +42,7 @@ const ReceiptHistory = () => {
 
     const backend_url = process.env.REACT_APP_BACKEND_URL;
 
+    // Dialog handling
     const handleOpenDialog = (billNumber) => {
         setSelectedBillNumber(billNumber);
         setDialogOpen(true);
@@ -63,12 +61,12 @@ const ReceiptHistory = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
             });
             if (response.ok) {
                 toast.success('Bill deleted successfully.');
-                fetchReceiptHistory(); // Refresh receipt history after deletion
+                fetchReceiptHistory();
             } else {
                 toast.error('Failed to delete the bill.');
             }
@@ -78,7 +76,7 @@ const ReceiptHistory = () => {
         }
     };
 
-    // Fetch all receipt history without pagination
+    // Fetching receipt data
     const fetchReceiptHistory = async () => {
         setLoading(true);
         try {
@@ -87,19 +85,16 @@ const ReceiptHistory = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch data');
-            }
+            if (!response.ok) throw new Error('Failed to fetch data');
 
             const data = await response.json();
-            console.log('Receipt history:', data);
-            setData(data || []);  // Ensure 'records' is an array
-            setFilteredData(data || []);  // Initialize filtered data to avoid undefined
-            setTotalRecords(data ? data.length : 0);  // Set total records
+            setData(data || []);
+            setFilteredData(data || []);
+            setTotalRecords(data ? data.length : 0);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -109,22 +104,18 @@ const ReceiptHistory = () => {
 
     useEffect(() => {
         fetchReceiptHistory();
-    }, []);  // Fetch data once on mount
+    }, []);
 
-    // Filter data based on the search query
     useEffect(() => {
-        const filtered = data.filter((row) => {
-            return (
-                row.billNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                row.customerName.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        });
-        setFilteredData(filtered); // Update filtered data
-        setTotalRecords(filtered.length); // Update total records after search
-    }, [searchQuery, data]);  // Re-filter whenever search query or data changes
+        const filtered = data.filter((row) =>
+            row.billNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            row.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredData(filtered);
+        setTotalRecords(filtered.length);
+    }, [searchQuery, data]);
 
-    // Slice the filtered data for pagination
-    const paginatedData = (filteredData || []).slice(
+    const paginatedData = filteredData.slice(
         (currentPage - 1) * resultsPerPage,
         currentPage * resultsPerPage
     );
@@ -146,128 +137,175 @@ const ReceiptHistory = () => {
         navigate('/dashboard/rough-receipt/preview');
     };
 
-    const defaultReceiptData = {
-        businessName: '',
-        address: '',
-        phone: '',
-        documentTitle: '',
-        customerName: '',
-        customerAddress: '',
-        customerPhone: '',
-        billNumber: '',
-        date: '',
-        user: '',
-        _24kRate: '',
-        silverBhav: '',
-        _18kReturn: '',
-        _20kReturn: '',
-        _22kReturn: '',
-        items: [],
-        closingBalance: '',
-        previousDue: '0',
-        currentDue: '',
-        paidAmount: '',
-        totalNetWeight: '0',
-    };
-
-    const resetReceiptData = () => {
-        setReceiptData(defaultReceiptData);
-    };
-
-    useEffect(() => {
-        resetReceiptData();
-    }, []);
-
     return (
-        <Container maxWidth='false' disableGutters>
-            <Box sx={{ padding: '24px' }}>
-
-                {/* Search and Actions */}
-                <Box sx={{
-                    display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '16px',
-                    '@media (min-width: 600px)': { flexDirection: 'row' },
-                }}>
+        <Container maxWidth="lg" disableGutters>
+            <Box sx={{ padding: '16px' }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        alignItems: { xs: 'flex-start', sm: 'center' },
+                        gap: '16px',
+                        marginBottom: '16px',
+                        width: { xs: '100vw', sm: '100%' }, // Ensure the container itself doesn't exceed the viewport width
+                    }}
+                >
                     <TextField
                         variant="outlined"
                         size="small"
                         placeholder="Search by Bill No. or Name"
-                        sx={{ width: '100%', maxWidth: '300px' }}
+                        sx={{
+                            flex: 1, // Allow the TextField to grow and shrink within available space
+                            width: { xs: '100vw', sm: '50%' }, // Full width on extra-small screens, half on small and above
+                            maxWidth: '100%', // Prevent it from exceeding the container width
+                        }}
                         value={searchQuery}
                         onChange={handleSearchChange}
                     />
-                    <Box sx={{ display: 'flex', gap: '16px', flexDirection: 'row', '@media (max-width: 600px)': { flexDirection: 'column' } }}>
-                        <Select size="small" value={resultsPerPage} onChange={handleResultsPerPageChange}>
-                            <MenuItem value={6}>Show Results 6</MenuItem>
-                            <MenuItem value={8}>Show Results 8</MenuItem>
-                            <MenuItem value={10}>Show Results 10</MenuItem>
-                        </Select>
-                    </Box>
+                    <Select
+                        size="small"
+                        value={resultsPerPage}
+                        onChange={handleResultsPerPageChange}
+                        sx={{
+                            width: { xs: '100%', sm: '150px' }, // Full width on extra-small screens, fixed width on small and above
+                            maxWidth: '100%', // Prevent it from exceeding the container width
+                        }}
+                    >
+                        <MenuItem value={6}>Show 6</MenuItem>
+                        <MenuItem value={8}>Show 8</MenuItem>
+                        <MenuItem value={10}>Show 10</MenuItem>
+                    </Select>
                 </Box>
 
 
-                {loading ? <LoadingScreen/> : <><Box sx={{ overflowX: 'auto' }}>
-                    <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }}>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Bill No.</TableCell>
-                                    <TableCell>Date</TableCell>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Phone</TableCell>
-                                    <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Net Weight</TableCell>
-                                    <TableCell>Due</TableCell>
-                                    <TableCell>Amount</TableCell>
-                                    <TableCell>Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {paginatedData.map((row, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{row.billNumber}</TableCell>
-                                        <TableCell>{row.date}</TableCell>
-                                        <TableCell>{row.customerName}</TableCell>
-                                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{row.customerPhone}</TableCell>
-                                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{row.totalNetWeight}</TableCell>
-                                        <TableCell>{row.currentDue}</TableCell>
-                                        <TableCell>{row.closingBalance}</TableCell>
-                                        <TableCell>
-                                            {/* Preview Button */}
-                                            <IconButton size="small" color="primary" onClick={() => handlePreview(row)} sx={{ color: '#1e1e2f' }}>
-                                                <PreviewIcon />
-                                            </IconButton>
 
-                                            {/* Delete Button */}
-                                            <IconButton size="small" color="error" onClick={() => handleOpenDialog(row.billNumber)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                            <ConfirmDialog
-                                                open={isDialogOpen}
-                                                handleClose={handleCloseDialog}
-                                                handleConfirm={() => handleCloseDialog(true)}
-                                                title="Delete Bill"
-                                                content="Are you sure you want to delete this bill?"
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
+                {loading ? (
+                    <LoadingScreen />
+                ) : (
+                    <>
+                        <Box sx={{ overflowX: 'auto', width: { xs: '100vw', sm: '100%' } }}>
+                            <TableContainer
+                                component={Paper}
+                                sx={{
+                                    border: '1px solid #ccc', // Border for the table container
+                                    borderRadius: '8px', // Optional: Add rounded corners
+                                    overflow: 'auto', // Ensure rounded corners are respected
+                                }}
+                            >
+                                <Table
+                                    sx={{
+                                        minWidth: 650,
+                                        borderCollapse: 'collapse', // Ensures borders don't double
+                                    }}
+                                    aria-label="responsive table"
+                                >
+                                    <TableHead>
+                                        <TableRow sx={{ borderBottom: '2px solid #ccc' }}> {/* Adds bottom border to the header */}
+                                            <TableCell sx={{ border: '1px solid #ccc' }}>Bill No.</TableCell>
+                                            <TableCell sx={{ border: '1px solid #ccc' }}>Date</TableCell>
+                                            <TableCell sx={{ border: '1px solid #ccc' }}>Name</TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    border: '1px solid #ccc',
+                                                    display: { xs: 'none', sm: 'table-cell' },
+                                                }}
+                                            >
+                                                Phone
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    border: '1px solid #ccc',
+                                                    display: { xs: 'none', sm: 'table-cell' },
+                                                }}
+                                            >
+                                                Net Weight
+                                            </TableCell>
+                                            <TableCell sx={{ border: '1px solid #ccc' }}>Due</TableCell>
+                                            <TableCell sx={{ border: '1px solid #ccc' }}>Amount</TableCell>
+                                            <TableCell sx={{ border: '1px solid #ccc' }}>Actions</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {paginatedData.map((row, index) => (
+                                            <TableRow
+                                                key={index}
+                                                sx={{
+                                                    borderBottom: '1px solid #ccc', // Adds border between rows
+                                                }}
+                                            >
+                                                <TableCell sx={{ border: '1px solid #ccc' }}>{row.billNumber}</TableCell>
+                                                <TableCell sx={{ border: '1px solid #ccc' }}>{row.date}</TableCell>
+                                                <TableCell sx={{ border: '1px solid #ccc' }}>{row.customerName}</TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        border: '1px solid #ccc',
+                                                        display: { xs: 'none', sm: 'table-cell' },
+                                                    }}
+                                                >
+                                                    {row.customerPhone}
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        border: '1px solid #ccc',
+                                                        display: { xs: 'none', sm: 'table-cell' },
+                                                    }}
+                                                >
+                                                    {row.totalNetWeight}
+                                                </TableCell>
+                                                <TableCell sx={{ border: '1px solid #ccc' }}>{row.currentDue}</TableCell>
+                                                <TableCell sx={{ border: '1px solid #ccc' }}>{row.closingBalance}</TableCell>
+                                                <TableCell sx={{ border: '1px solid #ccc' }}>
+                                                    <IconButton
+                                                        size="small"
+                                                        color="primary"
+                                                        onClick={() => handlePreview(row)}
+                                                        sx={{ color: '#1e1e2f' }}
+                                                    >
+                                                        <PreviewIcon />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="small"
+                                                        color="error"
+                                                        onClick={() => handleOpenDialog(row.billNumber)}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                    <ConfirmDialog
+                                                        open={isDialogOpen}
+                                                        handleClose={handleCloseDialog}
+                                                        handleConfirm={() => handleCloseDialog(true)}
+                                                        title="Delete Bill"
+                                                        content="Are you sure you want to delete this bill?"
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Box>
 
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
-                        <Typography variant="body2">
-                            Showing {paginatedData.length} of {totalRecords}
-                        </Typography>
-                        <Pagination
-                            count={Math.ceil(totalRecords / resultsPerPage)}  // Dynamic pagination count based on filtered data
-                            page={currentPage}
-                            onChange={handlePageChange}
-                            variant="outlined"
-                            shape="rounded"
-                        />
-                    </Box></>}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginTop: '16px',
+                                width: { xs: '100vw', sm: '100%' },
+                            }}
+                        >
+                            <Typography variant="body2">
+                                Showing {paginatedData.length} of {totalRecords}
+                            </Typography>
+                            <Pagination
+                                count={Math.ceil(totalRecords / resultsPerPage)}
+                                page={currentPage}
+                                onChange={handlePageChange}
+                            />
+                        </Box>
+                    </>
+                )}
             </Box>
         </Container>
     );
