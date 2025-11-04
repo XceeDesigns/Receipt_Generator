@@ -10,6 +10,7 @@ import { UserContextProvider } from './context/UserContext'
 import { SubscriptionProvider } from './context/SubscriptionContext'
 import {Toaster} from 'react-hot-toast'
 import MainDashboard from './pages/MainDashboard'
+import RoughEstimateWithoutLogin from './components/RoughEstimateWithoutLogin'
 
 function App() {
 
@@ -32,6 +33,7 @@ function App() {
               <Route path="/dashboard/inventory" element={<MainDashboard />} />
               <Route path="/dashboard/subscription" element={<MainDashboard />} />
               <Route path="/dashboard/contact-us" element={<MainDashboard />} />
+              <Route path="/generate-receipt" element={<RoughEstimateWithoutLogin />} />
             </Routes>
             <Toaster />
             </SubscriptionProvider>

@@ -204,7 +204,7 @@ export default function SignInPage() {
           </Box>
 
           <Button
-            onClick={() => navigate("/receipt-builder")}
+            onClick={() => navigate("/generate-receipt")}
             sx={{
               mt: 4,
               width: "fit-content",

@@ -133,7 +133,7 @@ export default function SignUpPage() {
           <Typography sx={{ opacity: 0.85 }}>✅ WhatsApp + PDF instant export</Typography>
           <Typography sx={{ opacity: 0.85 }}>✅ Smart metal rate auto-calculation & GST breakups</Typography>
         </Box>
-        <Button onClick={() => navigate("/receipt-builder")} sx={{ mt: 3, px: 5, py: 1.4, borderRadius: "10px", background: "linear-gradient(90deg,#F7E27D,#C6A667)", color: "black", fontWeight: 700, textTransform: "none", boxShadow: "0 8px 28px rgba(247,226,125,0.18)", '&:hover': { opacity: 0.95 } }}>
+        <Button onClick={() => navigate("/generate-receipt")} sx={{ mt: 3, px: 5, py: 1.4, borderRadius: "10px", background: "linear-gradient(90deg,#F7E27D,#C6A667)", color: "black", fontWeight: 700, textTransform: "none", boxShadow: "0 8px 28px rgba(247,226,125,0.18)", '&:hover': { opacity: 0.95 } }}>
           ⚡ Create Receipt Without Login
         </Button>
       </Box>
