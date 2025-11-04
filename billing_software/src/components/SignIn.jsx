@@ -1,304 +1,338 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from "react";
 import {
-  Container,
+  Box,
   TextField,
   Button,
-  Box,
   Typography,
-  Alert,
-  Paper,
-  Divider,
   InputAdornment,
   IconButton,
-  CircularProgress
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../context/UserContext';
-import { ReceiptHistoryContext } from '../context/ReceiptHistoryContext';
-import { SubscriptionContext } from '../context/SubscriptionContext';
-import toast from 'react-hot-toast';
-import LoadingScreen from './LoadingScreen';
-import { Send, Visibility, VisibilityOff } from '@mui/icons-material';
+  CircularProgress,
+  colors,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { UserContext } from "../context/UserContext";
+import { SubscriptionContext } from "../context/SubscriptionContext";
+import { ReceiptHistoryContext } from "../context/ReceiptHistoryContext";
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    canvas.id = "ornacloud-particles";
+    Object.assign(canvas.style, {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      zIndex: 0,
+      pointerEvents: "none",
+    });
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    const count = 55;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function init() {
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.4 + 0.4,
+        dx: (Math.random() - 0.5) * 0.35,
+        dy: (Math.random() - 0.5) * 0.35,
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(230, 206, 140, 0.7)";
+      particles.forEach((p) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      });
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    init();
+    draw();
+
+    window.addEventListener("resize", resize);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      canvas.remove();
+    };
+  }, []);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const { subscription, setSubscription } = useContext(SubscriptionContext);
-  const { user, setUser } = useContext(UserContext);
-  const { ReceiptHistory, setReceiptHistory } = useContext(ReceiptHistoryContext);
-
-  const backend_url = process.env.REACT_APP_BACKEND_URL;
   const navigate = useNavigate();
 
-  const checkDate = (date1, date2) => {
-    console.log('Checking date:', date1, date2);
-    const date1Array = date1.split('-');
-    const date2Array = date2.split('-');
-    console.log('Date 1:', date1Array);
-    console.log('Date 2:', date2Array);
+  const { setUser } = useContext(UserContext);
+  const { subscription, setSubscription } = useContext(SubscriptionContext);
+  const { setReceiptHistory } = useContext(ReceiptHistoryContext);
 
-    if (date1Array[0] < date2Array[0]) {
-      return false;
-    } else if (date1Array[0] === date2Array[0]) {
-      if (date1Array[1] < date2Array[1]) {
-        return false;
-      } else if (date1Array[1] === date2Array[1]) {
-        if (date1Array[2] < date2Array[2]) {
-          return false;
-        }
-      }
-    }
-    return true;
-  };
+  const backend_url = process.env.REACT_APP_BACKEND_URL;
 
-
-  const handleSignIn = async (event) => {
-    event.preventDefault();
-    setError('');
+  const handleSignIn = async (e) => {
+    e.preventDefault();
     setLoading(true);
 
-    // Ensure both email and password are provided
-    if (!email || !password) {
-      setError('Please enter both email and password.');
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Step 1: Attempt to log in with provided credentials
       const loginResponse = await fetch(`${backend_url}/api/user/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
+      const loginData = await loginResponse.json();
+
       if (!loginResponse.ok) {
-        setError('Failed to log in. Please check your credentials.');
+        toast.error(loginData.error || "Invalid credentials");
         setLoading(false);
         return;
       }
 
-      const loginData = await loginResponse.json();
-      localStorage.setItem('token', loginData.authToken);
-
-      // Step 2: Attempt to fetch the user's subscription status, but don't block login
-      let subscriptionData = null;
-      try {
-        const subscriptionResponse = await fetch(`${backend_url}/api/subscription/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-
-        if (subscriptionResponse.ok) {
-          subscriptionData = await subscriptionResponse.json();
-          console.log('Subscription Data:', subscriptionData);
-        } else {
-          console.error('Failed to fetch subscription data');
-        }
-      } catch (subscriptionError) {
-        console.error('Error fetching subscription data:', subscriptionError);
-      }
-
-      // Step 3: Check if the subscription has expired and update if needed
-      if (subscriptionData !== null && subscriptionData.endData !== null && subscriptionData.subscriptionStatus !== 'Canceled') {
-        console.log('Checking subscription status...');
-        const today = new Date().toISOString().split('T')[0];
-        console.log('chal')
-        console.log(checkDate(subscriptionData.endDate.slice(0, 10), today));
-        if (!checkDate(subscriptionData.endDate.slice(0, 10), today)) {
-          // Step 4: If expired, update the subscription status
-          console.log(subscriptionData);
-          try {
-            const updateSubscriptionResponse = await fetch(`${backend_url}/api/subscription/update`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-              },
-              body: JSON.stringify({
-                subscriptionStatus: 'Canceled',
-                user: subscriptionData.user,
-                _id: subscriptionData._id,
-                subscriptionType: subscriptionData.subscriptionType,
-                startDate: subscriptionData.startDate,
-                endDate: subscriptionData.endDate,
-              }),
-            });
-
-            if (updateSubscriptionResponse.ok) {
-              const updateSubscriptionData = await updateSubscriptionResponse.json();
-              console.log('Subscription Updated:', updateSubscriptionData);
-            } else {
-              console.error('Failed to update subscription status');
-            }
-          } catch (updateError) {
-            console.error('Error updating subscription:', updateError);
-          }
-        }
-      }
-
-      // Step 5: On successful login, navigate to the dashboard
-      toast.success('Logged in successfully');
-      setLoading(false);
-      navigate('/dashboard');
+      localStorage.setItem("token", loginData.authToken);
       setUser(email);
-
-    } catch (err) {
-      // Handle any errors during the login process
-      setLoading(false);
-      setError('An error occurred. Please try again later.');
+      toast.success("Welcome back! ✨");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Something went wrong. Try again.");
     }
+
+    setLoading(false);
   };
 
-
-
   return (
-    <Container
-      maxWidth="false"
+    <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        px: 2,
-        background: 'linear-gradient(to bottom right, #1E3A8A, #ffffff)',
+        minHeight: "100vh",
+        position: "relative",
+        zIndex: 1,
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        background:
+          "linear-gradient(135deg, #0c0c0f 0%, #1a1a22 40%, #0b0b0e 100%)",
+        fontFamily: "'Inter', sans-serif",
       }}
     >
-      <Paper
-        elevation={3}
+      {/* Particle canvas is appended via effect */}
+      <Box id="particles-layer" sx={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+
+      {/* LEFT SECTION */}
+      <Box
         sx={{
-          padding: 4,
-          borderRadius: 3,
-          width: '100%',
-          maxWidth: 480,
-          background: '#FFFFFF',
-          border: '1px solid #E0E4EA',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: { xs: "flex-start", md: "flex-start" },
+          px: { xs: 4, md: 6 },
+          py: { xs: 6, md: 10 },
+          gap: 2,
+          color: "white",
+          backgroundImage:
+            "radial-gradient(circle at top left, rgba(255,215,0,0.12), transparent 60%)",
         }}
       >
-        <Box textAlign="center" mb={3}>
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            px: { xs: 4, md: 10 },
+            py: 8,
+            color: "white",
+          }}
+        >
           <Typography
-            variant="h4"
-            component="h1"
-            fontWeight="bold"
-            color="#2C3E50"
+            variant="h2"
+            sx={{
+              fontWeight: 800,
+              mb: 2,
+              fontFamily: "'Playfair Display', serif",
+              letterSpacing: "1px",
+              background: "linear-gradient(90deg,#F7E27D,#C6A667)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
           >
-            Welcome Back 👋
+            OrnaCloud
           </Typography>
-          <Typography variant="body2" color="#5A6A85">
-            Sign in to your account to continue
-          </Typography>
-        </Box>
-
-        <Divider sx={{ my: 2 }} />
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-
-        <Box component="form" onSubmit={handleSignIn} noValidate>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            type="email"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#D1D9E6' },
-                '&:hover fieldset': { borderColor: '#1976D2' },
-                '&.Mui-focused fieldset': { borderColor: '#1976D2' },
-              },
-            }}
-          />
-
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#D1D9E6' },
-                '&:hover fieldset': { borderColor: '#1976D2' },
-                '&.Mui-focused fieldset': { borderColor: '#1976D2' },
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                    aria-label="toggle password visibility"
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
 
           <Typography
-            variant="body2"
-            sx={{ mt: 2, textAlign: 'center', color: '#5A6A85' }}
+            variant="h5"
+            sx={{
+              opacity: 0.9,
+              maxWidth: "420px",
+              mb: 3,
+              fontWeight: 500,
+            }}
           >
-            Don't have an account?{' '}
-            <Button
-              color="primary"
-              onClick={() => navigate('/signup')}
-              sx={{ textTransform: 'none', p: 0, color: '#1e1e2f' }}
-            >
-              Register
-            </Button>
+            Smart receipt generator for jewelers. Elevate customer trust & brand
+            prestige.
           </Typography>
+
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+            {[
+              "Instant GST-compliant jewelry receipts",
+              "Cloud record tracking & warranty slips",
+              "Export PDF & WhatsApp share instantly",
+              "Secure, fast & professional",
+            ].map((item, i) => (
+              <Typography key={i} sx={{ opacity: 0.8, fontSize: "15px" }}>
+                ✅ {item}
+              </Typography>
+            ))}
+          </Box>
 
           <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={loading}
-            endIcon={loading ? <CircularProgress size={20} /> : <Send />}
+            onClick={() => navigate("/receipt-builder")}
             sx={{
-              mt: 3,
-              mb: 2,
-              py: 1.5,
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              backgroundColor: '#1e1e2f',
-              color: '#fff',
-              textTransform: 'none',
-              '&:hover': {
-                backgroundColor: '#3a3a4c',
-              },
+              mt: 4,
+              width: "fit-content",
+              px: 4,
+              py: 1.2,
+              borderRadius: "8px",
+              background: "linear-gradient(90deg,#F7E27D,#C6A667)",
+              color: "black",
+              fontWeight: 700,
+              textTransform: "none",
+              ":hover": { opacity: 0.85 },
             }}
           >
-            Sign In
+            🚀 Create Receipt Without Login
           </Button>
         </Box>
-      </Paper>
-    </Container>
+      </Box>
+
+      {/* RIGHT SECTION LOGIN */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: { xs: 3, md: 6 },
+        }}
+      >
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 420,
+            backdropFilter: "blur(22px)",
+            alignSelf: "center",
+            boxShadow: "0px 0px 35px rgba(198,166,103,0.18)",
+            background: "rgba(255,255,255,0.08)",
+            borderRadius: "16px",
+            border: "1px solid rgba(255,255,255,0.15)",
+            p: 4,
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ mb: 3, fontWeight: 700, color: "white", textAlign: "center" }}
+          >
+            Login to Continue
+          </Typography>
+
+          <form onSubmit={handleSignIn}>
+            <TextField
+              fullWidth
+              label="Email"
+              variant="filled"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+
+            <TextField
+              fullWidth
+              label="Password"
+              variant="filled"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                style: { backgroundColor: "rgba(232,240,2554,1)" },
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ mb: 3 }}
+            />
+
+            <Button
+              fullWidth
+              type="submit"
+              disabled={loading}
+              sx={{
+                py: 1.4,
+                borderRadius: "10px",
+                fontSize: "16px",
+                fontWeight: 700,
+                background: "linear-gradient(90deg,#F7E27D,#C6A667)",
+                color: "black",
+                textTransform: "none",
+              }}
+            >
+              {loading ? <CircularProgress size={22} /> : "Sign In"}
+            </Button>
+
+            <Button
+              fullWidth
+              onClick={() => navigate("/signup")}
+              sx={{ mt: 2, textTransform: "none", color: "white" }}
+            >
+              New here? Create account
+            </Button>
+          </form>
+
+          {/* Trust Badges */}
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "center", gap: 3, opacity: 0.55 }}>
+            <Typography sx={{ fontSize: "13px", color: "white" }}>🔒 Bank‑grade Security</Typography>
+            <Typography sx={{ fontSize: "13px", color: "white" }}>⚡ 99.9% Uptime</Typography>
+          </Box>
+
+          {/* FOOTER */}
+          <Box
+            sx={{
+              width: "100%",
+              textAlign: "center",
+              py: 2,
+              opacity: 0.5,
+              color: "white",
+              fontSize: "13px",
+            }}
+          >
+            <Typography sx={{ cursor: "pointer", mx: 1 }} onClick={() => navigate("/about")}>
+              About • Pricing • Support
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }

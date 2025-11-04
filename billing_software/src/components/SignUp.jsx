@@ -1,340 +1,182 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  Container,
+  Box,
   TextField,
   Button,
-  Box,
   Typography,
-  Alert,
-  Paper,
-  Divider,
-  MenuItem,
-  Grid,
   InputAdornment,
   IconButton,
-  CircularProgress
-} from '@mui/material';
-import Modal from '@mui/material/Modal';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import LoadingScreen from './LoadingScreen';
-import { Send, Visibility, VisibilityOff } from '@mui/icons-material';
+  CircularProgress,
+  Modal,
+} from "@mui/material";
+import { Visibility, VisibilityOff, Send } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-// Password Strength Utility
-const getPasswordStrength = (password) => {
-  if (password.length > 8 && /[A-Z]/.test(password) && /\d/.test(password)) return 'Strong';
-  if (password.length >= 6) return 'Medium';
-  return 'Weak';
-};
-
+// SignUpPage: polished, aligned and consistent with SignIn design
 export default function SignUpPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    companyName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    mobileNumber: '',
-    country: '',
-    state: '',
-  });
-  const [passwordStrength, setPasswordStrength] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [otp, setOtp] = useState('');
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [otp, setOtp] = useState("");
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(300); // 5 minutes in seconds
 
-  const backend_url = process.env.REACT_APP_BACKEND_URL;
   const navigate = useNavigate();
+  const backend_url = process.env.REACT_APP_BACKEND_URL;
 
-  const countries = [
-    { label: 'India', value: 'India' },
-  ];
-
-  const states = [
-    { label: 'Uttar Pradesh', value: 'Uttar Pradesh' },
-    { label: 'Uttarakhand', value: 'Uttarakhand' },
-    { label: 'Karnataka', value: 'Karnataka' },
-  ];
-
-  const handleOtpModalClose = () => {
-    setIsOtpModalOpen(false);
-    setRemainingTime(300); // Reset the timer when the modal is closed
-  };
-
-  const handleOtpModalOpen = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError('Please fill in all required fields.');
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const otpResponse = await fetch(`${backend_url}/api/user/signup/generate-otp?email=${formData.email}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!otpResponse.ok) {
-        setError('Failed to generate OTP.');
-        setLoading(false);
-        return;
-      }
-
-      toast.success('OTP has been sent to your email.');
-      setIsOtpModalOpen(true);
-      setLoading(false);
-      setRemainingTime(300); // Reset the timer when the modal is opened
-    } catch (err) {
-      console.error(err);
-      setError('An error occurred. Please try again later.');
-      setLoading(false);
-    }
-  };
-
+  // Particles canvas (same behavior as SignIn)
   useEffect(() => {
-    if (isOtpModalOpen && remainingTime > 0) {
-      const timer = setInterval(() => {
-        setRemainingTime((prev) => prev - 1);
-      }, 1000);
+    const canvas = document.createElement("canvas");
+    canvas.id = "ornacloud-particles-signup";
+    Object.assign(canvas.style, { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 0, pointerEvents: "none" });
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    const count = 55;
 
-      return () => clearInterval(timer); // Cleanup on component unmount or modal close
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
-  }, [isOtpModalOpen, remainingTime]);
 
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-    if (name === 'password') {
-      setPasswordStrength(getPasswordStrength(value));
+    function init() {
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.4 + 0.4,
+        dx: (Math.random() - 0.5) * 0.35,
+        dy: (Math.random() - 0.5) * 0.35,
+      }));
     }
-  };
 
-  const handleValidate = async (event) => {
-    event.preventDefault();
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(230, 206, 140, 0.7)";
+      particles.forEach((p) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      });
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    init();
+    draw();
+    window.addEventListener("resize", resize);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      canvas.remove();
+    };
+  }, []);
+
+  const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const openOtpModal = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      return toast.error("Please fill all required fields");
+    }
+    if (formData.password !== formData.confirmPassword) {
+      return toast.error("Passwords do not match");
+    }
+
     setLoading(true);
     try {
-      const response = await fetch(`${backend_url}/api/user/signup/validate-otp?email=${formData.email}&otp=${otp}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const otpdata = await response.json();
-      if (otpdata.status === 408) {
-        setError('Invalid OTP. Please try again.');
-        toast.error('Invalid OTP.');
-        setLoading(false);
-        return;
-      }
-
-      const res = await fetch(`${backend_url}/api/user/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) {
-        setError('Failed to create account.');
-        return;
-      }
-
-      const data = await res.json();
-      toast.success(data.message || 'Account created successfully!');
-      navigate('/');
-
-      setIsOtpModalOpen(false);
-      setLoading(false);
+      const res = await fetch(`${backend_url}/api/user/signup/generate-otp?email=${encodeURIComponent(formData.email)}`, { method: "POST" });
+      if (!res.ok) throw new Error();
+      setIsOtpModalOpen(true);
+      toast.success("OTP sent to your email");
     } catch (err) {
-      console.error(err);
-      setLoading(false);
-      setError('An error occurred while verifying OTP.');
+      toast.error("Failed to send OTP");
     }
+    setLoading(false);
+  };
+
+  const handleValidate = async () => {
+    setLoading(true);
+    try {
+      const verify = await fetch(`${backend_url}/api/user/signup/validate-otp?email=${encodeURIComponent(formData.email)}&otp=${otp}`, { method: "POST" });
+      if (!verify.ok) throw new Error();
+
+      const register = await fetch(`${backend_url}/api/user/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(formData) });
+      if (!register.ok) throw new Error();
+
+      toast.success("Account created — please login");
+      setIsOtpModalOpen(false);
+      navigate("/");
+    } catch (err) {
+      toast.error("OTP invalid or expired");
+    }
+    setLoading(false);
   };
 
   return (
-    <>
-      {(
-        <Container
-          maxWidth="false"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-            background: 'linear-gradient(to bottom right, #1E3A8A, #ffffff)',
-          }}
-        >
-          {/* OTP Modal */}
-          <Modal open={isOtpModalOpen} onClose={handleOtpModalClose}>
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 400,
-                bgcolor: 'background.paper',
-                borderRadius: 2,
-                boxShadow: 24,
-                p: 3,
-              }}
-            >
-              <Typography variant="h5" fontWeight="bold" mb={1} color="#2C3E50" textAlign="center">
-                Verify Your OTP
-              </Typography>
-              <TextField
-                label="Enter OTP"
-                variant="outlined"
-                fullWidth
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.slice(0, 6))}
-                inputProps={{ maxLength: 6 }}
-                sx={{ mb: 2 }}
-              />
-              <Typography
-                variant="body2"
-                color="black"
-                sx={{ mb: 1, textAlign: 'center', fontWeight: 'bold' }}
-              >
-                OTP will expire in {formatTime(remainingTime)}
-              </Typography>
-              {remainingTime === 0 && (
-                <Typography
-                  variant="body2"
-                  color="error"
-                  sx={{ mt: 0, mb: 2, textAlign: 'center' }}
-                >
-                  OTP has expired. Please request a new one.
-                </Typography>
-              )}
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{
-                  backgroundColor: '#1e1e2f',
-                  color: '#fff',
-                  textTransform: 'none',
-                  '&:hover': {
-                    backgroundColor: '#3a3a4c',
-                  },
-                }}
-                endIcon={loading ? <CircularProgress size={20} /> : <Send />}
-                disabled={loading || remainingTime === 0 || otp.length !== 6}
-                fullWidth onClick={handleValidate}>
+    <Box sx={{ minHeight: "100vh", position: "relative", display: "flex", flexDirection: { xs: "column", md: "row" }, background: "linear-gradient(135deg,#0c0c0f,#1a1a22)", fontFamily: "Inter" }}>
+      {/* left: intro */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", px: { xs: 4, md: 12 }, py: { xs: 6, md: 10 }, gap: 3, color: "white", zIndex: 1 }}>
+        <Typography variant="h2" sx={{ fontWeight: 800, fontFamily: "Playfair Display, serif", background: "linear-gradient(90deg,#F7E27D,#C6A667)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", mb: 1, fontSize: { xs: "28px", md: "48px" } }}>
+          OrnaCloud
+        </Typography>
+        <Typography variant="h5" sx={{ opacity: 0.9, maxWidth: "520px", fontWeight: 500 }}>
+          Premium receipt & inventory suite for jewelers.
+        </Typography>
+        <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1.2 }}>
+          <Typography sx={{ opacity: 0.85 }}>✅ GST-compliant invoices for gold, silver & diamonds</Typography>
+          <Typography sx={{ opacity: 0.85 }}>✅ Customer warranty & weight records stored securely</Typography>
+          <Typography sx={{ opacity: 0.85 }}>✅ WhatsApp + PDF instant export</Typography>
+          <Typography sx={{ opacity: 0.85 }}>✅ Smart metal rate auto-calculation & GST breakups</Typography>
+        </Box>
+        <Button onClick={() => navigate("/receipt-builder")} sx={{ mt: 3, px: 5, py: 1.4, borderRadius: "10px", background: "linear-gradient(90deg,#F7E27D,#C6A667)", color: "black", fontWeight: 700, textTransform: "none", boxShadow: "0 8px 28px rgba(247,226,125,0.18)", '&:hover': { opacity: 0.95 } }}>
+          ⚡ Create Receipt Without Login
+        </Button>
+      </Box>
 
-                Verify OTP
-              </Button>
+      {/* right: signup form (glass) */}
+      <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", p: { xs: 3, md: 6 }, zIndex: 1 }}>
+        <Box sx={{ width: "100%", maxWidth: 460, backdropFilter: "blur(22px)", background: "rgba(255,255,255,0.06)", borderRadius: "18px", border: "1px solid rgba(247,226,125,0.12)", p: { xs: 3, md: 5 }, boxShadow: "0 10px 40px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", gap: 2 }}>
+          <Typography variant="h5" sx={{ textAlign: "center", mb: 1, color: "white", fontWeight: 700 }}>
+            Create an account
+          </Typography>
+          <Typography sx={{ textAlign: "center", color: "rgba(255,255,255,0.7)", mb: 1 }}>
+            Join OrnaCloud — tailor-made receipts & inventory for jewelers
+          </Typography>
+
+          <form onSubmit={openOtpModal} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <TextField name="name" label="Full Name" variant="filled" value={formData.name} onChange={handleInputChange} fullWidth />
+            <TextField name="email" label="Email" variant="filled" value={formData.email} onChange={handleInputChange} fullWidth />
+
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+              <TextField name="password" label="Password" variant="filled" type={showPassword ? "text" : "password"} value={formData.password} onChange={handleInputChange} fullWidth InputProps={{ endAdornment: (<InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)}>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>) }} />
+
+              <TextField name="confirmPassword" label="Confirm Password" variant="filled" type={showConfirmPassword ? "text" : "password"} value={formData.confirmPassword} onChange={handleInputChange} fullWidth InputProps={{ endAdornment: (<InputAdornment position="end"><IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>) }} />
             </Box>
-          </Modal>
 
-          {/* Sign-Up Form */}
-          <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, maxWidth: 500, width: '100%' }}>
-            <Typography variant="h4" textAlign="center" fontWeight="bold" color="#2C3E50" mb={0}>
-              Create an Account
-            </Typography>
-            <Typography variant="body2" color="#5A6A85" textAlign="center">
-              Join the family of OrnaCloud
-            </Typography>
-            <Divider sx={{ mt: 1, mb: 2 }} />
-            {error && <Alert severity="error">{error}</Alert>}
+            <Button type="submit" disabled={loading} sx={{ py: 1.4, borderRadius: "10px", fontWeight: 700, background: "linear-gradient(90deg,#F7E27D,#C6A667)", color: "black", textTransform: "none", '&:hover': { filter: "brightness(1.06)" } }}>{loading ? <CircularProgress size={22} /> : "Sign Up"}</Button>
 
-            <Box component="form" onSubmit={handleOtpModalOpen} noValidate>
-              <Grid container spacing={2}>
-                <Grid item xs={12}><TextField label="Full Name" name="name" type='text' fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={12}><TextField label="Company Name" name="companyName" type='text' fullWidth onChange={handleInputChange} /></Grid>
-                <Grid item xs={12}><TextField label="Email" name="email" type='email' fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={6}><TextField label="Password" name="password" type={showPassword ? 'text' : 'password'} fullWidth required onChange={handleInputChange}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                          aria-label="toggle password visibility"
-                        >
-                          {showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                /></Grid>
-                <Grid item xs={6}><TextField label="Confirm Password" name="confirmPassword" type={showConfirmPassword ? 'text' : 'password'} fullWidth required onChange={handleInputChange}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          edge="end"
-                          aria-label="toggle password visibility"
-                        >
-                          {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                /></Grid>
-                <Grid item xs={12}><TextField label="Mobile Number" name="mobileNumber" type='tel' fullWidth required onChange={handleInputChange} /></Grid>
-                <Grid item xs={6}><TextField select label="Country" name="country" type='text' fullWidth onChange={handleInputChange}>{countries.map((c) => (<MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>))}</TextField></Grid>
-                <Grid item xs={6}><TextField select label="State" name="state" type='text' fullWidth onChange={handleInputChange}>{states.map((s) => (<MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>))}</TextField></Grid>
-              </Grid>
+            <Button onClick={() => navigate("/")} sx={{ textTransform: "none", color: "rgba(255,255,255,0.85)" }}>Already have an account? Log in</Button>
 
-              <Typography
-                variant="body2"
-                sx={{ mt: 2, textAlign: 'center', color: '#5A6A85' }}
-              >
-                Already have an account?{''}
-                <Button
-                  color="primary"
-                  onClick={() => navigate('/')}
-                  sx={{ textTransform: 'none', p: 0, color: '#1e1e2f' }}
-                >
-                  Log In
-                </Button>
-              </Typography>
-
-              <Button variant="contained"
-                color="primary"
-                disabled={loading}
-                endIcon={loading ? <CircularProgress size={20} /> : <Send />}
-                fullWidth type="submit" sx={{
-                  mt: 1, mb: 1,
-                  py: 1.5,
-                  fontSize: '1rem',
-                  fontWeight: 'bold',
-                  backgroundColor: '#1e1e2f',
-                  color: '#fff',
-                  textTransform: 'none',
-                  '&:hover': {
-                    backgroundColor: '#3a3a4c',
-                  },
-                }}>
-                Sign Up
-              </Button>
+            <Box style={{ color: "white" }} sx={{ textAlign: "center", mt: 1 }}>
+              <Typography sx={{ fontSize: "13px", opacity: 0.7 }}>🔒 Bank-grade Security • ⚡️ 99.9% Uptime</Typography>
             </Box>
-          </Paper>
-        </Container>
-      )}
-    </>
+          </form>
+        </Box>
+      </Box>
+
+      {/* OTP Modal */}
+      <Modal open={isOtpModalOpen} onClose={() => setIsOtpModalOpen(false)}>
+        <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 360, bgcolor: "background.paper", borderRadius: 2, boxShadow: 24, p: 3 }}>
+          <Typography variant="h6" textAlign="center" fontWeight={700}>Verify OTP</Typography>
+          <TextField fullWidth value={otp} onChange={(e) => setOtp(e.target.value.slice(0, 6))} sx={{ mt: 2 }} label="Enter OTP" />
+          <Button fullWidth sx={{ mt: 2, background: "#1e1e2f", color: "white" }} onClick={handleValidate}>{loading ? <CircularProgress size={22} /> : "Verify"}</Button>
+        </Box>
+      </Modal>
+    </Box>
   );
 }
