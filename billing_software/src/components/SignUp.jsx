@@ -171,10 +171,80 @@ export default function SignUpPage() {
 
       {/* OTP Modal */}
       <Modal open={isOtpModalOpen} onClose={() => setIsOtpModalOpen(false)}>
-        <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 360, bgcolor: "background.paper", borderRadius: 2, boxShadow: 24, p: 3 }}>
-          <Typography variant="h6" textAlign="center" fontWeight={700}>Verify OTP</Typography>
-          <TextField fullWidth value={otp} onChange={(e) => setOtp(e.target.value.slice(0, 6))} sx={{ mt: 2 }} label="Enter OTP" />
-          <Button fullWidth sx={{ mt: 2, background: "#1e1e2f", color: "white" }} onClick={handleValidate}>{loading ? <CircularProgress size={22} /> : "Verify"}</Button>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 380,
+            p: 4,
+            borderRadius: "18px",
+            backdropFilter: "blur(22px)",
+            background: "rgba(255,255,255,0.08)",
+            border: "1px solid rgba(247,226,125,0.25)",
+            boxShadow: "0 12px 45px rgba(0,0,0,0.55)",
+            textAlign: "center",
+          }}
+        >
+          <Typography
+            variant="h6"
+            fontWeight={700}
+            sx={{
+              mb: 2,
+              color: "white",
+              background: "linear-gradient(90deg,#F7E27D,#C6A667)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            🔐 Verify Your OTP
+          </Typography>
+
+
+          <Typography sx={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", mb: 2 }}>
+            Enter the 6-digit code sent to your email
+          </Typography>
+
+
+          <TextField
+            autoFocus
+            fullWidth
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.slice(0, 6))}
+            sx={{
+              mb: 2,
+              input: { textAlign: "center", fontSize: "20px", letterSpacing: "3px" },
+            }}
+            label="OTP Code"
+          />
+
+
+          <Button
+            fullWidth
+            onClick={handleValidate}
+            disabled={loading || otp.length !== 6}
+            sx={{
+              py: 1.3,
+              borderRadius: "10px",
+              fontWeight: 700,
+              background: "linear-gradient(90deg,#F7E27D,#C6A667)",
+              color: "black",
+              textTransform: "none",
+              boxShadow: "0 8px 25px rgba(247,226,125,0.28)",
+              '&:hover': { opacity: 0.9 },
+            }}
+          >
+            {loading ? <CircularProgress size={22} /> : "Verify OTP"}
+          </Button>
+
+
+          <Typography
+            onClick={() => setIsOtpModalOpen(false)}
+            sx={{ mt: 2, fontSize: "13px", cursor: "pointer", color: "rgba(255,255,255,0.7)", '&:hover': { color: "white" } }}
+          >
+            Cancel
+          </Typography>
         </Box>
       </Modal>
     </Box>
