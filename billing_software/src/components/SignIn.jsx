@@ -143,8 +143,8 @@ export default function SignInPage() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: { xs: "flex-start", md: "flex-start" },
-          px: { xs: 4, md: 4 },
-          py: { xs: 6, md: 10 },
+          px: { xs: 2, md: 4 },
+          py: { xs: 2, md: 10 },
           gap: 2,
           color: "white",
           // backgroundImage:
@@ -157,8 +157,8 @@ export default function SignInPage() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            px: { xs: 4, md: 10 },
-            py: 8,
+            px: { xs: 2, md: 10 },
+            py: 4,
             color: "white",
           }}
         >
@@ -172,7 +172,8 @@ export default function SignInPage() {
               background: "linear-gradient(90deg,#F7E27D,#C6A667)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              fontSize: { xs: "28px", md: "48px"}
+              fontSize: { xs: "28px", md: "48px"},
+              textAlign: { xs: "left", md: "left"}
             }}
           >
             OrnaCloud
@@ -182,22 +183,23 @@ export default function SignInPage() {
             variant="h5"
             sx={{
               opacity: 0.9,
-              maxWidth: "440px",
+              maxWidth: {xs: "400px", md: "440px"},
               mb: 3,
               fontWeight: 500,
+              textAlign: { xs: "left", md: "left"}
             }}
           >
             Smart receipt generator for jewellers. Elevate customer trust & brand prestige.
           </Typography>
 
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             {[
               "Instant GST-compliant jewellery receipts",
               "Cloud record tracking & warranty slips",
               "Export PDF & WhatsApp share instantly",
               "Secure, Fast & Professional",
             ].map((item, i) => (
-              <Typography key={i} sx={{ opacity: 0.8, fontSize: "15px" }}>
+              <Typography key={i} sx={{ opacity: 0.8, fontSize: {xs: "12px", md: "15px"} }}>
                 ✅ {item}
               </Typography>
             ))}
@@ -332,8 +334,8 @@ export default function SignInPage() {
 
           {/* Trust Badges */}
           <Box sx={{ mt: 3, display: "flex", justifyContent: "center", gap: 3, opacity: 0.55 }}>
-            <Typography sx={{ fontSize: "13px", color: "white" }}>🔒 Bank‑grade Security</Typography>
-            <Typography sx={{ fontSize: "13px", color: "white" }}>⚡ 99.9% Uptime</Typography>
+            <Typography sx={{ fontSize: {xs: "12px", md: "14px"}, color: "white" }}>🔒 Bank‑grade Security</Typography>
+            <Typography sx={{ fontSize: {xs: "12px", md: "14px"}, color: "white" }}>⚡ 99.9% Uptime</Typography>
           </Box>
 
           {/* FOOTER */}

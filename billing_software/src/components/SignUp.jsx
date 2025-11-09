@@ -129,10 +129,10 @@ export default function SignUpPage() {
           Premium receipt & inventory suite for jewellers.
         </Typography>
         <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1.2 }}>
-          <Typography sx={{ opacity: 0.85 }}>✅ GST-compliant invoices for gold, silver & diamonds</Typography>
-          <Typography sx={{ opacity: 0.85 }}>✅ Customer warranty & weight records stored securely</Typography>
-          <Typography sx={{ opacity: 0.85 }}>✅ WhatsApp + PDF instant export</Typography>
-          <Typography sx={{ opacity: 0.85 }}>✅ Smart metal rate auto-calculation & GST breakups</Typography>
+          <Typography sx={{ opacity: 0.85, fontSize: {xs: "12px", md: "15px"} }}>✅ GST-compliant invoices for gold, silver & diamonds</Typography>
+          <Typography sx={{ opacity: 0.85, fontSize: {xs: "12px", md: "15px"} }}>✅ Customer warranty & weight records stored securely</Typography>
+          <Typography sx={{ opacity: 0.85, fontSize: {xs: "12px", md: "15px"} }}>✅ WhatsApp + PDF instant export</Typography>
+          <Typography sx={{ opacity: 0.85, fontSize: {xs: "12px", md: "15px"} }}>✅ Smart metal rate auto-calculation & GST breakups</Typography>
         </Box>
         <Button onClick={() => navigate("/generate-receipt")} sx={{ mt: 3, px: 5, py: 1.4, borderRadius: "10px", background: "linear-gradient(90deg,#F7E27D,#C6A667)", color: "black", fontWeight: 700, textTransform: "none", boxShadow: "0 8px 28px rgba(247,226,125,0.18)", '&:hover': { opacity: 0.95 } }}>
           ⚡ Create Receipt Without Login
