@@ -124,7 +124,7 @@ export default function SignInPage() {
       sx={{
         minHeight: "100vh",
         position: "relative",
-        zIndex: 1,
+        // zIndex: 1,
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
         background:
@@ -133,7 +133,7 @@ export default function SignInPage() {
       }}
     >
       {/* Particle canvas is appended via effect */}
-      <Box id="particles-layer" sx={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+      {/* <Box id="particles-layer" sx={{ position: "absolute", inset: 0, pointerEvents: "none" }} /> */}
 
       {/* LEFT SECTION */}
       <Box
@@ -143,12 +143,12 @@ export default function SignInPage() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: { xs: "flex-start", md: "flex-start" },
-          px: { xs: 4, md: 6 },
+          px: { xs: 4, md: 4 },
           py: { xs: 6, md: 10 },
           gap: 2,
           color: "white",
-          backgroundImage:
-            "radial-gradient(circle at top left, rgba(255,215,0,0.12), transparent 60%)",
+          // backgroundImage:
+            // "radial-gradient(circle at top left, rgba(255,215,0,0.12), transparent 60%)",
         }}
       >
         <Box
@@ -172,6 +172,7 @@ export default function SignInPage() {
               background: "linear-gradient(90deg,#F7E27D,#C6A667)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
+              fontSize: { xs: "28px", md: "48px"}
             }}
           >
             OrnaCloud
@@ -181,21 +182,20 @@ export default function SignInPage() {
             variant="h5"
             sx={{
               opacity: 0.9,
-              maxWidth: "420px",
+              maxWidth: "440px",
               mb: 3,
               fontWeight: 500,
             }}
           >
-            Smart receipt generator for jewelers. Elevate customer trust & brand
-            prestige.
+            Smart receipt generator for jewellers. Elevate customer trust & brand prestige.
           </Typography>
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
             {[
-              "Instant GST-compliant jewelry receipts",
+              "Instant GST-compliant jewellery receipts",
               "Cloud record tracking & warranty slips",
               "Export PDF & WhatsApp share instantly",
-              "Secure, fast & professional",
+              "Secure, Fast & Professional",
             ].map((item, i) => (
               <Typography key={i} sx={{ opacity: 0.8, fontSize: "15px" }}>
                 ✅ {item}
@@ -230,16 +230,16 @@ export default function SignInPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          p: { xs: 3, md: 6 },
+          p: { xs: 3, md: 2  },
         }}
       >
         <Box
           sx={{
             width: "100%",
-            maxWidth: 420,
+            maxWidth: 440,
             backdropFilter: "blur(22px)",
             alignSelf: "center",
-            boxShadow: "0px 0px 35px rgba(198,166,103,0.18)",
+            // boxShadow: "0px 0px 35px rgba(198,166,103,0.18)",
             background: "rgba(255,255,255,0.08)",
             borderRadius: "16px",
             border: "1px solid rgba(255,255,255,0.15)",
@@ -248,9 +248,15 @@ export default function SignInPage() {
         >
           <Typography
             variant="h5"
-            sx={{ mb: 3, fontWeight: 700, color: "white", textAlign: "center" }}
+            sx={{ mb: 2, fontWeight: 700, color: "white", textAlign: "center" }}
           >
             Login to Continue
+          </Typography>
+
+          <Typography
+            sx={{ mb: 3, color: "rgba(255,255,255,0.7)", textAlign: "center" }}
+          >
+            Welcome back - your workspace awaits
           </Typography>
 
           <form onSubmit={handleSignIn}>
@@ -261,7 +267,15 @@ export default function SignInPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                backgroundColor: 'white',
+                borderRadius: "16px",
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'black',
+                },
+              }}
+              InputProps={{ disableUnderline: true }}
             />
 
             <TextField
@@ -272,7 +286,7 @@ export default function SignInPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               InputProps={{
-                style: { backgroundColor: "rgba(232,240,2554,1)" },
+                style: { backgroundColor: "rgba(232,240,2554,1)", borderRadius: "16px" },
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton onClick={() => setShowPassword(!showPassword)}>
@@ -280,8 +294,14 @@ export default function SignInPage() {
                     </IconButton>
                   </InputAdornment>
                 ),
+                disableUnderline: true
               }}
-              sx={{ mb: 3 }}
+              sx={{
+                mb: 3,
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'black',
+                },
+              }}
             />
 
             <Button
@@ -306,7 +326,7 @@ export default function SignInPage() {
               onClick={() => navigate("/signup")}
               sx={{ mt: 2, textTransform: "none", color: "white" }}
             >
-              New here? Create account
+              New here? Create your account
             </Button>
           </form>
 
@@ -317,7 +337,7 @@ export default function SignInPage() {
           </Box>
 
           {/* FOOTER */}
-          <Box
+          {/* <Box
             sx={{
               width: "100%",
               textAlign: "center",
@@ -330,7 +350,7 @@ export default function SignInPage() {
             <Typography sx={{ cursor: "pointer", mx: 1 }} onClick={() => navigate("/about")}>
               About • Pricing • Support
             </Typography>
-          </Box>
+          </Box> */}
         </Box>
       </Box>
     </Box>

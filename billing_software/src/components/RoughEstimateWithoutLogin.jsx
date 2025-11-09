@@ -19,14 +19,14 @@ export default function RoughEstimate(){
 
   const [items,setItems] = useState([{type:"Gold",description:"",gWt:"",sWt:"0",tunch:"",rate:"",amount:"0"}]);
 
-  useEffect(()=>{ setReceiptData(p=>({...p,user:jwtDecode(localStorage.getItem("token")).sub})); },[]);
-  useEffect(()=>{ (async()=>{
-    const u = jwtDecode(localStorage.getItem("token")).sub;
-    const r = await fetch(`${backend}/api/receipt/fetch/${u}`,{headers:{Authorization:`Bearer ${localStorage.getItem("token")}`}});
-    const d = await r.json(); if(!d.length) return;
-    const last=d.at(-1);
-    setReceiptData(p=>({...p,...last,billNumber:`BILL-${+last.billNumber.split('-')[1]+1}`,date:new Date().toISOString().slice(0,10)}));
-  })(); },[]);
+  // useEffect(()=>{ setReceiptData(p=>({...p,user:jwtDecode(localStorage.getItem("token")).sub})); },[]);
+  // useEffect(()=>{ (async()=>{
+  //   // const u = jwtDecode(localStorage.getItem("token")).sub;
+  //   // const r = await fetch(`${backend}/api/receipt/fetch/${u}`,{headers:{Authorization:`Bearer ${localStorage.getItem("token")}`}});
+  //   // const d = await r.json(); if(!d.length) return;
+  //   const last=d.at(-1);
+  //   setReceiptData(p=>({...p,...last,billNumber:`BILL-${+last.billNumber.split('-')[1]+1}`,date:new Date().toISOString().slice(0,10)}));
+  // })(); },[]);
 
   const handleForm=(f,v)=>setReceiptData(p=>({...p,[f]:v}));
   const handleItem=(i,f,v)=>{

@@ -13,6 +13,7 @@ import { Visibility, VisibilityOff, Send } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+
 // SignUpPage: polished, aligned and consistent with SignIn design
 export default function SignUpPage() {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
@@ -120,12 +121,12 @@ export default function SignUpPage() {
   return (
     <Box sx={{ minHeight: "100vh", position: "relative", display: "flex", flexDirection: { xs: "column", md: "row" }, background: "linear-gradient(135deg,#0c0c0f,#1a1a22)", fontFamily: "Inter" }}>
       {/* left: intro */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", px: { xs: 4, md: 12 }, py: { xs: 6, md: 10 }, gap: 3, color: "white", zIndex: 1 }}>
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", px: { xs: 4, md: 12 }, py: { xs: 6, md: 10 }, gap: 2, color: "white", zIndex: 1 }}>
         <Typography variant="h2" sx={{ fontWeight: 800, fontFamily: "Playfair Display, serif", background: "linear-gradient(90deg,#F7E27D,#C6A667)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", mb: 1, fontSize: { xs: "28px", md: "48px" } }}>
           OrnaCloud
         </Typography>
         <Typography variant="h5" sx={{ opacity: 0.9, maxWidth: "520px", fontWeight: 500 }}>
-          Premium receipt & inventory suite for jewelers.
+          Premium receipt & inventory suite for jewellers.
         </Typography>
         <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1.2 }}>
           <Typography sx={{ opacity: 0.85 }}>✅ GST-compliant invoices for gold, silver & diamonds</Typography>
@@ -140,22 +141,84 @@ export default function SignUpPage() {
 
       {/* right: signup form (glass) */}
       <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", p: { xs: 3, md: 6 }, zIndex: 1 }}>
-        <Box sx={{ width: "100%", maxWidth: 460, backdropFilter: "blur(22px)", background: "rgba(255,255,255,0.06)", borderRadius: "18px", border: "1px solid rgba(247,226,125,0.12)", p: { xs: 3, md: 5 }, boxShadow: "0 10px 40px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", gap: 2 }}>
-          <Typography variant="h5" sx={{ textAlign: "center", mb: 1, color: "white", fontWeight: 700 }}>
-            Create an account
+        <Box sx={{ width: "100%", maxWidth: 480, backdropFilter: "blur(22px)", background: "rgba(255,255,255,0.06)", borderRadius: "18px", border: "1px solid rgba(247,226,125,0.12)", p: { xs: 3, md: 5 }, boxShadow: "0 10px 40px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", gap: 2 }}>
+          <Typography variant="h5" sx={{ textAlign: "center", color: "white", fontWeight: 700 }}>
+            Create your Account
           </Typography>
-          <Typography sx={{ textAlign: "center", color: "rgba(255,255,255,0.7)", mb: 1 }}>
-            Join OrnaCloud — tailor-made receipts & inventory for jewelers
+          <Typography sx={{ textAlign: "center", color: "rgba(255,255,255,0.7)" }}>
+            Join OrnaCloud - tailor-made receipts & inventory for jewellers
           </Typography>
 
           <form onSubmit={openOtpModal} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <TextField name="name" label="Full Name" variant="filled" value={formData.name} onChange={handleInputChange} fullWidth />
-            <TextField name="email" label="Email" variant="filled" value={formData.email} onChange={handleInputChange} fullWidth />
+            <TextField
+              sx={{
+                backgroundColor: 'white',
+                borderRadius: "16px",
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'black',
+                },
+              }}
+              InputProps={{ disableUnderline: true }}
+              name="name"
+              label="Full Name"
+              variant="filled"
+              value={formData.name}
+              onChange={handleInputChange}
+              fullWidth
+            />
+            <TextField
+              sx={{
+                backgroundColor: 'white',
+                borderRadius: "16px",
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'black',
+                },
+              }}
+              InputProps={{ disableUnderline: true }}
+              name="email"
+              label="Email"
+              variant="filled"
+              value={formData.email}
+              onChange={handleInputChange}
+              fullWidth
+            />
 
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
-              <TextField name="password" label="Password" variant="filled" type={showPassword ? "text" : "password"} value={formData.password} onChange={handleInputChange} fullWidth InputProps={{ endAdornment: (<InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)}>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>) }} />
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1, mb: 1 }}>
+              <TextField
+                sx={{
+                  backgroundColor: 'white',
+                  borderRadius: "16px",
+                  '& .MuiInputLabel-root.Mui-focused': {
+                    color: 'black',
+                  },
+                }}
+                name="password"
+                label="Password"
+                variant="filled"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleInputChange}
+                fullWidth
+                InputProps={{ disableUnderline: true, endAdornment: (<InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)}>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>) }}
+              />
 
-              <TextField name="confirmPassword" label="Confirm Password" variant="filled" type={showConfirmPassword ? "text" : "password"} value={formData.confirmPassword} onChange={handleInputChange} fullWidth InputProps={{ endAdornment: (<InputAdornment position="end"><IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>) }} />
+              <TextField
+                sx={{
+                  backgroundColor: 'white',
+                  borderRadius: "16px",
+                  '& .MuiInputLabel-root.Mui-focused': {
+                    color: 'black',
+                  },
+                }}
+                name="confirmPassword"
+                label="Confirm Password"
+                variant="filled"
+                type={showConfirmPassword ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                fullWidth
+                InputProps={{ disableUnderline: true, endAdornment: (<InputAdornment position="end"><IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <Visibility /> : <VisibilityOff />}</IconButton></InputAdornment>) }}
+              />
             </Box>
 
             <Button type="submit" disabled={loading} sx={{ py: 1.4, borderRadius: "10px", fontWeight: 700, background: "linear-gradient(90deg,#F7E27D,#C6A667)", color: "black", textTransform: "none", '&:hover': { filter: "brightness(1.06)" } }}>{loading ? <CircularProgress size={22} /> : "Sign Up"}</Button>
@@ -170,7 +233,10 @@ export default function SignUpPage() {
       </Box>
 
       {/* OTP Modal */}
-      <Modal open={isOtpModalOpen} onClose={() => setIsOtpModalOpen(false)}>
+      <Modal 
+        open={isOtpModalOpen} 
+        onClose={() => setIsOtpModalOpen(false)}
+      >
         <Box
           sx={{
             position: "absolute",
@@ -210,12 +276,19 @@ export default function SignUpPage() {
           <TextField
             autoFocus
             fullWidth
+            variant="filled"
             value={otp}
             onChange={(e) => setOtp(e.target.value.slice(0, 6))}
             sx={{
               mb: 2,
-              input: { textAlign: "center", fontSize: "20px", letterSpacing: "3px" },
+              // input: { textAlign: "center", fontSize: "20px", letterSpacing: "3px" },
+              backgroundColor: 'white',
+              borderRadius: "16px",
+              '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'black',
+                },
             }}
+             InputProps={{ disableUnderline: true }}
             label="OTP Code"
           />
 
@@ -231,9 +304,10 @@ export default function SignUpPage() {
               background: "linear-gradient(90deg,#F7E27D,#C6A667)",
               color: "black",
               textTransform: "none",
-              boxShadow: "0 8px 25px rgba(247,226,125,0.28)",
+              // boxShadow: "0 8px 25px rgba(247,226,125,0.28)",
               '&:hover': { opacity: 0.9 },
             }}
+            
           >
             {loading ? <CircularProgress size={22} /> : "Verify OTP"}
           </Button>
